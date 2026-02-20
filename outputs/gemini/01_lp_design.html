@@ -1,209 +1,292 @@
 <!DOCTYPE html>
-<html lang="ja" class="scroll-smooth">
+<html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>和庵 | 現代茶室</title>
-    
-    <!-- Google Fonts: 凛とした和の美しさを持つ Shippori Mincho を使用 -->
+
+    <!-- Google Fonts (Noto Serif JP) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;500;600&display=swap"
+        rel="stylesheet">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        sumi: '#1C1C1C',      /* 墨色 - ベースの黒 */
-                        gofun: '#F9F8F6',     /* 胡粉色 - 温かみのある白 */
-                        shikkoku: '#0B0B0B',  /* 漆黒 - より深い黒 */
-                        rikyu: '#888E7E',     /* 利休鼠 - 落ち着いた緑灰 */
-                        kare: '#E0D2B4',      /* 枯色 - 乾いた竹のような淡い茶 */
-                    },
                     fontFamily: {
-                        mincho:,
+                        serif:,
                     },
-                    animation: {
-                        'spin-slow': 'spin 30s linear infinite',
+                    colors: {
+                        washi: '#F4F2EC',   /* 生成りがかった和紙の色 */
+                        sumi: '#1C1C1C',    /* 漆黒に近い墨色 */
+                        kurumi: '#8B7E6A',  /* 胡桃（くるみ）色・利休色に近いアクセント */
+                        usu: '#E8E5DF',     /* 柔らかな陰影色 */
+                        shironeri: '#FCFAF5'/* 白練（しろねり） */
+                    },
+                    letterSpacing: {
+                        widest: '.2em',
+                        super: '.4em',
                     }
                 }
             }
         }
     </script>
 
+    <!-- Custom CSS -->
     <style>
-        /* 全体設定 */
-        body {
-            background-color: #F9F8F6;
-            color: #1C1C1C;
-            overflow-x: hidden;
+        :root {
+            scroll-behavior: smooth;
         }
 
-        /* 縦書き設定 */
+        body {
+            background-color: #F4F2EC;
+            color: #1C1C1C;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 選択テキストの色 */
+        ::selection {
+            background: #8B7E6A;
+            color: #F4F2EC;
+        }
+
+        /* 空間に微細な質感を与える和紙風ノイズテクスチャ */
+        .noise-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.035;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* 縦書き指定 */
         .vertical-text {
             writing-mode: vertical-rl;
-            text-orientation: upright;
+            text-orientation: mixed;
         }
 
-        /* スクロールバーのカスタマイズ (控えめで上品に) */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1C1C1C;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #888E7E;
-            border-radius: 3px;
+        /* スクロールダウンインジケーター（一筋の線） */
+        .scroll-indicator {
+            position: relative;
+            height: 80px;
+            width: 1px;
+            background-color: transparent;
+            overflow: hidden;
+            margin: 0 auto;
         }
 
-        /* スクロール表示アニメーション */
+        .scroll-indicator::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1C1C1C;
+            animation: scroll-down 2.5s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+        }
+
+        @keyframes scroll-down {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            50% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        /* --- Intersection Observer用 アニメーションクラス --- */
         .reveal {
             opacity: 0;
             transform: translateY(40px);
-            transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-            will-change: transform, opacity;
+            transition: opacity 1.5s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
+
+        .reveal-delay-1 {
+            transition-delay: 0.2s;
         }
-        
+
+        .reveal-delay-2 {
+            transition-delay: 0.4s;
+        }
+
+        .reveal-delay-3 {
+            transition-delay: 0.6s;
+        }
+
         .reveal-left {
             opacity: 0;
             transform: translateX(-40px);
-            transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-            will-change: transform, opacity;
-        }
-        .reveal-left.active {
-            opacity: 1;
-            transform: translateX(0);
+            transition: opacity 1.5s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         .reveal-right {
             opacity: 0;
             transform: translateX(40px);
-            transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-            will-change: transform, opacity;
+            transition: opacity 1.5s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .reveal-right.active {
+
+        .is-revealed {
             opacity: 1;
-            transform: translateX(0);
+            transform: translate(0, 0);
         }
 
-        /* 砂紋（枯山水）風の微細な背景パターン */
-        .bg-samon {
-            background-image: repeating-radial-gradient(
-                circle at 50% 50%,
-                transparent 0,
-                transparent 15px,
-                rgba(28, 28, 28, 0.02) 16px,
-                transparent 17px
-            );
+        /* --- 画像のパララックス＆ホバーエフェクト --- */
+        .img-container {
+            overflow: hidden;
+            position: relative;
         }
 
-        /* 和紙の質感を付与するノイズフィルター */
-        .washi-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            opacity: 0.35;
+        .img-container img {
+            transition: transform 2s cubic-bezier(0.2, 0.8, 0.2, 1), filter 1.5s ease;
+            filter: grayscale(60%) sepia(15%);
+        }
+
+        .img-container:hover img {
+            transform: scale(1.03) !important;
+            /* JSのパララックスと競合させないため微調整 */
+            filter: grayscale(0%) sepia(0%);
+        }
+
+        /* --- 円相（Enso）のアニメーション --- */
+        .enso {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid #8B7E6A;
+            opacity: 0.15;
             pointer-events: none;
-            z-index: 50;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            z-index: -1;
         }
 
-        /* 悟りの窓（円窓）クリップパス */
-        .ensou {
-            clip-path: circle(48% at 50% 50%);
+        .enso-spin {
+            animation: spin 40s linear infinite;
+            border-style: dashed;
         }
 
-        /* スクロールダウンインジケーターのアニメーション */
-        @keyframes scrolldown {
-            0% { transform: translateY(-100%); }
-            50% { transform: translateY(0); }
-            100% { transform: translateY(100%); }
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        .animate-scrolldown {
-            animation: scrolldown 2.5s cubic-bezier(0.645, 0.045, 0.355, 1) infinite;
+
+        /* 障子の桟（さん）をモチーフにしたセパレーター */
+        .shoji-border {
+            position: relative;
+        }
+
+        .shoji-border::before {
+            content: "";
+            position: absolute;
+            background-color: #8B7E6A;
+            opacity: 0.3;
+        }
+
+        .shoji-border-top::before {
+            top: 0;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+        }
+
+        /* スクロールバーのカスタマイズ */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F4F2EC;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8B7E6A;
         }
     </style>
 </head>
-<body class="font-mincho antialiased selection:bg-rikyu selection:text-gofun">
-    
-    <!-- 和紙風テクスチャのオーバーレイ -->
-    <div class="washi-overlay"></div>
+
+<body class="relative font-serif">
+
+    <!-- 空間全体を覆う和紙テクスチャ -->
+    <div class="noise-bg"></div>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-40 p-6 flex justify-between items-center mix-blend-difference text-gofun pointer-events-none">
-        <div class="text-xl tracking- font-bold pointer-events-auto">和庵</div>
-        <ul class="flex space-x-10 text-xs md:text-sm tracking- pointer-events-auto">
-            <li><a href="#concept" class="hover:text-kare transition duration-500">理念</a></li>
-            <li><a href="#space" class="hover:text-kare transition duration-500">空間</a></li>
-            <li><a href="#contact" class="hover:text-kare transition duration-500">結び</a></li>
-        </ul>
+    <nav
+        class="fixed top-0 left-0 w-full z-40 px-6 py-8 md:px-12 flex justify-between items-center mix-blend-difference text-shironeri">
+        <a href="#" class="text-xl tracking-widest font-light hover:opacity-70 transition-opacity duration-500">和庵</a>
+        <div class="hidden md:flex gap-12 text-xs md:text-sm tracking-widest font-light">
+            <a href="#concept" class="hover:text-kurumi transition-colors duration-500">哲学</a>
+            <a href="#space" class="hover:text-kurumi transition-colors duration-500">空間</a>
+            <a href="#gallery" class="hover:text-kurumi transition-colors duration-500">情景</a>
+        </div>
+        <!-- Mobile Menu Icon -->
+        <button class="md:hidden text-shironeri focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1" d="M4 6h16M4 12h16m-7 6h7">
+                </path>
+            </svg>
+        </button>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-sumi text-gofun">
-        <div class="absolute inset-0 z-0">
-            <!-- 円窓風のメインビジュアル -->
-            <div class="w-full h-full flex items-center justify-center">
-                <div class="w- h- md:w- md:h- ensou overflow-hidden relative reveal" style="transition-duration: 2s;">
-                    <img src="https://images.unsplash.com/photo-1613430155694-0130612716b5?q=80&w=2000&auto=format&fit=crop" alt="茶室の情景" class="w-full h-full object-cover opacity-70 hover:scale-110 hover:opacity-100 transition duration- ease-out">
-                </div>
-            </div>
-        </div>
-        
-        <div class="relative z-10 container mx-auto px-6 h-screen flex flex-col md:flex-row justify-between items-center pointer-events-none">
-            <!-- 左側サブタイトル -->
-            <div class="mt-32 md:mt-0 flex flex-col space-y-6">
-                <p class="text-kare tracking- text-xs md:text-sm reveal-left" style="transition-delay: 0.4s;">現代に息づく</p>
-                <p class="text-kare tracking- text-xs md:text-sm reveal-left" style="transition-delay: 0.6s;">静寂と調和の境地</p>
-            </div>
-            
-            <!-- 右側メインタイトル（縦書き） -->
-            <h1 class="vertical-text text-6xl md:text-8xl lg:text-9xl font-bold tracking- text-gofun reveal-right drop-shadow-2xl" style="transition-delay: 0.8s;">
-                和庵
+    <header class="relative w-full h-screen flex flex-col justify-center items-center overflow-hidden">
+        <!-- 禅の円相モチーフ（ゆっくりと回転） -->
+        <div class="enso enso-spin w- h- md:w- md:h- top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="enso w- h- md:w- md:h- top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-5"></div>
+
+        <div class="z-10 flex flex-col items-center reveal">
+            <!-- 縦書きタイトル -->
+            <h1 class="vertical-text text-5xl md:text-7xl font-light tracking- text-sumi mb-8 leading-loose">
+                現代茶室<br><span class="text-kurumi text-4xl md:text-5xl mt-12 block">和庵</span>
             </h1>
+            <p class="text- md:text-xs tracking-super text-sumi/50 uppercase mt-12 md:mt-16">Silence, Translated into
+                Space</p>
         </div>
-        
-        <!-- スクロールインジケーター -->
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-4 reveal" style="transition-delay: 1.5s;">
-            <span class="vertical-text text- tracking- text-rikyu">巡る</span>
-            <div class="w- h-20 bg-rikyu/20 overflow-hidden relative">
-                <div class="w-full h-full bg-rikyu absolute top-0 left-0 animate-scrolldown"></div>
-            </div>
+
+        <div
+            class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 reveal reveal-delay-2">
+            <span class="vertical-text text- tracking-widest text-sumi/40">奥へ</span>
+            <div class="scroll-indicator"></div>
         </div>
-    </section>
+    </header>
 
     <!-- Concept Section -->
-    <section id="concept" class="py-32 md:py-56 bg-gofun relative bg-samon">
-        <div class="container mx-auto px-8 max-w-5xl">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-20">
-                <div class="w-full md:w-5/12 order-2 md:order-1 relative">
-                    <h2 class="vertical-text text-4xl md:text-6xl font-medium tracking- text-sumi mb-8 float-right h-80 reveal">
-                        和敬清寂
-                    </h2>
-                    <div class="clear-both pt-8 pr-4">
-                        <p class="leading- text-sumi/80 tracking- text-sm md:text-base mb-10 reveal" style="transition-delay: 0.2s;">
-                            日常の喧騒から離れ、己と向き合うための空間。<br>
-                            無駄を削ぎ落としたミニマリズムの極致が、<br>
-                            かつての千利休が見出した「侘び・寂び」を<br>
-                            現代の文脈で蘇らせます。
-                        </p>
-                        <p class="leading- text-sumi/80 tracking- text-sm md:text-base reveal" style="transition-delay: 0.4s;">
-                            自然光の微かな移ろい、風の音、そして一服の茶。<br>
-                            五感を研ぎ澄ますための「余白」がここにあります。
-                        </p>
-                    </div>
+    <section id="concept" class="relative w-full py-32 md:py-48 px-6 md:px-12 max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row items-center gap-16 md:gap-32">
+            <!-- 左：画像 -->
+            <div class="w-full md:w-5/12 reveal-left">
+                <div class="img-container aspect- w-full max-w-md mx-auto md:ml-0 relative">
+                    <img src="https://images.unsplash.com/photo-1618220179428-22790b46a011?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                        alt="和室の光と影" class="object-cover w-full h-full parallax-img" data-speed="0.08">
+                    <!-- 粋な装飾枠（少しずらす） -->
+                    <div class="absolute -top-4 -left-4 w-full h-full border border-kurumi/30 -z-10"></div>
                 </div>
-                <div class="w-full md:w-6/12 order-1 md:order-2 reveal-right">
-                    <!-- 抹茶・茶道具のビジュアル (ホバーでモノクロからカラーへ) -->
-                    <div class="relative p-4 bg-white shadow-2xl">
-                        <img src="https://images.unsplash.com/photo-1596404975517-764f6932cba9?q=80&w=1200&auto=format&fit=crop" alt="茶筅と抹茶" class="w-full aspect- object-cover grayscale hover:grayscale-0 transition duration- ease-in-out">
+            </div>
+
+            <!-- 右：テキスト（縦書きで余白を活かすレイアウト） -->
+            <div class="w-full md:w-7/12 flex justify-center md:justify-start reveal-right">
+                <div class="flex gap-8 md:gap-20 h-64 md:h-96">
+                    <h2 class="vertical-text text-2xl md:text-4xl font-light tracking-widest text-kurumi">間と静寂</h2>
+                    <div
+                        class="vertical-text text-sm md:text-base leading- md:leading- tracking-widest text-sumi/80 pt-8 md:pt-16">
+                        <p>何もない空間にこそ、豊かな意味が宿る。</p>
+                        <p>喧騒を離れ、ただ湯の沸く音に耳を澄ます。</p>
+                        <p>千利休が追求した「わび・さび」の精神を、</p>
+                        <p>現代の洗練された建築美学で再構築。</p>
+                        <p>光と影が織りなす、一期一会の時間。</p>
                     </div>
                 </div>
             </div>
@@ -211,109 +294,163 @@
     </section>
 
     <!-- Space / Features Section -->
-    <section id="space" class="py-32 md:py-48 bg-shikkoku text-gofun overflow-hidden relative border-t border-sumi">
-        <div class="container mx-auto px-8 max-w-6xl">
-            <div class="text-center mb-32 reveal">
-                <h3 class="text-sm md:text-base tracking- text-rikyu mb-6">空間の意匠</h3>
-                <h2 class="text-3xl md:text-4xl tracking- text-kare mb-8">陰翳礼讃</h2>
-                <div class="w-16 h- bg-rikyu mx-auto opacity-50"></div>
+    <section id="space" class="relative w-full py-32 md:py-48 bg-sumi text-washi overflow-hidden">
+        <!-- 上下の細い罫線 -->
+        <div class="absolute top-0 left-0 w-full h- bg-kurumi/20"></div>
+        <div class="absolute bottom-0 left-0 w-full h- bg-kurumi/20"></div>
+
+        <div class="max-w-7xl mx-auto px-6 md:px-12">
+            <div
+                class="mb-24 reveal text-center md:text-left flex flex-col md:flex-row md:items-end justify-between border-b border-kurumi/20 pb-8">
+                <h2 class="text-3xl md:text-4xl font-light tracking-widest">空間の美学</h2>
+                <p class="text-kurumi tracking-super text-xs uppercase mt-4 md:mt-0">Aesthetics of Space</p>
             </div>
 
-            <!-- Feature 1: 光と影 -->
-            <div class="flex flex-col md:flex-row items-center gap-12 md:gap-24 mb-40">
-                <div class="w-full md:w-7/12 reveal-left">
-                    <div class="relative overflow-hidden group">
-                        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?q=80&w=1200&auto=format&fit=crop" alt="光と影" class="w-full h- md:h- object-cover group-hover:scale-105 transition duration-">
-                        <div class="absolute inset-0 bg-shikkoku/40 group-hover:bg-transparent transition duration-"></div>
-                    </div>
-                </div>
-                <div class="w-full md:w-5/12 reveal-right">
-                    <h4 class="text-2xl md:text-3xl tracking- mb-8 text-kare font-medium">仄暗さの美学</h4>
-                    <p class="leading- text-gofun/70 tracking- text-sm md:text-base">
-                        障子越しに差し込む柔らかな光。<br>
-                        時間とともに表情を変える影の美しさ。<br>
-                        光を遮るのではなく、光を和らげ、<br>
-                        空間全体に奥行きと静謐さをもたらします。
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-12">
+                <!-- Feature 1 -->
+                <div class="reveal reveal-delay-1 shoji-border shoji-border-top pt-12">
+                    <span class="block text-4xl text-kurumi font-light mb-8 opacity-40">壱</span>
+                    <h3 class="text-xl tracking-widest mb-6">陰翳</h3>
+                    <p class="text-sm leading- text-washi/60 font-light">
+                        障子越しに差し込む柔らかな自然光。時間帯によって変化する光と影のグラデーションが、空間に深い奥行きと静謐な表情を与えます。
                     </p>
                 </div>
-            </div>
-
-            <!-- Feature 2: 自然素材 -->
-            <div class="flex flex-col md:flex-row-reverse items-center gap-12 md:gap-24">
-                <div class="w-full md:w-7/12 reveal-right">
-                    <div class="relative overflow-hidden group">
-                        <img src="https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?q=80&w=1200&auto=format&fit=crop" alt="自然素材" class="w-full h- md:h- object-cover group-hover:scale-105 transition duration-">
-                        <div class="absolute inset-0 bg-shikkoku/40 group-hover:bg-transparent transition duration-"></div>
-                    </div>
+                <!-- Feature 2 -->
+                <div class="reveal reveal-delay-2 shoji-border shoji-border-top pt-12">
+                    <span class="block text-4xl text-kurumi font-light mb-8 opacity-40">弐</span>
+                    <h3 class="text-xl tracking-widest mb-6">無音</h3>
+                    <p class="text-sm leading- text-washi/60 font-light">
+                        外界のノイズを完全に遮断。茶釜の湯が沸く「松風」の音だけが微かに響き渡る、己と向き合うための絶対的な静けさを設えました。
+                    </p>
                 </div>
-                <div class="w-full md:w-5/12 text-left md:text-right reveal-left">
-                    <h4 class="text-2xl md:text-3xl tracking- mb-8 text-kare font-medium">命ある素材</h4>
-                    <p class="leading- text-gofun/70 tracking- text-sm md:text-base">
-                        土壁、木肌、和紙、そして畳。<br>
-                        経年変化とともに味わいを増す自然素材。<br>
-                        人工物では表現し得ない、<br>
-                        温もりと静かな生命力が宿ります。
+                <!-- Feature 3 -->
+                <div class="reveal reveal-delay-3 shoji-border shoji-border-top pt-12">
+                    <span class="block text-4xl text-kurumi font-light mb-8 opacity-40">参</span>
+                    <h3 class="text-xl tracking-widest mb-6">素材</h3>
+                    <p class="text-sm leading- text-washi/60 font-light">
+                        ざらつきのある土壁、無垢の木材、手漉きの和紙。自然の温もりと経年変化を楽しめる素材が、現代の幾何学的な意匠と静かに調和します。
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Closing / Contact Section -->
-    <section id="contact" class="py-48 bg-gofun relative flex flex-col items-center justify-center text-center overflow-hidden">
-        <!-- 背景の巨大な透かし文字 -->
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-">
-            <span class="text- font-bold text-sumi vertical-text leading-none">一期一会</span>
+    <!-- Gallery Section (Asymmetric Grid) -->
+    <section id="gallery" class="py-32 md:py-48 px-6 md:px-12 max-w-7xl mx-auto">
+        <div class="flex flex-col items-center mb-24 md:mb-32 reveal">
+            <h2 class="text-3xl md:text-4xl font-light tracking-widest text-sumi mb-4">情景</h2>
+            <p class="text-kurumi tracking-super text-xs uppercase">Moments</p>
         </div>
-        
-        <div class="relative z-10 max-w-2xl px-6 reveal">
-            <div class="w-px h-24 bg-sumi/30 mx-auto mb-12"></div>
-            <h2 class="text-3xl md:text-4xl tracking- text-sumi mb-12 font-medium">心静かに、茶を点てる。</h2>
-            <p class="leading- text-sumi/70 tracking- mb-16 text-sm md:text-base">
-                和庵では、現代における真の豊かさを提案します。<br>
-                茶室の見学や、空間設計のご相談は、<br>
-                お便りにて承っております。
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+            <!-- 画像1: 左に大きく配置 -->
+            <div class="md:col-span-7 md:col-start-1 reveal">
+                <div class="img-container w-full aspect-">
+                    <img src="https://images.unsplash.com/photo-1545987796-200677ee1011?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                        alt="竹林の自然" class="object-cover w-full h- parallax-img" data-speed="0.05">
+                </div>
+                <p class="mt-4 text- tracking-widest text-sumi/50">アプローチ - 露地の竹林</p>
+            </div>
+
+            <!-- 画像2: 右下にずらして配置 -->
+            <div class="md:col-span-4 md:col-start-9 md:mt-48 reveal reveal-delay-1">
+                <div class="img-container w-full aspect-">
+                    <img src="https://images.unsplash.com/photo-1523730205978-59fd1b2965e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt="茶道具" class="object-cover w-full h- parallax-img" data-speed="0.12">
+                </div>
+                <p class="mt-4 text- tracking-widest text-sumi/50">点前座 - 道具に宿る美</p>
+            </div>
+
+            <!-- 画像3: 中央に横長で配置 -->
+            <div class="md:col-span-8 md:col-start-3 mt-16 md:mt-32 reveal">
+                <div class="img-container w-full aspect-">
+                    <img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                        alt="抽象的な光とグラデーション" class="object-cover w-full h- parallax-img" data-speed="0.08">
+                </div>
+                <p class="mt-4 text- tracking-widest text-sumi/50 text-center">床の間 - 陰翳礼讃</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reservation / Contact Section -->
+    <section class="py-32 px-6 bg-usu border-t border-kurumi/20 text-center relative overflow-hidden">
+        <!-- 薄い円相 -->
+        <div class="enso w- h- top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-20"></div>
+
+        <div class="relative z-10 max-w-2xl mx-auto reveal">
+            <h2 class="text-2xl md:text-3xl font-light tracking-widest text-sumi mb-8">お席のご案内</h2>
+            <p class="text-sm leading-loose text-sumi/70 mb-12 tracking-wide">
+                和庵は完全予約制となっております。<br>
+                日常から切り離された、あなただけの静寂をお過ごしください。
             </p>
-            
-            <!-- デザインされたボタン -->
-            <a href="#" class="inline-block border border-sumi px-16 py-5 text-sm tracking- text-sumi hover:bg-sumi hover:text-gofun transition-all duration-500 relative overflow-hidden group">
-                <span class="relative z-10">お便りを送る</span>
-                <div class="absolute inset-0 bg-sumi transform scale-y-0 origin-bottom group-hover:scale-y-100 transition-transform duration-500 ease-out z-0"></div>
+            <a href="#"
+                class="inline-block border border-sumi text-sumi px-12 py-4 text-xs tracking-widest hover:bg-sumi hover:text-washi transition-colors duration-700">
+                ご予約を承る
             </a>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-sumi py-16 text-center text-gofun/40 text- md:text-xs tracking- border-t border-gofun/10 relative z-10">
-        <p>&copy; 2026 和庵 WA-AN. All rights reserved.</p>
+    <footer class="bg-sumi text-washi/40 py-16 text-center text- tracking-widest uppercase">
+        <div class="flex justify-center mb-12">
+            <span
+                class="text-xl font-light tracking-widest text-washi/80 hover:text-washi transition-colors cursor-pointer">和庵</span>
+        </div>
+        <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-12 mb-12">
+            <p>東京都港区南青山 幻影番地</p>
+            <p>info@wa-an.example.com</p>
+        </div>
+        <p>&copy; 2026 WA-AN MODERN TEA ROOM. All rights reserved.</p>
     </footer>
 
-    <!-- スクロールアニメーション制御 JS -->
+    <!-- Scripts for Interactivity -->
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // Intersection Observer の設定
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // 1. Intersection Observer for Scroll Reveal Animations
             const observerOptions = {
                 root: null,
                 rootMargin: '0px',
-                threshold: 0.15 // 要素が15%見えたら発火
+                threshold: 0.15
             };
 
-            const observer = new IntersectionObserver((entries, observer) => {
+            const revealObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                        // 一度アニメーションしたら監視を解除 (再度スクロールしてもアニメーションさせない場合)
+                        entry.target.classList.add('is-revealed');
+                        // 1度アニメーションしたら監視を解除して軽量化
                         observer.unobserve(entry.target);
                     }
                 });
             }, observerOptions);
 
-            // アニメーション対象の要素を取得して監視開始
-            const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
-            revealElements.forEach(el => {
-                observer.observe(el);
+            document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => {
+                revealObserver.observe(el);
             });
+
+            // 2. Parallax Effect for Images
+            const parallaxImages = document.querySelectorAll('.parallax-img');
+
+            // requestAnimationFrameを使用したスムーズなパララックス
+            let rafId;
+            const updateParallax = () => {
+                const scrolled = window.pageYOffset;
+                parallaxImages.forEach(img => {
+                    const speed = img.getAttribute('data-speed') || 0.1;
+                    // はみ出しを防ぐため、CSS側で height を 120% など大きく設定しています
+                    const yPos = -(scrolled * speed);
+                    img.style.transform = `translateY(${yPos}px)`;
+                });
+                rafId = null;
+            };
+
+            window.addEventListener('scroll', () => {
+                if (!rafId) {
+                    rafId = requestAnimationFrame(updateParallax);
+                }
+            }, { passive: true });
         });
     </script>
 </body>
+
 </html>
