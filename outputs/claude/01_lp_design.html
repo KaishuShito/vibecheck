@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>和庵 | 現代茶室</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sumi: '#1a1a1a',
+            kinari: '#f5f0e8',
+            matcha: '#6b7c5e',
+            'matcha-deep': '#4a5a3e',
+            haizakura: '#c4928a',
+            tobi: '#6b4226',
+            nezumi: '#8c8c8c',
+            kitsune: '#c4a26e',
+            shiro: '#faf7f2',
+            usuzumi: '#3a3a3a',
+          },
+          fontFamily: {
+            serif: ['"Noto Serif JP"', 'Georgia', 'serif'],
+            sans: ['"Noto Sans JP"', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Noto+Serif+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Noto Serif JP', Georgia, serif;
+      background-color: #faf7f2;
+      color: #1a1a1a;
+      overflow-x: hidden;
+    }
+
+    /* === Scrollbar === */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f5f0e8; }
+    ::-webkit-scrollbar-thumb { background: #c4a26e; border-radius: 3px; }
+
+    /* === Scroll-triggered reveal === */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-60px);
+      transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(60px);
+      transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .reveal-scale {
+      opacity: 0;
+      transform: scale(0.92);
+      transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal-scale.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* === Staggered children === */
+    .stagger-children > * {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .stagger-children.visible > *:nth-child(1) { transition-delay: 0.1s; }
+    .stagger-children.visible > *:nth-child(2) { transition-delay: 0.25s; }
+    .stagger-children.visible > *:nth-child(3) { transition-delay: 0.4s; }
+    .stagger-children.visible > *:nth-child(4) { transition-delay: 0.55s; }
+    .stagger-children.visible > *:nth-child(5) { transition-delay: 0.7s; }
+    .stagger-children.visible > * {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    .stagger-children.visible > * {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* === Hero ink wash background === */
+    .ink-wash {
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(107,124,94,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 30%, rgba(196,162,110,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(107,66,38,0.04) 0%, transparent 40%);
+    }
+
+    /* === Tatami texture pattern === */
+    .tatami-texture {
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(107,124,94,0.03) 3px,
+          rgba(107,124,94,0.03) 4px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 6px,
+          rgba(107,124,94,0.02) 6px,
+          rgba(107,124,94,0.02) 7px
+        );
+    }
+
+    /* === Shoji (paper screen) pattern === */
+    .shoji-pattern {
+      background-image:
+        linear-gradient(rgba(26,26,26,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26,26,26,0.06) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+
+    /* === Engawa (veranda) horizontal line === */
+    .engawa-line {
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        #c4a26e 20%,
+        #c4a26e 80%,
+        transparent 100%
+      );
+    }
+
+    /* === Floating particles (dust in light) === */
+    @keyframes float-particle {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      50% { transform: translate(80px, -120px) rotate(180deg); }
+    }
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #c4a26e;
+      opacity: 0;
+    }
+
+    /* === Hero calligraphy brush stroke === */
+    @keyframes brush-draw {
+      0% { clip-path: inset(0 100% 0 0); }
+      100% { clip-path: inset(0 0 0 0); }
+    }
+    .brush-stroke {
+      animation: brush-draw 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation-delay: 0.5s;
+      clip-path: inset(0 100% 0 0);
+    }
+
+    @keyframes brush-draw-slow {
+      0% { clip-path: inset(0 100% 0 0); }
+      100% { clip-path: inset(0 0 0 0); }
+    }
+    .brush-stroke-slow {
+      animation: brush-draw-slow 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation-delay: 1.2s;
+      clip-path: inset(0 100% 0 0);
+    }
+
+    /* === Steam animation === */
+    @keyframes steam-rise {
+      0% { transform: translateY(0) scaleX(1); opacity: 0; }
+      15% { opacity: 0.5; }
+      50% { transform: translateY(-40px) scaleX(1.4); opacity: 0.3; }
+      100% { transform: translateY(-80px) scaleX(2); opacity: 0; }
+    }
+    .steam {
+      animation: steam-rise 4s ease-out infinite;
+    }
+    .steam:nth-child(2) { animation-delay: 1.3s; left: 45%; }
+    .steam:nth-child(3) { animation-delay: 2.6s; left: 55%; }
+
+    /* === Parallax subtle === */
+    .parallax-layer {
+      will-change: transform;
+      transition: transform 0.1s linear;
+    }
+
+    /* === Seasonal circle ring === */
+    @keyframes rotate-slow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .rotate-ring {
+      animation: rotate-slow 120s linear infinite;
+    }
+
+    /* === Nav === */
+    .nav-glass {
+      backdrop-filter: blur(12px) saturate(1.2);
+      -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    }
+
+    /* === Cursor trail (on hero) === */
+    .hero-glow {
+      pointer-events: none;
+      position: fixed;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(196,162,110,0.06) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      transition: left 0.3s ease-out, top 0.3s ease-out;
+    }
+
+    /* === Image ken-burns === */
+    @keyframes kenburns {
+      0% { transform: scale(1) translate(0, 0); }
+      50% { transform: scale(1.08) translate(-1%, -1%); }
+      100% { transform: scale(1) translate(0, 0); }
+    }
+    .kenburns { animation: kenburns 20s ease-in-out infinite; }
+
+    /* === Section divider - winding stream === */
+    .stream-divider {
+      height: 60px;
+      overflow: hidden;
+    }
+    .stream-divider svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* === Tokonoma (alcove) shadow === */
+    .tokonoma-shadow {
+      box-shadow:
+        inset 8px 0 30px -10px rgba(26,26,26,0.12),
+        inset -8px 0 30px -10px rgba(26,26,26,0.12),
+        inset 0 8px 30px -10px rgba(26,26,26,0.08);
+    }
+
+    /* === Fade mask for images === */
+    .fade-edges {
+      mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        black 8%,
+        black 92%,
+        transparent 100%
+      );
+      -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        black 8%,
+        black 92%,
+        transparent 100%
+      );
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Cursor glow -->
+  <div id="heroGlow" class="hero-glow hidden lg:block"></div>
+
+  <!-- ============================== -->
+  <!-- NAV -->
+  <!-- ============================== -->
+  <nav id="nav" class="fixed top-0 left-0 w-full z-50 nav-glass transition-all duration-700" style="background:transparent;">
+    <div class="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between h-16 md:h-20">
+      <a href="#hero" class="text-lg md:text-xl tracking-[0.3em] font-serif font-light text-sumi/80 hover:text-matcha transition-colors duration-500">
+        和庵
+      </a>
+      <div class="hidden md:flex items-center gap-10 text-sm tracking-[0.2em] font-light font-sans text-sumi/60">
+        <a href="#philosophy" class="hover:text-matcha transition-colors duration-500">思想</a>
+        <a href="#space" class="hover:text-matcha transition-colors duration-500">空間</a>
+        <a href="#seasons" class="hover:text-matcha transition-colors duration-500">季節</a>
+        <a href="#ritual" class="hover:text-matcha transition-colors duration-500">作法</a>
+        <a href="#visit" class="hover:text-matcha transition-colors duration-500">訪問</a>
+      </div>
+      <!-- Mobile menu button -->
+      <button id="menuBtn" class="md:hidden flex flex-col gap-1.5 p-2 group" aria-label="Menu">
+        <span class="w-6 h-px bg-sumi/60 transition-all duration-300 group-hover:bg-matcha"></span>
+        <span class="w-4 h-px bg-sumi/60 transition-all duration-300 group-hover:bg-matcha ml-auto"></span>
+      </button>
+    </div>
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="md:hidden max-h-0 overflow-hidden transition-all duration-500">
+      <div class="px-6 pb-6 flex flex-col gap-4 text-sm tracking-[0.2em] font-light font-sans text-sumi/60">
+        <a href="#philosophy" class="hover:text-matcha transition-colors">思想</a>
+        <a href="#space" class="hover:text-matcha transition-colors">空間</a>
+        <a href="#seasons" class="hover:text-matcha transition-colors">季節</a>
+        <a href="#ritual" class="hover:text-matcha transition-colors">作法</a>
+        <a href="#visit" class="hover:text-matcha transition-colors">訪問</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================== -->
+  <!-- HERO -->
+  <!-- ============================== -->
+  <section id="hero" class="relative min-h-screen flex items-center justify-center ink-wash overflow-hidden">
+    <!-- Floating particles -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="particle" style="top:20%;left:15%;animation:float-particle 8s ease-in-out infinite;"></div>
+      <div class="particle" style="top:60%;left:70%;animation:float-particle 10s ease-in-out 2s infinite;"></div>
+      <div class="particle" style="top:40%;left:40%;animation:float-particle 12s ease-in-out 4s infinite;"></div>
+      <div class="particle" style="top:75%;left:25%;animation:float-particle 9s ease-in-out 1s infinite;"></div>
+      <div class="particle" style="top:30%;left:85%;animation:float-particle 11s ease-in-out 3s infinite;"></div>
+    </div>
+
+    <!-- Decorative circle -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] md:w-[700px] md:h-[700px] pointer-events-none">
+      <div class="rotate-ring w-full h-full rounded-full border border-kitsune/10"></div>
+    </div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[550px] md:h-[550px] pointer-events-none">
+      <div class="rotate-ring w-full h-full rounded-full border border-matcha/8" style="animation-direction:reverse;animation-duration:90s;"></div>
+    </div>
+
+    <div class="relative z-10 text-center px-6">
+      <!-- Main kanji -->
+      <div class="brush-stroke">
+        <h1 class="text-8xl md:text-[12rem] lg:text-[16rem] font-serif font-bold text-sumi/90 leading-none tracking-tight select-none">
+          茶
+        </h1>
+      </div>
+
+      <!-- Underline brush stroke -->
+      <div class="brush-stroke-slow mx-auto mt-4">
+        <svg class="w-48 md:w-72 h-3 mx-auto" viewBox="0 0 288 12" fill="none">
+          <path d="M2 8 C 40 2, 80 10, 120 5 S 200 8, 240 4 S 270 6, 286 6" stroke="#c4a26e" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.5"/>
+        </svg>
+      </div>
+
+      <!-- Subtitle -->
+      <div class="brush-stroke-slow mt-8 md:mt-12">
+        <p class="text-sm md:text-base tracking-[0.5em] font-light text-sumi/50 font-sans">
+          静寂のなかに、美を見出す
+        </p>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-0 animate-[fadeIn_1s_ease-out_3s_forwards]">
+        <span class="text-[10px] tracking-[0.4em] text-sumi/30 font-sans font-light">SCROLL</span>
+        <div class="w-px h-12 bg-gradient-to-b from-kitsune/40 to-transparent relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-4 bg-kitsune/60 animate-[scrollDown_2s_ease-in-out_infinite]"></div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @keyframes fadeIn { to { opacity: 1; } }
+      @keyframes scrollDown {
+        0% { transform: translateY(-16px); }
+        100% { transform: translateY(48px); }
+      }
+    </style>
+  </section>
+
+  <!-- ============================== -->
+  <!-- PHILOSOPHY -->
+  <!-- ============================== -->
+  <section id="philosophy" class="relative py-28 md:py-40 overflow-hidden">
+    <div class="absolute inset-0 tatami-texture"></div>
+
+    <div class="relative max-w-6xl mx-auto px-6 md:px-10">
+      <!-- Section label -->
+      <div class="reveal flex items-center gap-6 mb-20 md:mb-28">
+        <div class="w-8 md:w-16 h-px bg-kitsune/40"></div>
+        <span class="text-[10px] md:text-xs tracking-[0.5em] text-matcha/60 font-sans font-light uppercase">Philosophy</span>
+      </div>
+
+      <div class="grid md:grid-cols-12 gap-12 md:gap-8 items-start">
+        <!-- Left: Large text -->
+        <div class="md:col-span-5 reveal-left">
+          <h2 class="text-4xl md:text-5xl lg:text-6xl font-serif font-light leading-tight text-sumi/85 mb-8">
+            一期一会の<br/>精神を、<br/>
+            <span class="text-matcha">現代に</span>
+          </h2>
+          <div class="w-12 h-px bg-kitsune/50 mb-8"></div>
+          <p class="text-sm md:text-base text-sumi/50 font-light leading-relaxed font-sans max-w-sm">
+            和庵は、千利休が追求した侘びの美学を現代建築の文脈で再解釈する空間です。
+          </p>
+        </div>
+
+        <!-- Right: Philosophy cards -->
+        <div class="md:col-span-6 md:col-start-7 stagger-children space-y-8">
+          <!-- Card 1 -->
+          <div class="group p-8 md:p-10 bg-kinari/60 border border-sumi/5 hover:border-matcha/20 transition-all duration-700 cursor-default">
+            <div class="flex items-start gap-6">
+              <span class="text-3xl md:text-4xl font-serif text-matcha/30 font-light leading-none mt-1">侘</span>
+              <div>
+                <h3 class="text-lg font-serif font-medium text-sumi/80 mb-3">侘び — Wabi</h3>
+                <p class="text-sm text-sumi/45 font-light leading-relaxed font-sans">
+                  不完全さのなかにある静かな美。削ぎ落とされた空間にこそ、心が満たされる瞬間があります。
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="group p-8 md:p-10 bg-kinari/60 border border-sumi/5 hover:border-matcha/20 transition-all duration-700 cursor-default">
+            <div class="flex items-start gap-6">
+              <span class="text-3xl md:text-4xl font-serif text-matcha/30 font-light leading-none mt-1">寂</span>
+              <div>
+                <h3 class="text-lg font-serif font-medium text-sumi/80 mb-3">寂び — Sabi</h3>
+                <p class="text-sm text-sumi/45 font-light leading-relaxed font-sans">
+                  時の流れが刻む味わい。経年変化を愛で、ものの命の移ろいに美を見出す心。
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="group p-8 md:p-10 bg-kinari/60 border border-sumi/5 hover:border-matcha/20 transition-all duration-700 cursor-default">
+            <div class="flex items-start gap-6">
+              <span class="text-3xl md:text-4xl font-serif text-matcha/30 font-light leading-none mt-1">間</span>
+              <div>
+                <h3 class="text-lg font-serif font-medium text-sumi/80 mb-3">間 — Ma</h3>
+                <p class="text-sm text-sumi/45 font-light leading-relaxed font-sans">
+                  何もない空間が語ること。余白は沈黙ではなく、最も雄弁な表現です。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stream divider -->
+  <div class="stream-divider">
+    <svg viewBox="0 0 1440 60" preserveAspectRatio="none">
+      <path d="M0,30 C240,10 480,50 720,30 S1200,10 1440,30" stroke="#c4a26e" stroke-width="0.5" fill="none" opacity="0.3"/>
+    </svg>
+  </div>
+
+  <!-- ============================== -->
+  <!-- SPACE -->
+  <!-- ============================== -->
+  <section id="space" class="relative py-28 md:py-40 bg-sumi overflow-hidden">
+    <!-- Shoji pattern overlay -->
+    <div class="absolute inset-0 shoji-pattern opacity-30"></div>
+
+    <div class="relative max-w-7xl mx-auto px-6 md:px-10">
+      <!-- Section label -->
+      <div class="reveal flex items-center gap-6 mb-20 md:mb-28">
+        <div class="w-8 md:w-16 h-px bg-kitsune/30"></div>
+        <span class="text-[10px] md:text-xs tracking-[0.5em] text-kinari/30 font-sans font-light uppercase">Space</span>
+      </div>
+
+      <div class="reveal mb-16 md:mb-20">
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-serif font-light text-kinari/85 leading-tight max-w-3xl">
+          光と影が織りなす、<br/>
+          <span class="text-kitsune/70">もうひとつの世界</span>
+        </h2>
+      </div>
+
+      <!-- Space gallery grid -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
+        <!-- Large image placeholder -->
+        <div class="md:col-span-7 reveal-left">
+          <div class="relative aspect-[4/3] bg-usuzumi overflow-hidden group tokonoma-shadow">
+            <div class="absolute inset-0 bg-gradient-to-br from-matcha/20 via-sumi/60 to-tobi/20 kenburns"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-sumi/80 via-transparent to-transparent"></div>
+            <!-- Simulated tea room interior -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-3/4 h-3/4 relative">
+                <!-- Tokonoma alcove -->
+                <div class="absolute left-0 top-0 w-1/3 h-full bg-sumi/40 border-r border-kitsune/10">
+                  <div class="absolute top-8 left-1/2 -translate-x-1/2">
+                    <div class="w-px h-24 bg-gradient-to-b from-kitsune/30 to-transparent mx-auto mb-3"></div>
+                    <div class="w-8 h-10 border border-kitsune/15 mx-auto"></div>
+                  </div>
+                </div>
+                <!-- Tatami lines -->
+                <div class="absolute right-0 top-0 w-2/3 h-full opacity-20">
+                  <div class="w-full h-1/2 border-b border-kinari/20"></div>
+                  <div class="w-1/2 h-full border-r border-kinari/20 absolute top-0 left-0"></div>
+                </div>
+                <!-- Light beam -->
+                <div class="absolute top-0 right-1/4 w-16 h-full bg-gradient-to-b from-kinari/8 via-kinari/3 to-transparent skew-x-[-5deg]"></div>
+              </div>
+            </div>
+            <div class="absolute bottom-6 left-6 md:bottom-8 md:left-8">
+              <span class="text-xs tracking-[0.3em] text-kinari/40 font-sans font-light">四畳半 — YOJOUHAN</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column stacked -->
+        <div class="md:col-span-5 flex flex-col gap-4 md:gap-6">
+          <div class="reveal-right" style="transition-delay:0.15s;">
+            <div class="relative aspect-square bg-usuzumi overflow-hidden group tokonoma-shadow">
+              <div class="absolute inset-0 bg-gradient-to-tl from-matcha-deep/30 via-sumi/50 to-kitsune/10"></div>
+              <!-- Tea bowl -->
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="relative">
+                  <div class="w-20 h-14 md:w-28 md:h-20 rounded-b-full border border-kitsune/20 bg-gradient-to-b from-tobi/20 to-tobi/30 relative">
+                    <!-- Steam -->
+                    <div class="absolute -top-8 left-1/2 -translate-x-1/2 w-full">
+                      <div class="steam absolute left-[40%] w-6 h-6 rounded-full bg-kinari/10 blur-sm"></div>
+                      <div class="steam absolute left-[50%] w-4 h-4 rounded-full bg-kinari/8 blur-sm" style="animation-delay:1.3s;"></div>
+                      <div class="steam absolute left-[45%] w-5 h-5 rounded-full bg-kinari/6 blur-sm" style="animation-delay:2.6s;"></div>
+                    </div>
+                    <!-- Matcha surface -->
+                    <div class="absolute top-1 left-1/2 -translate-x-1/2 w-[85%] h-3 rounded-full bg-matcha/30"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="absolute bottom-6 left-6">
+                <span class="text-xs tracking-[0.3em] text-kinari/40 font-sans font-light">茶碗 — CHAWAN</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="reveal-right" style="transition-delay:0.3s;">
+            <div class="relative aspect-[2/1] bg-usuzumi overflow-hidden tokonoma-shadow">
+              <div class="absolute inset-0 bg-gradient-to-r from-sumi/70 via-matcha/10 to-sumi/70"></div>
+              <!-- Bamboo garden abstraction -->
+              <div class="absolute inset-0 flex items-end justify-center gap-4 pb-4 px-8">
+                <div class="w-px h-[60%] bg-gradient-to-t from-matcha/30 to-matcha/5"></div>
+                <div class="w-px h-[80%] bg-gradient-to-t from-matcha/25 to-matcha/5"></div>
+                <div class="w-px h-[45%] bg-gradient-to-t from-matcha/35 to-matcha/5"></div>
+                <div class="w-px h-[70%] bg-gradient-to-t from-matcha/20 to-matcha/5"></div>
+                <div class="w-px h-[55%] bg-gradient-to-t from-matcha/30 to-matcha/5"></div>
+                <div class="w-px h-[75%] bg-gradient-to-t from-matcha/25 to-matcha/5"></div>
+                <div class="w-px h-[40%] bg-gradient-to-t from-matcha/35 to-matcha/5"></div>
+              </div>
+              <div class="absolute bottom-4 left-6">
+                <span class="text-xs tracking-[0.3em] text-kinari/40 font-sans font-light">竹 — TAKE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="reveal mt-16 md:mt-24 max-w-2xl">
+        <p class="text-sm md:text-base text-kinari/40 font-light leading-loose font-sans">
+          四畳半の空間に、宇宙を映す。躙口をくぐる瞬間、日常は遠ざかり、
+          茶の湯のための時間が静かに始まります。光と影、素材の質感、
+          そして何よりも「間」が、この空間の本質です。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- SEASONS -->
+  <!-- ============================== -->
+  <section id="seasons" class="relative py-28 md:py-40 overflow-hidden">
+    <div class="absolute inset-0 tatami-texture"></div>
+
+    <div class="relative max-w-6xl mx-auto px-6 md:px-10">
+      <!-- Section label -->
+      <div class="reveal flex items-center gap-6 mb-20 md:mb-28">
+        <div class="w-8 md:w-16 h-px bg-kitsune/40"></div>
+        <span class="text-[10px] md:text-xs tracking-[0.5em] text-matcha/60 font-sans font-light uppercase">Seasons</span>
+      </div>
+
+      <div class="reveal mb-16 md:mb-24">
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-serif font-light text-sumi/85 leading-tight max-w-3xl">
+          四季に寄り添い、<br/>
+          <span class="text-matcha/70">時を味わう</span>
+        </h2>
+      </div>
+
+      <!-- Seasons horizontal scroll on mobile, grid on desktop -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 stagger-children">
+        <!-- Spring -->
+        <div class="group cursor-default">
+          <div class="relative aspect-[3/4] overflow-hidden mb-4 md:mb-6 bg-gradient-to-b from-haizakura/20 via-shiro to-kinari border border-sumi/5 group-hover:border-haizakura/30 transition-all duration-700">
+            <!-- Cherry blossom abstraction -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="relative w-24 h-24 md:w-32 md:h-32">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-haizakura/30"></div>
+                <div class="absolute top-1/4 right-0 w-2.5 h-2.5 rounded-full bg-haizakura/20"></div>
+                <div class="absolute bottom-1/4 right-1/4 w-2 h-2 rounded-full bg-haizakura/25"></div>
+                <div class="absolute bottom-0 left-1/3 w-3 h-3 rounded-full bg-haizakura/15"></div>
+                <div class="absolute top-1/3 left-0 w-2 h-2 rounded-full bg-haizakura/35"></div>
+                <!-- Branch -->
+                <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+                  <path d="M20,80 Q50,50 70,20" stroke="#6b4226" stroke-width="0.8" fill="none" opacity="0.3"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-baseline gap-3 mb-2">
+              <span class="text-2xl md:text-3xl font-serif text-haizakura/60 font-light">春</span>
+              <span class="text-[10px] tracking-[0.3em] text-sumi/30 font-sans font-light">HARU</span>
+            </div>
+            <p class="text-xs text-sumi/35 font-light leading-relaxed font-sans hidden md:block">
+              桜花に誘われ、新たな出会いの茶を点てる
+            </p>
+          </div>
+        </div>
+
+        <!-- Summer -->
+        <div class="group cursor-default">
+          <div class="relative aspect-[3/4] overflow-hidden mb-4 md:mb-6 bg-gradient-to-b from-matcha/15 via-shiro to-kinari border border-sumi/5 group-hover:border-matcha/30 transition-all duration-700">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="relative w-24 h-24 md:w-32 md:h-32">
+                <!-- Water ripple -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border border-matcha/10"></div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border border-matcha/7"></div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full border border-matcha/4"></div>
+                <!-- Leaf -->
+                <svg class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-8" viewBox="0 0 24 32">
+                  <ellipse cx="12" cy="16" rx="8" ry="14" fill="none" stroke="#6b7c5e" stroke-width="0.8" opacity="0.4"/>
+                  <line x1="12" y1="4" x2="12" y2="28" stroke="#6b7c5e" stroke-width="0.5" opacity="0.3"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-baseline gap-3 mb-2">
+              <span class="text-2xl md:text-3xl font-serif text-matcha/60 font-light">夏</span>
+              <span class="text-[10px] tracking-[0.3em] text-sumi/30 font-sans font-light">NATSU</span>
+            </div>
+            <p class="text-xs text-sumi/35 font-light leading-relaxed font-sans hidden md:block">
+              涼を求め、水の音に耳を澄ます静寂
+            </p>
+          </div>
+        </div>
+
+        <!-- Autumn -->
+        <div class="group cursor-default">
+          <div class="relative aspect-[3/4] overflow-hidden mb-4 md:mb-6 bg-gradient-to-b from-kitsune/15 via-shiro to-kinari border border-sumi/5 group-hover:border-kitsune/30 transition-all duration-700">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="relative w-24 h-24 md:w-32 md:h-32">
+                <!-- Falling leaves abstraction -->
+                <svg class="absolute w-full h-full" viewBox="0 0 100 100">
+                  <path d="M30,20 Q35,30 40,35" stroke="#c4a26e" stroke-width="0.8" fill="none" opacity="0.4"/>
+                  <circle cx="42" cy="37" r="2" fill="#c4a26e" opacity="0.25"/>
+                  <path d="M60,40 Q62,55 55,65" stroke="#6b4226" stroke-width="0.6" fill="none" opacity="0.3"/>
+                  <circle cx="54" cy="67" r="1.5" fill="#6b4226" opacity="0.2"/>
+                  <path d="M45,60 Q50,70 48,80" stroke="#c4a26e" stroke-width="0.7" fill="none" opacity="0.35"/>
+                  <circle cx="47" cy="82" r="2.5" fill="#c4a26e" opacity="0.15"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-baseline gap-3 mb-2">
+              <span class="text-2xl md:text-3xl font-serif text-kitsune/70 font-light">秋</span>
+              <span class="text-[10px] tracking-[0.3em] text-sumi/30 font-sans font-light">AKI</span>
+            </div>
+            <p class="text-xs text-sumi/35 font-light leading-relaxed font-sans hidden md:block">
+              紅葉の下、名残を惜しむ一服の温もり
+            </p>
+          </div>
+        </div>
+
+        <!-- Winter -->
+        <div class="group cursor-default">
+          <div class="relative aspect-[3/4] overflow-hidden mb-4 md:mb-6 bg-gradient-to-b from-nezumi/8 via-shiro to-kinari border border-sumi/5 group-hover:border-nezumi/20 transition-all duration-700">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="relative w-24 h-24 md:w-32 md:h-32">
+                <!-- Snow / Emptiness -->
+                <div class="absolute top-1/4 left-1/3 w-1 h-1 rounded-full bg-nezumi/15"></div>
+                <div class="absolute top-1/2 right-1/3 w-0.5 h-0.5 rounded-full bg-nezumi/20"></div>
+                <div class="absolute bottom-1/3 left-1/2 w-1.5 h-1.5 rounded-full bg-nezumi/10"></div>
+                <div class="absolute top-1/3 right-1/4 w-0.5 h-0.5 rounded-full bg-nezumi/25"></div>
+                <!-- Single branch -->
+                <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+                  <path d="M30,70 Q50,50 75,45" stroke="#1a1a1a" stroke-width="0.5" fill="none" opacity="0.15"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-baseline gap-3 mb-2">
+              <span class="text-2xl md:text-3xl font-serif text-nezumi/60 font-light">冬</span>
+              <span class="text-[10px] tracking-[0.3em] text-sumi/30 font-sans font-light">FUYU</span>
+            </div>
+            <p class="text-xs text-sumi/35 font-light leading-relaxed font-sans hidden md:block">
+              雪景色を窓に映し、心の奥底を温める
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Engawa line -->
+  <div class="engawa-line mx-6 md:mx-20"></div>
+
+  <!-- ============================== -->
+  <!-- RITUAL -->
+  <!-- ============================== -->
+  <section id="ritual" class="relative py-28 md:py-40 overflow-hidden">
+    <div class="absolute inset-0 tatami-texture"></div>
+
+    <div class="relative max-w-6xl mx-auto px-6 md:px-10">
+      <!-- Section label -->
+      <div class="reveal flex items-center gap-6 mb-20 md:mb-28">
+        <div class="w-8 md:w-16 h-px bg-kitsune/40"></div>
+        <span class="text-[10px] md:text-xs tracking-[0.5em] text-matcha/60 font-sans font-light uppercase">Ritual</span>
+      </div>
+
+      <div class="grid md:grid-cols-12 gap-16 md:gap-8">
+        <!-- Left: Vertical process -->
+        <div class="md:col-span-5 reveal-left">
+          <h2 class="text-3xl md:text-5xl font-serif font-light text-sumi/85 leading-tight mb-12 md:mb-16">
+            作法という名の<br/>
+            <span class="text-matcha/70">瞑想</span>
+          </h2>
+
+          <!-- Process steps -->
+          <div class="relative pl-8 border-l border-kitsune/15">
+            <div class="space-y-12">
+              <div class="relative">
+                <div class="absolute -left-[33px] top-1 w-2 h-2 rounded-full bg-kitsune/40"></div>
+                <span class="text-[10px] tracking-[0.4em] text-kitsune/50 font-sans font-light block mb-2">01</span>
+                <h4 class="text-base font-serif text-sumi/75 mb-1">席入り</h4>
+                <p class="text-xs text-sumi/35 font-sans font-light leading-relaxed">
+                  躙口をくぐり、世俗を置き去りにする
+                </p>
+              </div>
+              <div class="relative">
+                <div class="absolute -left-[33px] top-1 w-2 h-2 rounded-full bg-kitsune/30"></div>
+                <span class="text-[10px] tracking-[0.4em] text-kitsune/50 font-sans font-light block mb-2">02</span>
+                <h4 class="text-base font-serif text-sumi/75 mb-1">拝見</h4>
+                <p class="text-xs text-sumi/35 font-sans font-light leading-relaxed">
+                  床の間の掛軸と花を愛で、亭主の心を読む
+                </p>
+              </div>
+              <div class="relative">
+                <div class="absolute -left-[33px] top-1 w-2 h-2 rounded-full bg-kitsune/20"></div>
+                <span class="text-[10px] tracking-[0.4em] text-kitsune/50 font-sans font-light block mb-2">03</span>
+                <h4 class="text-base font-serif text-sumi/75 mb-1">点前</h4>
+                <p class="text-xs text-sumi/35 font-sans font-light leading-relaxed">
+                  一つひとつの所作が、祈りに似た集中を宿す
+                </p>
+              </div>
+              <div class="relative">
+                <div class="absolute -left-[33px] top-1 w-2 h-2 rounded-full bg-kitsune/10"></div>
+                <span class="text-[10px] tracking-[0.4em] text-kitsune/50 font-sans font-light block mb-2">04</span>
+                <h4 class="text-base font-serif text-sumi/75 mb-1">一服</h4>
+                <p class="text-xs text-sumi/35 font-sans font-light leading-relaxed">
+                  茶碗を手に、この瞬間だけに存在する
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Large quote -->
+        <div class="md:col-span-6 md:col-start-7 flex items-center reveal-right">
+          <div class="relative w-full">
+            <div class="absolute -top-8 -left-4 text-8xl md:text-9xl font-serif text-matcha/5 leading-none select-none">
+              「
+            </div>
+            <blockquote class="relative z-10 text-xl md:text-2xl lg:text-3xl font-serif font-light text-sumi/60 leading-relaxed md:leading-loose pl-2">
+              茶の湯とは<br/>
+              ただ湯を沸かし<br/>
+              茶を点てて<br/>
+              飲むばかりなる事と<br/>
+              知るべし
+            </blockquote>
+            <div class="mt-8 flex items-center gap-4">
+              <div class="w-8 h-px bg-kitsune/30"></div>
+              <cite class="text-xs tracking-[0.3em] text-sumi/30 font-sans font-light not-italic">千利休</cite>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- VISIT / CONTACT -->
+  <!-- ============================== -->
+  <section id="visit" class="relative py-28 md:py-40 bg-sumi overflow-hidden">
+    <div class="absolute inset-0 shoji-pattern opacity-20"></div>
+
+    <div class="relative max-w-6xl mx-auto px-6 md:px-10">
+      <!-- Section label -->
+      <div class="reveal flex items-center gap-6 mb-20 md:mb-28">
+        <div class="w-8 md:w-16 h-px bg-kitsune/30"></div>
+        <span class="text-[10px] md:text-xs tracking-[0.5em] text-kinari/30 font-sans font-light uppercase">Visit</span>
+      </div>
+
+      <div class="grid md:grid-cols-12 gap-16 md:gap-8 items-start">
+        <div class="md:col-span-6 reveal-left">
+          <h2 class="text-3xl md:text-5xl lg:text-6xl font-serif font-light text-kinari/85 leading-tight mb-8">
+            お越しを、<br/>
+            <span class="text-kitsune/60">お待ちしております</span>
+          </h2>
+          <p class="text-sm text-kinari/30 font-light leading-relaxed font-sans max-w-md mb-12">
+            完全予約制にて、おひとり様から承ります。季節のお菓子とともに、一期一会のひとときをお過ごしください。
+          </p>
+
+          <!-- Contact info -->
+          <div class="space-y-6 text-sm font-sans font-light">
+            <div class="flex items-start gap-6">
+              <span class="text-kinari/20 tracking-[0.2em] w-16 shrink-0">所在地</span>
+              <span class="text-kinari/50">京都市左京区 南禅寺界隈</span>
+            </div>
+            <div class="flex items-start gap-6">
+              <span class="text-kinari/20 tracking-[0.2em] w-16 shrink-0">営業日</span>
+              <span class="text-kinari/50">金・土・日（祝日を除く）</span>
+            </div>
+            <div class="flex items-start gap-6">
+              <span class="text-kinari/20 tracking-[0.2em] w-16 shrink-0">時間</span>
+              <span class="text-kinari/50">十時 — 十七時（最終入室 十六時）</span>
+            </div>
+            <div class="flex items-start gap-6">
+              <span class="text-kinari/20 tracking-[0.2em] w-16 shrink-0">予約</span>
+              <span class="text-kinari/50">三日前までに、お電話にて</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reservation form area -->
+        <div class="md:col-span-5 md:col-start-8 reveal-right">
+          <div class="p-8 md:p-10 border border-kinari/8 bg-sumi/50">
+            <h3 class="text-lg font-serif text-kinari/60 mb-8">ご予約のお問い合わせ</h3>
+            <form class="space-y-6" onsubmit="event.preventDefault();">
+              <div>
+                <label class="text-[10px] tracking-[0.3em] text-kinari/25 font-sans font-light block mb-3">お名前</label>
+                <input type="text" class="w-full bg-transparent border-b border-kinari/10 focus:border-kitsune/40 text-kinari/60 text-sm font-sans font-light pb-2 outline-none transition-colors duration-500 placeholder:text-kinari/15" placeholder="山田 太郎" />
+              </div>
+              <div>
+                <label class="text-[10px] tracking-[0.3em] text-kinari/25 font-sans font-light block mb-3">ご連絡先</label>
+                <input type="email" class="w-full bg-transparent border-b border-kinari/10 focus:border-kitsune/40 text-kinari/60 text-sm font-sans font-light pb-2 outline-none transition-colors duration-500 placeholder:text-kinari/15" placeholder="email@example.com" />
+              </div>
+              <div>
+                <label class="text-[10px] tracking-[0.3em] text-kinari/25 font-sans font-light block mb-3">ご希望日</label>
+                <input type="text" class="w-full bg-transparent border-b border-kinari/10 focus:border-kitsune/40 text-kinari/60 text-sm font-sans font-light pb-2 outline-none transition-colors duration-500 placeholder:text-kinari/15" placeholder="2026年 3月 15日" />
+              </div>
+              <div>
+                <label class="text-[10px] tracking-[0.3em] text-kinari/25 font-sans font-light block mb-3">人数</label>
+                <input type="text" class="w-full bg-transparent border-b border-kinari/10 focus:border-kitsune/40 text-kinari/60 text-sm font-sans font-light pb-2 outline-none transition-colors duration-500 placeholder:text-kinari/15" placeholder="2名" />
+              </div>
+              <div class="pt-4">
+                <button type="submit" class="group w-full py-4 border border-kitsune/20 text-kitsune/50 text-xs tracking-[0.4em] font-sans font-light hover:bg-kitsune/5 hover:border-kitsune/40 transition-all duration-700 relative overflow-hidden">
+                  <span class="relative z-10">送信する</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- FOOTER -->
+  <!-- ============================== -->
+  <footer class="bg-sumi border-t border-kinari/5 py-16 md:py-20">
+    <div class="max-w-6xl mx-auto px-6 md:px-10">
+      <div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
+        <div>
+          <span class="text-2xl md:text-3xl tracking-[0.4em] font-serif font-light text-kinari/50">和庵</span>
+          <p class="text-[10px] tracking-[0.3em] text-kinari/15 font-sans font-light mt-3">現代茶室 — A MODERN CHASHITSU</p>
+        </div>
+        <div class="flex items-center gap-8 text-kinari/15 text-[10px] tracking-[0.2em] font-sans font-light">
+          <span>KYOTO, JAPAN</span>
+          <div class="w-4 h-px bg-kinari/10"></div>
+          <span>EST. 2024</span>
+        </div>
+      </div>
+      <div class="engawa-line mt-12 mb-8 opacity-20"></div>
+      <p class="text-[10px] text-kinari/10 font-sans font-light tracking-[0.2em] text-center">
+        &copy; 2024 和庵 WAAN. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ============================== -->
+  <!-- SCRIPTS -->
+  <!-- ============================== -->
+  <script>
+    // === Scroll Reveal ===
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger-children')
+      .forEach((el) => revealObserver.observe(el));
+
+    // === Nav background on scroll ===
+    const nav = document.getElementById('nav');
+    let lastScroll = 0;
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      if (scrollY > 80) {
+        nav.style.background = 'rgba(250, 247, 242, 0.85)';
+        nav.style.borderBottom = '1px solid rgba(196, 162, 110, 0.1)';
+      } else {
+        nav.style.background = 'transparent';
+        nav.style.borderBottom = 'none';
+      }
+
+      // On dark sections, adjust nav text
+      const darkSections = document.querySelectorAll('#space, #visit');
+      let onDark = false;
+      darkSections.forEach((sec) => {
+        const rect = sec.getBoundingClientRect();
+        if (rect.top <= 80 && rect.bottom >= 80) {
+          onDark = true;
+        }
+      });
+
+      if (onDark && scrollY > 80) {
+        nav.style.background = 'rgba(26, 26, 26, 0.85)';
+        nav.style.borderBottom = '1px solid rgba(196, 162, 110, 0.08)';
+        nav.querySelectorAll('a, span').forEach((el) => {
+          el.style.color = '';
+        });
+        nav.querySelector('a').style.color = 'rgba(245, 240, 232, 0.8)';
+        nav.querySelectorAll('.hidden.md\\:flex a').forEach((el) => {
+          el.style.color = 'rgba(245, 240, 232, 0.5)';
+        });
+      } else {
+        nav.querySelector('a').style.color = '';
+        nav.querySelectorAll('.hidden.md\\:flex a').forEach((el) => {
+          el.style.color = '';
+        });
+      }
+
+      lastScroll = scrollY;
+    });
+
+    // === Mobile menu ===
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    let menuOpen = false;
+    menuBtn.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.style.maxHeight = menuOpen ? '300px' : '0';
+    });
+
+    // Close mobile menu on link click
+    mobileMenu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        menuOpen = false;
+        mobileMenu.style.maxHeight = '0';
+      });
+    });
+
+    // === Hero cursor glow ===
+    const heroGlow = document.getElementById('heroGlow');
+    const heroSection = document.getElementById('hero');
+    document.addEventListener('mousemove', (e) => {
+      const heroRect = heroSection.getBoundingClientRect();
+      if (
+        e.clientY >= heroRect.top &&
+        e.clientY <= heroRect.bottom
+      ) {
+        heroGlow.style.display = 'block';
+        heroGlow.style.left = e.clientX + 'px';
+        heroGlow.style.top = e.clientY + 'px';
+      } else {
+        heroGlow.style.display = 'none';
+      }
+    });
+
+    // === Smooth anchor scroll ===
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(anchor.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // === Parallax on scroll (subtle) ===
+    const parallaxElements = document.querySelectorAll('.parallax-layer');
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      parallaxElements.forEach((el) => {
+        const speed = el.dataset.speed || 0.05;
+        const rect = el.getBoundingClientRect();
+        const offset = (rect.top + rect.height / 2 - window.innerHeight / 2) * speed;
+        el.style.transform = `translateY(${offset}px)`;
+      });
+    });
+  </script>
+</body>
+</html>

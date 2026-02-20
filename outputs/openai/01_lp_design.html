@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="ja" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>和庵 | 現代茶室</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind = window.tailwind || {};
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#10100e",
+              tatami: "#a19370",
+              matcha: "#4d6b48",
+              clay: "#7b4d3a",
+              mist: "#d9d1bd",
+              soot: "#221f1a"
+            },
+            boxShadow: {
+              glow: "0 0 0 1px rgba(217,209,189,0.22), 0 24px 80px rgba(0,0,0,0.45)",
+            },
+            backgroundImage: {
+              "tatami-grid":
+                "linear-gradient(to right, rgba(217,209,189,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(217,209,189,0.08) 1px, transparent 1px)",
+              "paper-fade":
+                "radial-gradient(circle at 20% 30%, rgba(217,209,189,0.24), transparent 50%), radial-gradient(circle at 80% 70%, rgba(123,77,58,0.25), transparent 48%), linear-gradient(160deg, #10100e 20%, #171612 58%, #221f1a 100%)",
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      body {
+        font-family: "Noto Sans JP", sans-serif;
+        background: #10100e;
+      }
+
+      .mincho {
+        font-family: "Zen Old Mincho", serif;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translate3d(0, 28px, 0);
+        transition: opacity 0.9s cubic-bezier(0.2, 0.8, 0.2, 1),
+          transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+        will-change: opacity, transform;
+      }
+
+      .reveal.reveal-in {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+
+      .drift {
+        animation: drift 13s ease-in-out infinite;
+      }
+
+      .drift-slow {
+        animation: drift 18s ease-in-out infinite reverse;
+      }
+
+      .pulse-soft {
+        animation: pulse-soft 7s ease-in-out infinite;
+      }
+
+      @keyframes drift {
+        0%,
+        100% {
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+        50% {
+          transform: translate3d(0, -16px, 0) scale(1.06);
+        }
+      }
+
+      @keyframes pulse-soft {
+        0%,
+        100% {
+          opacity: 0.42;
+        }
+        50% {
+          opacity: 0.72;
+        }
+      }
+
+      .vertical-title {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+      }
+
+      .grain {
+        background-image: radial-gradient(
+          circle at 1px 1px,
+          rgba(255, 255, 255, 0.05) 1px,
+          transparent 0
+        );
+        background-size: 3px 3px;
+      }
+    </style>
+  </head>
+  <body class="bg-paper-fade text-mist antialiased">
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+      <div class="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-matcha/30 blur-3xl drift"></div>
+      <div class="absolute top-1/4 -right-20 h-80 w-80 rounded-full bg-clay/30 blur-3xl drift-slow"></div>
+      <div class="absolute bottom-0 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-tatami/20 blur-3xl pulse-soft"></div>
+      <div class="absolute inset-0 grain opacity-40"></div>
+    </div>
+
+    <header class="fixed top-0 z-50 w-full border-b border-mist/10 bg-ink/65 backdrop-blur-xl">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-8">
+        <a href="#top" class="mincho text-lg tracking-[0.25em] text-mist">和庵</a>
+        <nav class="flex items-center gap-4 text-xs tracking-[0.18em] text-mist/80 md:gap-7 md:text-sm">
+          <a href="#concept" class="transition hover:text-mist">思想</a>
+          <a href="#space" class="transition hover:text-mist">空間</a>
+          <a href="#ritual" class="transition hover:text-mist">作法</a>
+          <a href="#reserve" class="rounded-full border border-mist/30 px-4 py-2 transition hover:border-mist hover:bg-mist/10">来庵予約</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top" class="relative z-10">
+      <section class="relative mx-auto min-h-screen max-w-6xl px-5 pb-20 pt-32 md:px-8 md:pb-28 md:pt-36">
+        <div class="absolute inset-x-5 inset-y-20 -z-10 rounded-[2rem] border border-mist/10 bg-tatami-grid bg-[size:42px_42px] md:inset-x-8"></div>
+        <div class="grid items-end gap-12 md:grid-cols-[1.15fr_0.85fr]">
+          <div class="reveal space-y-8" data-delay="0.05s">
+            <p class="text-sm tracking-[0.38em] text-mist/65">SILENCE CURATED IN LIGHT</p>
+            <h1 class="mincho text-5xl leading-[1.15] text-mist sm:text-6xl md:text-7xl">
+              和庵
+              <span class="block text-2xl tracking-[0.2em] text-tatami md:text-3xl">現代茶室</span>
+            </h1>
+            <p class="max-w-xl text-sm leading-8 text-mist/80 md:text-base">
+              凛とした余白、土の温度、湯気の軌跡。<br />
+              茶室の原理を再編集し、都市の時間に寄り添う
+              静かな体験をデザインしました。
+            </p>
+            <div class="flex flex-wrap gap-3 pt-2">
+              <a href="#reserve" class="rounded-full bg-mist px-6 py-3 text-xs font-medium tracking-[0.18em] text-ink transition hover:bg-[#f1ede0] md:text-sm">席をしつらえる</a>
+              <a href="#concept" class="rounded-full border border-mist/35 px-6 py-3 text-xs tracking-[0.18em] text-mist/90 transition hover:border-mist hover:bg-mist/10 md:text-sm">世界観を見る</a>
+            </div>
+          </div>
+
+          <div class="reveal relative" data-delay="0.2s">
+            <div class="relative overflow-hidden rounded-[2rem] border border-mist/15 bg-gradient-to-b from-soot/90 to-ink/90 p-7 shadow-glow md:p-9">
+              <div class="vertical-title absolute right-5 top-6 text-[11px] tracking-[0.35em] text-mist/45">
+                今宵のしつらえ
+              </div>
+              <p class="text-xs tracking-[0.2em] text-tatami/80">TODAY'S TEA</p>
+              <h2 class="mincho mt-4 text-3xl text-mist">薄茶・深山</h2>
+              <div class="mt-8 space-y-4 text-sm text-mist/80">
+                <div class="flex items-center justify-between border-b border-mist/10 pb-3">
+                  <span>香り</span>
+                  <span class="tracking-[0.12em] text-tatami">若竹 / 白檀</span>
+                </div>
+                <div class="flex items-center justify-between border-b border-mist/10 pb-3">
+                  <span>温度</span>
+                  <span class="tracking-[0.12em] text-tatami">78°C</span>
+                </div>
+                <div class="flex items-center justify-between pb-1">
+                  <span>所作</span>
+                  <span class="tracking-[0.12em] text-tatami">一客一亭</span>
+                </div>
+              </div>
+              <div class="mt-8 h-px bg-gradient-to-r from-transparent via-mist/40 to-transparent"></div>
+              <p class="mt-5 text-xs leading-7 tracking-[0.08em] text-mist/70">
+                余計な音を削ぎ、必要な気配だけを残す。
+                茶の一服を、空間そのものとして味わうための設計です。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="concept" class="mx-auto max-w-6xl px-5 py-20 md:px-8 md:py-24">
+        <div class="reveal mb-12 flex flex-col gap-4 md:mb-14 md:flex-row md:items-end md:justify-between" data-delay="0.05s">
+          <div>
+            <p class="text-xs tracking-[0.28em] text-tatami/80">CONCEPT</p>
+            <h2 class="mincho mt-3 text-3xl text-mist md:text-5xl">和の原理を、今の呼吸へ。</h2>
+          </div>
+          <p class="max-w-md text-sm leading-7 text-mist/70">
+            「間」「陰影」「侘び」を抽象化し、建築・光・音のレイヤーとして再構築。
+            触れた瞬間に落ち着く、静けさのインターフェースを目指しました。
+          </p>
+        </div>
+
+        <div class="grid gap-5 md:grid-cols-3">
+          <article class="reveal rounded-3xl border border-mist/15 bg-soot/55 p-6 backdrop-blur-md" data-delay="0.1s">
+            <p class="text-xs tracking-[0.22em] text-tatami/80">01 LIGHT</p>
+            <h3 class="mincho mt-4 text-2xl">陰翳礼賛</h3>
+            <p class="mt-4 text-sm leading-7 text-mist/75">直線的な照明を避け、面で滲む光を採用。視線が静かに沈む明暗のリズムを設計。</p>
+          </article>
+          <article class="reveal rounded-3xl border border-mist/15 bg-soot/55 p-6 backdrop-blur-md" data-delay="0.2s">
+            <p class="text-xs tracking-[0.22em] text-tatami/80">02 MATERIAL</p>
+            <h3 class="mincho mt-4 text-2xl">土と木の質感</h3>
+            <p class="mt-4 text-sm leading-7 text-mist/75">漆喰、炭、畳の配色を現代的に抽出。触感を想起させる色温度で空間を統一。</p>
+          </article>
+          <article class="reveal rounded-3xl border border-mist/15 bg-soot/55 p-6 backdrop-blur-md" data-delay="0.3s">
+            <p class="text-xs tracking-[0.22em] text-tatami/80">03 FLOW</p>
+            <h3 class="mincho mt-4 text-2xl">遷移する所作</h3>
+            <p class="mt-4 text-sm leading-7 text-mist/75">床の間から茶席へ、視線と歩幅が自然に整う導線。スクロールに呼応して体験が深化。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="space" class="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24">
+        <div class="grid gap-10 md:grid-cols-[0.95fr_1.05fr] md:gap-12">
+          <div class="reveal rounded-[2rem] border border-mist/15 bg-soot/70 p-7 md:p-10" data-delay="0.05s">
+            <p class="text-xs tracking-[0.3em] text-tatami/85">SPATIAL SCORE</p>
+            <h2 class="mincho mt-4 text-3xl leading-tight md:text-4xl">三層の静けさを重ねる</h2>
+            <ul class="mt-8 space-y-6 text-sm leading-7 text-mist/75">
+              <li class="border-l border-tatami/60 pl-4">外界の気配を薄める「前室」</li>
+              <li class="border-l border-tatami/60 pl-4">思考を整える「中間の間」</li>
+              <li class="border-l border-tatami/60 pl-4">一服に集中する「核の席」</li>
+            </ul>
+          </div>
+
+          <div class="grid gap-4">
+            <div class="reveal rounded-3xl border border-mist/15 bg-gradient-to-r from-matcha/25 to-soot/70 p-6" data-delay="0.1s">
+              <p class="text-xs tracking-[0.2em] text-mist/60">ENTRY</p>
+              <p class="mt-2 text-sm leading-7 text-mist/80">やや低い天井と柔らかな照度で、都市の速度を一度リセット。</p>
+            </div>
+            <div class="reveal rounded-3xl border border-mist/15 bg-gradient-to-r from-clay/25 to-soot/70 p-6" data-delay="0.2s">
+              <p class="text-xs tracking-[0.2em] text-mist/60">TRANSIT</p>
+              <p class="mt-2 text-sm leading-7 text-mist/80">香りと足音だけが残る回廊。所作が自然と丁寧になる動線。</p>
+            </div>
+            <div class="reveal rounded-3xl border border-mist/15 bg-gradient-to-r from-tatami/20 to-soot/70 p-6" data-delay="0.3s">
+              <p class="text-xs tracking-[0.2em] text-mist/60">CORE</p>
+              <p class="mt-2 text-sm leading-7 text-mist/80">最小限の要素で構成された席。湯気の揺らぎそのものが主役になる。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="ritual" class="mx-auto max-w-6xl px-5 py-20 md:px-8 md:py-24">
+        <div class="reveal mb-12 text-center" data-delay="0.05s">
+          <p class="text-xs tracking-[0.32em] text-tatami/85">RITUAL</p>
+          <h2 class="mincho mt-3 text-3xl md:text-5xl">一服までの、四つの拍</h2>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <article class="reveal rounded-2xl border border-mist/15 bg-soot/60 p-5" data-delay="0.08s">
+            <p class="text-xs tracking-[0.2em] text-tatami/80">拍 1</p>
+            <h3 class="mincho mt-3 text-xl">坐る</h3>
+            <p class="mt-3 text-sm leading-7 text-mist/75">背筋を立て、呼吸をひとつ深く。</p>
+          </article>
+          <article class="reveal rounded-2xl border border-mist/15 bg-soot/60 p-5" data-delay="0.16s">
+            <p class="text-xs tracking-[0.2em] text-tatami/80">拍 2</p>
+            <h3 class="mincho mt-3 text-xl">聴く</h3>
+            <p class="mt-3 text-sm leading-7 text-mist/75">湯の音と器の触れ合いを受け取る。</p>
+          </article>
+          <article class="reveal rounded-2xl border border-mist/15 bg-soot/60 p-5" data-delay="0.24s">
+            <p class="text-xs tracking-[0.2em] text-tatami/80">拍 3</p>
+            <h3 class="mincho mt-3 text-xl">味わう</h3>
+            <p class="mt-3 text-sm leading-7 text-mist/75">温度と香りの層をゆっくり重ねる。</p>
+          </article>
+          <article class="reveal rounded-2xl border border-mist/15 bg-soot/60 p-5" data-delay="0.32s">
+            <p class="text-xs tracking-[0.2em] text-tatami/80">拍 4</p>
+            <h3 class="mincho mt-3 text-xl">還る</h3>
+            <p class="mt-3 text-sm leading-7 text-mist/75">心拍が整ったまま、日常へ戻る。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="reserve" class="mx-auto max-w-6xl px-5 pb-24 pt-8 md:px-8 md:pb-28">
+        <div class="reveal overflow-hidden rounded-[2rem] border border-mist/20 bg-gradient-to-br from-soot/95 via-ink to-soot/95" data-delay="0.05s">
+          <div class="grid gap-8 p-7 md:grid-cols-[1fr_0.9fr] md:p-10">
+            <div>
+              <p class="text-xs tracking-[0.3em] text-tatami/90">RESERVATION</p>
+              <h2 class="mincho mt-4 text-3xl leading-tight text-mist md:text-4xl">静けさを、あなたの時間へ。</h2>
+              <p class="mt-5 max-w-lg text-sm leading-8 text-mist/75">
+                完全予約制の小さな茶席。季節ごとのしつらえで、
+                都市の中にひらく一片の余白を提供します。
+              </p>
+            </div>
+
+            <form class="grid gap-3 text-sm">
+              <label class="space-y-2">
+                <span class="text-mist/75">お名前</span>
+                <input type="text" placeholder="Name" class="w-full rounded-xl border border-mist/20 bg-ink/70 px-4 py-3 text-mist placeholder:text-mist/40 outline-none transition focus:border-tatami" />
+              </label>
+              <label class="space-y-2">
+                <span class="text-mist/75">ご希望日</span>
+                <input type="date" class="w-full rounded-xl border border-mist/20 bg-ink/70 px-4 py-3 text-mist outline-none transition focus:border-tatami" />
+              </label>
+              <button type="button" class="mt-2 rounded-xl bg-mist px-4 py-3 font-medium tracking-[0.16em] text-ink transition hover:bg-[#f3efe2]">
+                しつらえを依頼する
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="relative z-10 border-t border-mist/10 py-6 text-center text-xs tracking-[0.2em] text-mist/50">
+      WAAN MODERN TEA ROOM
+    </footer>
+
+    <script>
+      const items = document.querySelectorAll(".reveal");
+      const observer = new IntersectionObserver(
+        (entries, obs) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            const delay = el.getAttribute("data-delay");
+            if (delay) el.style.transitionDelay = delay;
+            el.classList.add("reveal-in");
+            obs.unobserve(el);
+          });
+        },
+        { threshold: 0.18, rootMargin: "0px 0px -8% 0px" }
+      );
+
+      items.forEach((item) => observer.observe(item));
+    </script>
+  </body>
+</html>

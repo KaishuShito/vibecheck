@@ -1,0 +1,2828 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <title>STARDRIFT-3D</title>
+    <style>
+      :root {
+        --bg0: #03040a;
+        --bg1: #070a1a;
+        --panel: rgba(7, 10, 22, 0.72);
+        --panel2: rgba(8, 12, 26, 0.9);
+        --stroke: rgba(150, 255, 255, 0.16);
+        --text: rgba(220, 255, 255, 0.88);
+        --muted: rgba(220, 255, 255, 0.62);
+        --hot: rgba(255, 160, 90, 0.95);
+        --ok: rgba(120, 255, 210, 0.95);
+        --bad: rgba(255, 100, 120, 0.95);
+        --accent: rgba(120, 220, 255, 0.95);
+        --shadow: rgba(0, 0, 0, 0.6);
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+          monospace;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: radial-gradient(1400px 900px at 50% 30%, rgba(40, 80, 140, 0.12), transparent 60%),
+          radial-gradient(900px 700px at 10% 90%, rgba(180, 80, 150, 0.08), transparent 60%),
+          linear-gradient(180deg, var(--bg0), var(--bg1));
+        overflow: hidden;
+        color: var(--text);
+        font-family: var(--mono);
+      }
+      #wrap {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: stretch;
+        touch-action: none;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: transparent;
+      }
+      .hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
+      .topline {
+        position: absolute;
+        left: max(16px, env(safe-area-inset-left));
+        right: max(16px, env(safe-area-inset-right));
+        top: max(14px, env(safe-area-inset-top));
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        text-shadow: 0 1px 0 var(--shadow), 0 0 12px rgba(120, 220, 255, 0.18);
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        opacity: 0.92;
+      }
+      .brand {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+      }
+      .brand b {
+        color: rgba(170, 255, 255, 0.95);
+        letter-spacing: 0.12em;
+        font-weight: 800;
+      }
+      .brand span {
+        color: var(--muted);
+        letter-spacing: 0.06em;
+      }
+      .readout {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        color: rgba(220, 255, 255, 0.82);
+      }
+      .readout .kv {
+        display: inline-flex;
+        gap: 6px;
+      }
+      .readout .k {
+        color: rgba(220, 255, 255, 0.55);
+      }
+      .readout .v {
+        color: rgba(220, 255, 255, 0.92);
+      }
+      .panel {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        pointer-events: auto;
+      }
+      .card {
+        width: min(720px, calc(100vw - 28px));
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(12, 20, 50, 0.7), rgba(6, 10, 24, 0.85));
+        box-shadow: 0 18px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(150, 255, 255, 0.11),
+          inset 0 0 0 1px rgba(120, 220, 255, 0.08);
+        padding: 18px 18px 16px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+      }
+      .card:before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        background: radial-gradient(1000px 240px at 20% 0%, rgba(120, 220, 255, 0.22), transparent 60%),
+          radial-gradient(900px 240px at 80% 0%, rgba(255, 120, 210, 0.12), transparent 60%);
+        opacity: 0.75;
+        pointer-events: none;
+        filter: blur(2px);
+      }
+      .card > * {
+        position: relative;
+      }
+      .title {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .title h1 {
+        margin: 0;
+        font-size: 26px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        text-shadow: 0 0 22px rgba(120, 220, 255, 0.22);
+      }
+      .title .tag {
+        color: rgba(220, 255, 255, 0.7);
+        letter-spacing: 0.1em;
+        font-size: 12px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      @media (min-width: 780px) {
+        .grid {
+          grid-template-columns: 1.35fr 1fr;
+          gap: 14px;
+        }
+      }
+      .box {
+        border-radius: 14px;
+        background: linear-gradient(180deg, rgba(6, 10, 22, 0.55), rgba(6, 10, 22, 0.86));
+        border: 1px solid rgba(150, 255, 255, 0.1);
+        padding: 12px 12px 10px;
+      }
+      .box h2 {
+        margin: 0 0 8px 0;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(220, 255, 255, 0.82);
+      }
+      .box p {
+        margin: 0;
+        color: rgba(220, 255, 255, 0.72);
+        line-height: 1.45;
+        font-size: 13px;
+      }
+      .box .small {
+        margin-top: 8px;
+        font-size: 12px;
+        color: rgba(220, 255, 255, 0.58);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 12px;
+      }
+      .btns {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      button {
+        font-family: var(--mono);
+        border-radius: 12px;
+        border: 1px solid rgba(150, 255, 255, 0.18);
+        background: linear-gradient(180deg, rgba(14, 24, 58, 0.86), rgba(10, 14, 34, 0.92));
+        color: rgba(220, 255, 255, 0.92);
+        padding: 10px 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 12px;
+        cursor: pointer;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.34);
+        transition: transform 120ms ease, filter 120ms ease, border-color 120ms ease;
+      }
+      button:hover {
+        filter: brightness(1.08);
+        border-color: rgba(120, 220, 255, 0.34);
+        transform: translateY(-1px);
+      }
+      button:active {
+        transform: translateY(0px);
+        filter: brightness(0.98);
+      }
+      button.primary {
+        border-color: rgba(120, 220, 255, 0.26);
+        background: linear-gradient(180deg, rgba(20, 48, 86, 0.92), rgba(12, 18, 40, 0.92));
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.42), 0 0 30px rgba(120, 220, 255, 0.1);
+      }
+      button.ghost {
+        background: rgba(8, 12, 26, 0.45);
+      }
+      .toggle {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-top: 1px solid rgba(150, 255, 255, 0.08);
+      }
+      .toggle:first-child {
+        border-top: none;
+      }
+      .toggle label {
+        color: rgba(220, 255, 255, 0.76);
+        font-size: 13px;
+      }
+      .toggle input[type="range"] {
+        width: 180px;
+      }
+      .toggle input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: rgba(120, 220, 255, 0.85);
+      }
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+        color: rgba(220, 255, 255, 0.6);
+        font-size: 12px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .touch {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
+      .stick {
+        position: absolute;
+        left: max(14px, env(safe-area-inset-left));
+        bottom: max(14px, env(safe-area-inset-bottom));
+        width: min(200px, 38vw);
+        height: min(200px, 38vw);
+        border-radius: 999px;
+        border: 1px solid rgba(150, 255, 255, 0.1);
+        background: radial-gradient(circle at 50% 50%, rgba(120, 220, 255, 0.12), rgba(0, 0, 0, 0));
+        opacity: 0.0;
+        transform: translateZ(0);
+      }
+      .stick:after {
+        content: "";
+        position: absolute;
+        inset: 22%;
+        border-radius: 999px;
+        border: 1px solid rgba(150, 255, 255, 0.14);
+        box-shadow: inset 0 0 30px rgba(120, 220, 255, 0.08);
+      }
+      .fire {
+        position: absolute;
+        right: max(14px, env(safe-area-inset-right));
+        bottom: max(18px, env(safe-area-inset-bottom));
+        width: min(190px, 36vw);
+        height: min(190px, 36vw);
+        border-radius: 999px;
+        border: 1px solid rgba(150, 255, 255, 0.1);
+        background: radial-gradient(circle at 50% 50%, rgba(255, 140, 120, 0.14), rgba(0, 0, 0, 0));
+        opacity: 0.0;
+      }
+      .fire:after {
+        content: "FIRE";
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        color: rgba(255, 190, 160, 0.78);
+        font-size: 13px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        text-shadow: 0 0 18px rgba(255, 150, 130, 0.22);
+      }
+      .touch.on .stick,
+      .touch.on .fire {
+        opacity: 0.78;
+      }
+      .corner {
+        position: absolute;
+        left: max(16px, env(safe-area-inset-left));
+        bottom: max(16px, env(safe-area-inset-bottom));
+        color: rgba(220, 255, 255, 0.6);
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-shadow: 0 1px 0 var(--shadow);
+        opacity: 0.0;
+        transition: opacity 200ms ease;
+        pointer-events: none;
+      }
+      .corner.show {
+        opacity: 0.92;
+      }
+      a,
+      a:visited {
+        color: rgba(120, 220, 255, 0.85);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrap">
+      <canvas id="game" aria-label="STARDRIFT 3D canvas"></canvas>
+    </div>
+
+    <div class="hud" id="hud">
+      <div class="topline">
+        <div class="brand">
+          <b>STARDRIFT</b><span>// RETRO-3D FLIGHT</span>
+        </div>
+        <div class="readout">
+          <div class="kv"><span class="k">SCORE</span><span class="v" id="score">0</span></div>
+          <div class="kv"><span class="k">COMBO</span><span class="v" id="combo">x1</span></div>
+          <div class="kv"><span class="k">SHIELD</span><span class="v" id="shield">100</span></div>
+          <div class="kv"><span class="k">HEAT</span><span class="v" id="heat">0</span></div>
+          <div class="kv"><span class="k">SPD</span><span class="v" id="spd">0</span></div>
+        </div>
+      </div>
+      <div class="corner" id="hint">Click canvas for pointer lock. Press H for help.</div>
+    </div>
+
+    <div class="panel" id="panel">
+      <div class="card" role="dialog" aria-modal="true">
+        <div class="title">
+          <h1 id="panelTitle">STARDRIFT-3D</h1>
+          <div class="tag" id="panelTag">NEON VECTOR FLIGHT</div>
+        </div>
+        <div class="grid">
+          <div class="box">
+            <h2>Controls</h2>
+            <p>
+              Steer: WASD or arrows. Aim: mouse (pointer lock) or right stick. Fire: Space / A. Boost:
+              Shift / LT. Brake: C / RT. Roll: Q / E. Pause: P or Esc. Restart: R.
+            </p>
+            <p class="small">
+              Advanced: Double-tap a direction to dash. Dashing briefly phases collisions but drains shield.
+            </p>
+          </div>
+          <div class="box" id="boxStatus">
+            <h2>Status</h2>
+            <p id="statusLine">Ready to launch.</p>
+            <p class="small" id="statusSmall">Tip: Boost through gates to build combo, but watch heat.</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="btns">
+            <button class="primary" id="btnStart">Start</button>
+            <button class="ghost" id="btnResume">Resume</button>
+            <button class="ghost" id="btnRestart">Restart</button>
+          </div>
+          <div class="btns">
+            <button id="btnSettings">Settings</button>
+            <button id="btnHelp">Help</button>
+          </div>
+        </div>
+        <div class="footer">
+          <div id="footerLeft">Highscore: <span id="hi">0</span></div>
+          <div id="footerRight">Reduced motion respected. Audio starts after interaction.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel hidden" id="settingsPanel">
+      <div class="card" role="dialog" aria-modal="true">
+        <div class="title">
+          <h1>Settings</h1>
+          <div class="tag">VISUALS / INPUT / AUDIO</div>
+        </div>
+        <div class="box">
+          <div class="toggle">
+            <label for="setInvertY">Invert Y</label>
+            <input id="setInvertY" type="checkbox" />
+          </div>
+          <div class="toggle">
+            <label for="setSensitivity">Mouse Sensitivity</label>
+            <input id="setSensitivity" type="range" min="0.2" max="2.6" value="1" step="0.05" />
+          </div>
+          <div class="toggle">
+            <label for="setBloom">Bloom</label>
+            <input id="setBloom" type="range" min="0" max="1.5" value="1" step="0.05" />
+          </div>
+          <div class="toggle">
+            <label for="setShake">Screen Shake</label>
+            <input id="setShake" type="range" min="0" max="1.5" value="1" step="0.05" />
+          </div>
+          <div class="toggle">
+            <label for="setReduced">Reduced Motion</label>
+            <input id="setReduced" type="checkbox" />
+          </div>
+          <div class="toggle">
+            <label for="setVolume">Volume</label>
+            <input id="setVolume" type="range" min="0" max="1" value="0.7" step="0.01" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="btns">
+            <button class="primary" id="btnBack">Back</button>
+            <button class="ghost" id="btnDefaults">Defaults</button>
+          </div>
+          <div class="btns">
+            <button class="ghost" id="btnMute">Mute</button>
+          </div>
+        </div>
+        <div class="footer">
+          <div>Tip: Touch controls appear automatically on mobile.</div>
+          <div>Pointer lock recommended for best feel.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="touch" id="touch">
+      <div class="stick"></div>
+      <div class="fire"></div>
+    </div>
+
+    <script>
+      (() => {
+        "use strict";
+
+        const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+        const lerp = (a, b, t) => a + (b - a) * t;
+        const linstep = (a, b, v) => clamp((v - a) / (b - a), 0, 1);
+        const smoothstep = (a, b, v) => {
+          const t = linstep(a, b, v);
+          return t * t * (3 - 2 * t);
+        };
+        const expSmoothing = (dt, rate) => 1 - Math.exp(-dt * rate);
+        const sign = (v) => (v < 0 ? -1 : 1);
+
+        const mulberry32 = (seed) => {
+          let t = seed >>> 0;
+          return () => {
+            t += 0x6d2b79f5;
+            let x = Math.imul(t ^ (t >>> 15), 1 | t);
+            x ^= x + Math.imul(x ^ (x >>> 7), 61 | x);
+            return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+          };
+        };
+
+        class V3 {
+          constructor(x = 0, y = 0, z = 0) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+          }
+          set(x, y, z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            return this;
+          }
+          copy(v) {
+            this.x = v.x;
+            this.y = v.y;
+            this.z = v.z;
+            return this;
+          }
+          add(v) {
+            this.x += v.x;
+            this.y += v.y;
+            this.z += v.z;
+            return this;
+          }
+          sub(v) {
+            this.x -= v.x;
+            this.y -= v.y;
+            this.z -= v.z;
+            return this;
+          }
+          mul(s) {
+            this.x *= s;
+            this.y *= s;
+            this.z *= s;
+            return this;
+          }
+          len() {
+            return Math.hypot(this.x, this.y, this.z);
+          }
+          norm() {
+            const l = this.len() || 1;
+            this.x /= l;
+            this.y /= l;
+            this.z /= l;
+            return this;
+          }
+          static add(a, b) {
+            return new V3(a.x + b.x, a.y + b.y, a.z + b.z);
+          }
+          static sub(a, b) {
+            return new V3(a.x - b.x, a.y - b.y, a.z - b.z);
+          }
+        }
+
+        const rotXYZ = (v, yaw, pitch, roll) => {
+          // yaw (y), pitch (x), roll (z)
+          const cy = Math.cos(yaw),
+            sy = Math.sin(yaw);
+          const cp = Math.cos(pitch),
+            sp = Math.sin(pitch);
+          const cr = Math.cos(roll),
+            sr = Math.sin(roll);
+          // yaw
+          let x = v.x * cy + v.z * sy;
+          let y = v.y;
+          let z = -v.x * sy + v.z * cy;
+          // pitch
+          const y2 = y * cp - z * sp;
+          const z2 = y * sp + z * cp;
+          y = y2;
+          z = z2;
+          // roll
+          const x3 = x * cr - y * sr;
+          const y3 = x * sr + y * cr;
+          x = x3;
+          y = y3;
+          return new V3(x, y, z);
+        };
+
+        const makeMeshEdges = (faces) => {
+          const set = new Set();
+          const edges = [];
+          for (const f of faces) {
+            const a = f[0],
+              b = f[1],
+              c = f[2];
+            const pairs = [
+              [a, b],
+              [b, c],
+              [c, a],
+            ];
+            for (const [i, j] of pairs) {
+              const m = i < j ? (i << 16) | j : (j << 16) | i;
+              if (set.has(m)) continue;
+              set.add(m);
+              edges.push([i, j]);
+            }
+          }
+          return edges;
+        };
+
+        const makeShipMesh = () => {
+          // A chunky arrow / wedge.
+          const v = [
+            new V3(0, 0, -1.55), // nose
+            new V3(-0.52, 0.18, -0.3),
+            new V3(0.52, 0.18, -0.3),
+            new V3(-0.75, -0.12, 0.22),
+            new V3(0.75, -0.12, 0.22),
+            new V3(-0.35, 0.3, 0.22),
+            new V3(0.35, 0.3, 0.22),
+            new V3(0, -0.22, 0.65), // tail
+          ];
+          const faces = [
+            [0, 2, 1],
+            [1, 2, 6],
+            [1, 6, 5],
+            [2, 4, 6],
+            [1, 3, 4],
+            [1, 4, 2],
+            [3, 7, 4],
+            [3, 1, 7],
+            [4, 7, 2],
+            [7, 6, 2],
+            [7, 1, 5],
+            [7, 5, 6],
+          ];
+          const edges = makeMeshEdges(faces);
+          return { v, faces, edges };
+        };
+
+        const makeDroneMesh = () => {
+          const v = [
+            new V3(-0.6, -0.1, -0.4),
+            new V3(0.6, -0.1, -0.4),
+            new V3(0.6, 0.1, -0.4),
+            new V3(-0.6, 0.1, -0.4),
+            new V3(-0.5, -0.08, 0.4),
+            new V3(0.5, -0.08, 0.4),
+            new V3(0.5, 0.08, 0.4),
+            new V3(-0.5, 0.08, 0.4),
+            new V3(0, 0.0, -0.9),
+          ];
+          const faces = [
+            [0, 1, 2],
+            [0, 2, 3],
+            [4, 6, 5],
+            [4, 7, 6],
+            [0, 4, 5],
+            [0, 5, 1],
+            [1, 5, 6],
+            [1, 6, 2],
+            [2, 6, 7],
+            [2, 7, 3],
+            [3, 7, 4],
+            [3, 4, 0],
+            [8, 2, 1],
+            [8, 3, 2],
+            [8, 0, 3],
+            [8, 1, 0],
+          ];
+          const edges = makeMeshEdges(faces);
+          return { v, faces, edges };
+        };
+
+        const makeCrystalMesh = () => {
+          const v = [
+            new V3(0, 0, -0.9),
+            new V3(0.6, 0, 0),
+            new V3(0, 0.6, 0),
+            new V3(-0.6, 0, 0),
+            new V3(0, -0.6, 0),
+            new V3(0, 0, 0.9),
+          ];
+          const faces = [
+            [0, 1, 2],
+            [0, 2, 3],
+            [0, 3, 4],
+            [0, 4, 1],
+            [5, 2, 1],
+            [5, 3, 2],
+            [5, 4, 3],
+            [5, 1, 4],
+          ];
+          const edges = makeMeshEdges(faces);
+          return { v, faces, edges };
+        };
+
+        const makeAsteroidTemplates = () => {
+          const phi = (1 + Math.sqrt(5)) / 2;
+          const base = [
+            new V3(-1, phi, 0),
+            new V3(1, phi, 0),
+            new V3(-1, -phi, 0),
+            new V3(1, -phi, 0),
+            new V3(0, -1, phi),
+            new V3(0, 1, phi),
+            new V3(0, -1, -phi),
+            new V3(0, 1, -phi),
+            new V3(phi, 0, -1),
+            new V3(phi, 0, 1),
+            new V3(-phi, 0, -1),
+            new V3(-phi, 0, 1),
+          ].map((p) => p.norm());
+          const faces = [
+            [0, 11, 5],
+            [0, 5, 1],
+            [0, 1, 7],
+            [0, 7, 10],
+            [0, 10, 11],
+            [1, 5, 9],
+            [5, 11, 4],
+            [11, 10, 2],
+            [10, 7, 6],
+            [7, 1, 8],
+            [3, 9, 4],
+            [3, 4, 2],
+            [3, 2, 6],
+            [3, 6, 8],
+            [3, 8, 9],
+            [4, 9, 5],
+            [2, 4, 11],
+            [6, 2, 10],
+            [8, 6, 7],
+            [9, 8, 1],
+          ];
+          const edges = makeMeshEdges(faces);
+
+          const templates = [];
+          for (let i = 0; i < 12; i++) {
+            const r = mulberry32((0x1234abcd ^ (i * 2654435761)) >>> 0);
+            const v = base.map((p, idx) => {
+              const jitter = (r() - 0.5) * 0.55;
+              const jitter2 = (r() - 0.5) * 0.32;
+              const scale = 1 + jitter;
+              const q = new V3(p.x * scale, p.y * (1 + jitter2 * 0.6), p.z * (1 - jitter2 * 0.4));
+              q.mul(0.95 + (idx % 3) * 0.02);
+              return q;
+            });
+            templates.push({ v, faces, edges });
+          }
+          return templates;
+        };
+
+        const canvas = document.getElementById("game");
+        const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
+        const panel = document.getElementById("panel");
+        const panelTitle = document.getElementById("panelTitle");
+        const panelTag = document.getElementById("panelTag");
+        const statusLine = document.getElementById("statusLine");
+        const statusSmall = document.getElementById("statusSmall");
+        const boxStatus = document.getElementById("boxStatus");
+        const btnStart = document.getElementById("btnStart");
+        const btnResume = document.getElementById("btnResume");
+        const btnRestart = document.getElementById("btnRestart");
+        const btnSettings = document.getElementById("btnSettings");
+        const btnHelp = document.getElementById("btnHelp");
+        const settingsPanel = document.getElementById("settingsPanel");
+        const btnBack = document.getElementById("btnBack");
+        const btnDefaults = document.getElementById("btnDefaults");
+        const btnMute = document.getElementById("btnMute");
+        const hint = document.getElementById("hint");
+        const touchUI = document.getElementById("touch");
+
+        const elScore = document.getElementById("score");
+        const elCombo = document.getElementById("combo");
+        const elShield = document.getElementById("shield");
+        const elHeat = document.getElementById("heat");
+        const elSpd = document.getElementById("spd");
+        const elHi = document.getElementById("hi");
+
+        const scene = document.createElement("canvas");
+        const sctx = scene.getContext("2d", { alpha: false, desynchronized: true });
+        const glow = document.createElement("canvas");
+        const gctx = glow.getContext("2d", { alpha: true, desynchronized: true });
+
+        const noise = document.createElement("canvas");
+        noise.width = 196;
+        noise.height = 196;
+        const nctx = noise.getContext("2d", { alpha: true, desynchronized: true });
+        const noiseImg = nctx.createImageData(noise.width, noise.height);
+
+        const scan = document.createElement("canvas");
+        scan.width = 2;
+        scan.height = 6;
+        const scanctx = scan.getContext("2d", { alpha: true, desynchronized: true });
+
+        let scanPattern = null;
+
+        const SETTINGS_KEY = "stardrift_settings_v1";
+        const HIGHSCORE_KEY = "stardrift_hiscore_v1";
+
+        const settings = {
+          invertY: false,
+          sensitivity: 1.0,
+          bloom: 1.0,
+          shake: 1.0,
+          reducedMotion: false,
+          volume: 0.72,
+          muted: false,
+        };
+
+        const prefersReduced =
+          typeof matchMedia === "function" ? matchMedia("(prefers-reduced-motion: reduce)") : null;
+        if (prefersReduced && prefersReduced.matches) settings.reducedMotion = true;
+
+        const loadSettings = () => {
+          try {
+            const raw = localStorage.getItem(SETTINGS_KEY);
+            if (!raw) return;
+            const s = JSON.parse(raw);
+            if (typeof s.invertY === "boolean") settings.invertY = s.invertY;
+            if (typeof s.sensitivity === "number") settings.sensitivity = clamp(s.sensitivity, 0.2, 2.6);
+            if (typeof s.bloom === "number") settings.bloom = clamp(s.bloom, 0, 1.5);
+            if (typeof s.shake === "number") settings.shake = clamp(s.shake, 0, 1.5);
+            if (typeof s.reducedMotion === "boolean") settings.reducedMotion = s.reducedMotion;
+            if (typeof s.volume === "number") settings.volume = clamp(s.volume, 0, 1);
+            if (typeof s.muted === "boolean") settings.muted = s.muted;
+          } catch {}
+        };
+        const saveSettings = () => {
+          try {
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+          } catch {}
+        };
+
+        const uiSettings = {
+          invertY: document.getElementById("setInvertY"),
+          sensitivity: document.getElementById("setSensitivity"),
+          bloom: document.getElementById("setBloom"),
+          shake: document.getElementById("setShake"),
+          reduced: document.getElementById("setReduced"),
+          volume: document.getElementById("setVolume"),
+        };
+
+        const applySettingsToUI = () => {
+          uiSettings.invertY.checked = settings.invertY;
+          uiSettings.sensitivity.value = String(settings.sensitivity);
+          uiSettings.bloom.value = String(settings.bloom);
+          uiSettings.shake.value = String(settings.shake);
+          uiSettings.reduced.checked = settings.reducedMotion;
+          uiSettings.volume.value = String(settings.volume);
+          btnMute.textContent = settings.muted ? "Unmute" : "Mute";
+        };
+
+        const applyUIToSettings = () => {
+          settings.invertY = !!uiSettings.invertY.checked;
+          settings.sensitivity = clamp(parseFloat(uiSettings.sensitivity.value), 0.2, 2.6);
+          settings.bloom = clamp(parseFloat(uiSettings.bloom.value), 0, 1.5);
+          settings.shake = clamp(parseFloat(uiSettings.shake.value), 0, 1.5);
+          settings.reducedMotion = !!uiSettings.reduced.checked;
+          settings.volume = clamp(parseFloat(uiSettings.volume.value), 0, 1);
+          saveSettings();
+        };
+
+        const getHighscore = () => {
+          try {
+            const raw = localStorage.getItem(HIGHSCORE_KEY);
+            return raw ? Math.max(0, parseInt(raw, 10) || 0) : 0;
+          } catch {
+            return 0;
+          }
+        };
+        const setHighscore = (v) => {
+          try {
+            localStorage.setItem(HIGHSCORE_KEY, String(Math.max(0, Math.floor(v))));
+          } catch {}
+        };
+
+        loadSettings();
+        let hiScore = getHighscore();
+        elHi.textContent = String(hiScore);
+        applySettingsToUI();
+
+        let W = 0,
+          H = 0,
+          DPR = 1;
+        let cx = 0,
+          cy = 0;
+
+        const resize = () => {
+          const w = Math.max(1, Math.floor(window.innerWidth));
+          const h = Math.max(1, Math.floor(window.innerHeight));
+          const dpr = Math.min(2.5, window.devicePixelRatio || 1);
+          W = w;
+          H = h;
+          DPR = dpr;
+          cx = W * 0.5;
+          cy = H * 0.52;
+
+          canvas.width = Math.floor(W * DPR);
+          canvas.height = Math.floor(H * DPR);
+          canvas.style.width = W + "px";
+          canvas.style.height = H + "px";
+          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+          scene.width = canvas.width;
+          scene.height = canvas.height;
+          sctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+          const glowScale = 0.58;
+          glow.width = Math.max(1, Math.floor(W * DPR * glowScale));
+          glow.height = Math.max(1, Math.floor(H * DPR * glowScale));
+          gctx.setTransform(DPR * glowScale, 0, 0, DPR * glowScale, 0, 0);
+
+          scanctx.clearRect(0, 0, scan.width, scan.height);
+          scanctx.fillStyle = "rgba(0,0,0,0.0)";
+          scanctx.fillRect(0, 0, scan.width, scan.height);
+          scanctx.fillStyle = "rgba(0,0,0,0.18)";
+          scanctx.fillRect(0, 1, scan.width, 1);
+          scanctx.fillStyle = "rgba(0,0,0,0.08)";
+          scanctx.fillRect(0, 4, scan.width, 1);
+          scanPattern = ctx.createPattern(scan, "repeat");
+        };
+
+        window.addEventListener("resize", resize, { passive: true });
+
+        const isTouchDevice = () => {
+          const coarse = typeof matchMedia === "function" ? matchMedia("(pointer: coarse)") : null;
+          return !!(coarse && coarse.matches);
+        };
+
+        // Input
+        const keys = new Set();
+        let mouseDX = 0,
+          mouseDY = 0;
+        let pointerLocked = false;
+        let lastPointerType = "mouse";
+
+        const touchState = {
+          enabled: false,
+          joyId: null,
+          fireId: null,
+          joyCenterX: 0,
+          joyCenterY: 0,
+          joyX: 0,
+          joyY: 0,
+          fireDown: false,
+          boostDown: false,
+        };
+
+        const tapState = {
+          left: 0,
+          right: 0,
+          up: 0,
+          down: 0,
+        };
+
+        const onKey = (e, down) => {
+          const k = e.key;
+          if (down) keys.add(k);
+          else keys.delete(k);
+          if (down && !e.repeat) {
+            const now = game.time;
+            let dx = 0,
+              dy = 0,
+              dk = "";
+            if (k === "a" || k === "A" || k === "ArrowLeft") {
+              dx = -1;
+              dk = "left";
+            } else if (k === "d" || k === "D" || k === "ArrowRight") {
+              dx = 1;
+              dk = "right";
+            } else if (k === "w" || k === "W" || k === "ArrowUp") {
+              dy = -1;
+              dk = "up";
+            } else if (k === "s" || k === "S" || k === "ArrowDown") {
+              dy = 1;
+              dk = "down";
+            }
+            if (dk) {
+              const last = tapState[dk];
+              tapState[dk] = now;
+              if (game.state === "playing" && now - last < 0.22) doDash(dx, dy);
+            }
+          }
+          if (down && (k === "p" || k === "P" || k === "Escape")) {
+            if (game.state === "playing") pauseGame();
+            else if (game.state === "paused") resumeGame();
+          }
+          if (down && (k === "r" || k === "R")) {
+            if (game.state !== "playing") startGame(true);
+          }
+          if (down && (k === "h" || k === "H")) {
+            if (panel.classList.contains("hidden")) {
+              openPanel("help");
+            } else if (game.state === "paused") {
+              resumeGame();
+            }
+          }
+        };
+
+        window.addEventListener("keydown", (e) => onKey(e, true));
+        window.addEventListener("keyup", (e) => onKey(e, false));
+
+        const onPointerMove = (e) => {
+          lastPointerType = e.pointerType || "mouse";
+          if (pointerLocked) {
+            mouseDX += e.movementX || 0;
+            mouseDY += e.movementY || 0;
+          } else {
+            // When not locked, use relative from center via movement to keep feel.
+            mouseDX += (e.movementX || 0) * 0.65;
+            mouseDY += (e.movementY || 0) * 0.65;
+          }
+        };
+
+        const requestLock = async () => {
+          try {
+            if (document.pointerLockElement === canvas) return;
+            await canvas.requestPointerLock();
+          } catch {}
+        };
+
+        document.addEventListener("pointerlockchange", () => {
+          pointerLocked = document.pointerLockElement === canvas;
+          hint.classList.toggle("show", !pointerLocked && game.state === "playing");
+        });
+
+        canvas.addEventListener("pointermove", onPointerMove);
+        canvas.addEventListener("mousemove", onPointerMove);
+
+        canvas.addEventListener("click", () => {
+          if (game.state === "playing" && !pointerLocked) requestLock();
+        });
+
+        const touchEnableIfNeeded = () => {
+          const enable = isTouchDevice() || lastPointerType === "touch";
+          touchState.enabled = enable;
+          touchUI.classList.toggle("on", enable);
+          hint.classList.toggle("show", !enable && game.state === "playing" && !pointerLocked);
+        };
+
+        window.addEventListener(
+          "pointerdown",
+          (e) => {
+            lastPointerType = e.pointerType || "mouse";
+            touchEnableIfNeeded();
+
+            if (!touchState.enabled) return;
+            if (e.pointerType !== "touch") return;
+            const x = e.clientX;
+            const y = e.clientY;
+            const leftZone = x < W * 0.5;
+            if (leftZone && touchState.joyId === null) {
+              touchState.joyId = e.pointerId;
+              touchState.joyCenterX = x;
+              touchState.joyCenterY = y;
+              touchState.joyX = 0;
+              touchState.joyY = 0;
+            } else if (!leftZone && touchState.fireId === null) {
+              touchState.fireId = e.pointerId;
+              touchState.fireDown = true;
+            }
+          },
+          { passive: true }
+        );
+
+        window.addEventListener(
+          "pointermove",
+          (e) => {
+            if (!touchState.enabled) return;
+            if (e.pointerType !== "touch") return;
+            if (e.pointerId === touchState.joyId) {
+              const dx = e.clientX - touchState.joyCenterX;
+              const dy = e.clientY - touchState.joyCenterY;
+              const r = Math.min(Math.min(86, Math.min(W, H) * 0.12), 100);
+              touchState.joyX = clamp(dx / r, -1, 1);
+              touchState.joyY = clamp(dy / r, -1, 1);
+            }
+          },
+          { passive: true }
+        );
+
+        window.addEventListener(
+          "pointerup",
+          (e) => {
+            if (!touchState.enabled) return;
+            if (e.pointerType !== "touch") return;
+            if (e.pointerId === touchState.joyId) {
+              touchState.joyId = null;
+              touchState.joyX = 0;
+              touchState.joyY = 0;
+            }
+            if (e.pointerId === touchState.fireId) {
+              touchState.fireId = null;
+              touchState.fireDown = false;
+            }
+          },
+          { passive: true }
+        );
+
+        window.addEventListener(
+          "blur",
+          () => {
+            keys.clear();
+            touchState.fireDown = false;
+            touchState.joyId = null;
+            touchState.fireId = null;
+            touchState.joyX = 0;
+            touchState.joyY = 0;
+            mouseDX = 0;
+            mouseDY = 0;
+            if (game.state === "playing") pauseGame();
+          },
+          { passive: true }
+        );
+
+        document.addEventListener(
+          "visibilitychange",
+          () => {
+            if (document.hidden && game.state === "playing") pauseGame();
+          },
+          { passive: true }
+        );
+
+        // Audio (procedural synth)
+        let audio = null;
+        const audioInit = async () => {
+          if (audio) return audio;
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (!Ctx) return null;
+          const ac = new Ctx();
+          const master = ac.createGain();
+          master.gain.value = settings.muted ? 0 : settings.volume;
+          master.connect(ac.destination);
+
+          const engineOsc = ac.createOscillator();
+          engineOsc.type = "sawtooth";
+          const engineGain = ac.createGain();
+          engineGain.gain.value = 0.0;
+          const engineFilter = ac.createBiquadFilter();
+          engineFilter.type = "lowpass";
+          engineFilter.frequency.value = 520;
+          engineFilter.Q.value = 0.8;
+
+          engineOsc.connect(engineFilter);
+          engineFilter.connect(engineGain);
+          engineGain.connect(master);
+          engineOsc.start();
+
+          const makeNoise = () => {
+            const size = ac.sampleRate * 2;
+            const buf = ac.createBuffer(1, size, ac.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < size; i++) data[i] = (Math.random() * 2 - 1) * 0.6;
+            const src = ac.createBufferSource();
+            src.buffer = buf;
+            src.loop = true;
+            return src;
+          };
+          const noiseSrc = makeNoise();
+          const noiseFilter = ac.createBiquadFilter();
+          noiseFilter.type = "bandpass";
+          noiseFilter.frequency.value = 850;
+          noiseFilter.Q.value = 0.7;
+          const noiseGain = ac.createGain();
+          noiseGain.gain.value = 0.0;
+          noiseSrc.connect(noiseFilter);
+          noiseFilter.connect(noiseGain);
+          noiseGain.connect(master);
+          noiseSrc.start();
+
+          const sfx = (type, amount = 1) => {
+            if (!audio || settings.muted) return;
+            const t = ac.currentTime;
+            const out = ac.createGain();
+            out.gain.value = 0.0001;
+            out.connect(master);
+            if (type === "laser") {
+              const o = ac.createOscillator();
+              const g = ac.createGain();
+              o.type = "square";
+              o.frequency.setValueAtTime(860 + 120 * amount, t);
+              o.frequency.exponentialRampToValueAtTime(230 + 40 * amount, t + 0.08);
+              g.gain.setValueAtTime(0.0001, t);
+              g.gain.exponentialRampToValueAtTime(0.18 * settings.volume, t + 0.01);
+              g.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
+              o.connect(g);
+              g.connect(out);
+              o.start(t);
+              o.stop(t + 0.14);
+            } else if (type === "hit") {
+              const o = ac.createOscillator();
+              const g = ac.createGain();
+              o.type = "triangle";
+              o.frequency.setValueAtTime(140 + 40 * amount, t);
+              o.frequency.exponentialRampToValueAtTime(60, t + 0.15);
+              g.gain.setValueAtTime(0.0001, t);
+              g.gain.exponentialRampToValueAtTime(0.28 * settings.volume, t + 0.02);
+              g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+              o.connect(g);
+              g.connect(out);
+              o.start(t);
+              o.stop(t + 0.22);
+            } else if (type === "boom") {
+              const g = ac.createGain();
+              g.gain.setValueAtTime(0.0001, t);
+              g.gain.exponentialRampToValueAtTime(0.42 * settings.volume, t + 0.02);
+              g.gain.exponentialRampToValueAtTime(0.0001, t + 0.42);
+              const f = ac.createBiquadFilter();
+              f.type = "lowpass";
+              f.frequency.setValueAtTime(1800, t);
+              f.frequency.exponentialRampToValueAtTime(160, t + 0.32);
+              noiseSrc.connect(f);
+              f.connect(g);
+              g.connect(out);
+              setTimeout(() => {
+                try {
+                  noiseSrc.disconnect(f);
+                } catch {}
+                try {
+                  f.disconnect();
+                } catch {}
+              }, 520);
+            } else if (type === "ui") {
+              const o = ac.createOscillator();
+              const g = ac.createGain();
+              o.type = "sine";
+              o.frequency.setValueAtTime(660 + 120 * amount, t);
+              g.gain.setValueAtTime(0.0001, t);
+              g.gain.exponentialRampToValueAtTime(0.12 * settings.volume, t + 0.01);
+              g.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
+              o.connect(g);
+              g.connect(out);
+              o.start(t);
+              o.stop(t + 0.12);
+            }
+          };
+
+          const setMaster = () => {
+            master.gain.setTargetAtTime(settings.muted ? 0 : settings.volume, ac.currentTime, 0.03);
+          };
+          const setEngine = (throttle, speed) => {
+            const t = ac.currentTime;
+            const thr = clamp(throttle, 0, 1);
+            const sp = clamp(speed, 0, 1);
+            engineGain.gain.setTargetAtTime((0.035 + 0.065 * sp) * (0.2 + thr), t, 0.03);
+            engineOsc.frequency.setTargetAtTime(65 + 150 * sp + 35 * thr, t, 0.05);
+            engineFilter.frequency.setTargetAtTime(420 + 1600 * sp + 800 * thr, t, 0.06);
+            noiseGain.gain.setTargetAtTime(0.016 * thr + 0.02 * sp, t, 0.06);
+          };
+
+          audio = { ac, master, sfx, setMaster, setEngine };
+          return audio;
+        };
+
+        const vibrate = (pattern) => {
+          if (settings.reducedMotion) return;
+          if (navigator.vibrate) {
+            try {
+              navigator.vibrate(pattern);
+            } catch {}
+          }
+        };
+
+        // 3D render helpers
+        const shipMesh = makeShipMesh();
+        const droneMesh = makeDroneMesh();
+        const crystalMesh = makeCrystalMesh();
+        const asteroidTemplates = makeAsteroidTemplates();
+
+        const cam = {
+          x: 0,
+          y: 0,
+          z: 8.0,
+          yaw: 0,
+          pitch: 0,
+          roll: 0,
+          near: 0.55,
+          fov: 680,
+        };
+
+        const project = (p) => {
+          let x = p.x - cam.x;
+          let y = p.y - cam.y;
+          let z = p.z - cam.z;
+          if (cam.yaw || cam.pitch || cam.roll) {
+            const q = rotXYZ(new V3(x, y, z), cam.yaw, cam.pitch, cam.roll);
+            x = q.x;
+            y = q.y;
+            z = q.z;
+          }
+          if (z > -cam.near) return null;
+          const inv = cam.fov / (-z);
+          return { x: cx + x * inv, y: cy + y * inv, inv, depth: -z, z };
+        };
+
+        const lineGlow = (ax, ay, bx, by, width, c, alpha) => {
+          gctx.save();
+          gctx.globalAlpha = alpha;
+          gctx.strokeStyle = c;
+          gctx.lineWidth = width;
+          gctx.lineCap = "round";
+          gctx.lineJoin = "round";
+          gctx.shadowBlur = 18;
+          gctx.shadowColor = c;
+          gctx.beginPath();
+          gctx.moveTo(ax, ay);
+          gctx.lineTo(bx, by);
+          gctx.stroke();
+          gctx.restore();
+        };
+
+        const lineMain = (ax, ay, bx, by, width, c, alpha) => {
+          sctx.save();
+          sctx.globalAlpha = alpha;
+          sctx.strokeStyle = c;
+          sctx.lineWidth = width;
+          sctx.lineCap = "round";
+          sctx.lineJoin = "round";
+          sctx.beginPath();
+          sctx.moveTo(ax, ay);
+          sctx.lineTo(bx, by);
+          sctx.stroke();
+          sctx.restore();
+        };
+
+        const drawTri = (a, b, c, fill, alpha) => {
+          sctx.save();
+          sctx.globalAlpha = alpha;
+          sctx.fillStyle = fill;
+          sctx.beginPath();
+          sctx.moveTo(a.x, a.y);
+          sctx.lineTo(b.x, b.y);
+          sctx.lineTo(c.x, c.y);
+          sctx.closePath();
+          sctx.fill();
+          sctx.restore();
+        };
+
+        const drawMesh = (mesh, pos, yaw, pitch, roll, scale, color, glowColor, fillBase, fillAlpha, edgeAlpha) => {
+          const pts = [];
+          let avgDepth = 0;
+          for (let i = 0; i < mesh.v.length; i++) {
+            const v = mesh.v[i];
+            const r = rotXYZ(new V3(v.x * scale, v.y * scale, v.z * scale), yaw, pitch, roll).add(pos);
+            const p = project(r);
+            pts[i] = p;
+            if (p) avgDepth += p.depth;
+          }
+          avgDepth /= mesh.v.length || 1;
+          const depthFade = clamp(1 - avgDepth / 220, 0, 1);
+          const aEdges = edgeAlpha * depthFade;
+          const lwBase = 1.25;
+
+          if (fillBase && fillAlpha > 0) {
+            for (const f of mesh.faces) {
+              const A = pts[f[0]],
+                B = pts[f[1]],
+                C = pts[f[2]];
+              if (!A || !B || !C) continue;
+              const zAvg = (A.depth + B.depth + C.depth) / 3;
+              const lit = clamp(1.1 - zAvg / 65, 0.12, 1);
+              const fa = fillAlpha * lit * depthFade;
+              if (fa <= 0.001) continue;
+              drawTri(A, B, C, fillBase, fa);
+            }
+          }
+
+          for (const e of mesh.edges) {
+            const A = pts[e[0]],
+              B = pts[e[1]];
+            if (!A || !B) continue;
+            const zAvg = (A.depth + B.depth) * 0.5;
+            const invAvg = (A.inv + B.inv) * 0.5;
+            const w = clamp(lwBase * (0.6 + invAvg * 0.006), 0.85, 3.2);
+            const a = aEdges * clamp(1.2 - zAvg / 140, 0, 1);
+            if (a <= 0.001) continue;
+            if (glowColor) lineGlow(A.x, A.y, B.x, B.y, w * 2.4, glowColor, a * 0.55);
+            lineMain(A.x, A.y, B.x, B.y, w, color, a);
+          }
+        };
+
+        // Game state
+        const game = {
+          state: "menu", // menu|playing|paused|gameover
+          time: 0,
+          lastT: 0,
+          dt: 0,
+          timeScale: 1,
+          shake: 0,
+          flash: 0,
+          slowmo: 0,
+        };
+
+        const ship = {
+          x: 0,
+          y: 0,
+          vx: 0,
+          vy: 0,
+          yaw: 0,
+          pitch: 0,
+          roll: 0,
+          speed: 24,
+          speedTarget: 24,
+          shield: 100,
+          shieldTarget: 100,
+          heat: 0,
+          heatLock: 0,
+          fireCD: 0,
+          dash: 0,
+          dashCD: 0,
+          phase: 0,
+          score: 0,
+          combo: 1,
+          comboTime: 0,
+          streak: 0,
+          gateChain: 0,
+          dmgFlash: 0,
+          dead: false,
+        };
+
+        const world = {
+          difficulty: 1,
+          dist: 0,
+          spawnIn: 18,
+          gatesIn: 65,
+          dronesIn: 90,
+          powerIn: 80,
+        };
+
+        const stars = [];
+        const obstacles = [];
+        const bullets = [];
+        const enemyBullets = [];
+        const particles = [];
+        const after = [];
+
+        const randRange = (r, a, b) => a + (b - a) * r();
+
+        const initStars = () => {
+          stars.length = 0;
+          const count = clamp(Math.floor((W * H) / 8500), 120, 360);
+          const r = mulberry32(((Date.now() & 0xffffffff) ^ 0xdeadbeef) >>> 0);
+          for (let i = 0; i < count; i++) {
+            stars.push({
+              x: randRange(r, -14, 14),
+              y: randRange(r, -10, 10),
+              z: randRange(r, -210, -8),
+              s: randRange(r, 0.2, 1.0),
+              tw: randRange(r, 0.2, 1.0),
+              hue: randRange(r, -12, 12),
+            });
+          }
+        };
+
+        const resetWorld = () => {
+          ship.x = 0;
+          ship.y = 0;
+          ship.vx = 0;
+          ship.vy = 0;
+          ship.yaw = 0;
+          ship.pitch = 0;
+          ship.roll = 0;
+          ship.speed = 24;
+          ship.speedTarget = 24;
+          ship.shield = 100;
+          ship.shieldTarget = 100;
+          ship.heat = 0;
+          ship.heatLock = 0;
+          ship.fireCD = 0;
+          ship.dash = 0;
+          ship.dashCD = 0;
+          ship.phase = 0;
+          ship.score = 0;
+          ship.combo = 1;
+          ship.comboTime = 0;
+          ship.streak = 0;
+          ship.gateChain = 0;
+          ship.dmgFlash = 0;
+          ship.dead = false;
+          world.difficulty = 1;
+          world.dist = 0;
+          world.spawnIn = 18;
+          world.gatesIn = 55;
+          world.dronesIn = 90;
+          world.powerIn = 80;
+          obstacles.length = 0;
+          bullets.length = 0;
+          enemyBullets.length = 0;
+          particles.length = 0;
+          after.length = 0;
+          game.shake = 0;
+          game.flash = 0;
+          game.slowmo = 0;
+          game.timeScale = 1;
+        };
+
+        const spawnParticle = (x, y, z, vx, vy, vz, life, size, color, glowColor, mode) => {
+          particles.push({
+            x,
+            y,
+            z,
+            vx,
+            vy,
+            vz,
+            life,
+            t: 0,
+            size,
+            color,
+            glow: glowColor,
+            mode: mode || "add", // add|screen|normal
+          });
+        };
+
+        const spawnExplosion = (pos, power, hueShift) => {
+          const r = mulberry32(((Math.random() * 1e9) | 0) ^ ((pos.x * 99) | 0) ^ ((pos.y * 77) | 0));
+          const n = clamp(Math.floor(26 + power * 42), 20, 90);
+          for (let i = 0; i < n; i++) {
+            const a = r() * Math.PI * 2;
+            const u = Math.pow(r(), 0.28);
+            const sp = (10 + 70 * u) * power;
+            const vx = Math.cos(a) * sp * (0.3 + r());
+            const vy = Math.sin(a) * sp * (0.3 + r());
+            const vz = (r() - 0.8) * 16;
+            const life = randRange(r, 0.25, 0.9) * (0.8 + 0.6 * power);
+            const size = randRange(r, 0.7, 2.4) * (0.6 + power);
+            const warm = hueShift ? 1 : 0;
+            const c = warm
+              ? `rgba(255, ${Math.floor(140 + 80 * r())}, ${Math.floor(120 + 80 * r())}, 0.9)`
+              : `rgba(${Math.floor(120 + 110 * r())}, ${Math.floor(210 + 40 * r())}, 255, 0.9)`;
+            const g = warm ? "rgba(255,140,110,0.85)" : "rgba(120,220,255,0.85)";
+            spawnParticle(pos.x, pos.y, pos.z, vx, vy, vz, life, size, c, g, "add");
+          }
+        };
+
+        const spawnAsteroid = () => {
+          const r = Math.random;
+          const z = -180 - Math.random() * 140 - world.difficulty * 12;
+          const spread = 7.8 + Math.min(3.8, world.difficulty * 0.65);
+          const x = (Math.random() * 2 - 1) * spread;
+          const y = (Math.random() * 2 - 1) * (spread * 0.72);
+          const radius = 0.65 + Math.random() * (1.75 + world.difficulty * 0.15);
+          const spin = (Math.random() * 2 - 1) * (0.6 + world.difficulty * 0.12);
+          obstacles.push({
+            type: "asteroid",
+            x,
+            y,
+            z,
+            r: radius,
+            vx: (Math.random() * 2 - 1) * 0.25,
+            vy: (Math.random() * 2 - 1) * 0.22,
+            yaw: Math.random() * Math.PI * 2,
+            pitch: Math.random() * Math.PI * 2,
+            roll: Math.random() * Math.PI * 2,
+            spin,
+            hp: Math.floor(1 + radius * 0.55 + world.difficulty * 0.12),
+            tmpl: asteroidTemplates[(Math.random() * asteroidTemplates.length) | 0],
+            hit: 0,
+          });
+        };
+
+        const spawnGate = () => {
+          const z = -240 - Math.random() * 160;
+          const spread = 4.8 + Math.min(3.4, world.difficulty * 0.55);
+          const x = (Math.random() * 2 - 1) * spread;
+          const y = (Math.random() * 2 - 1) * (spread * 0.7);
+          const R = 3.05 + Math.random() * 2.15 + Math.min(0.8, world.difficulty * 0.08);
+          const t = 0.55 + Math.random() * 0.35;
+          obstacles.push({
+            type: "gate",
+            x,
+            y,
+            z,
+            R,
+            t,
+            yaw: (Math.random() * 2 - 1) * 0.45,
+            pitch: (Math.random() * 2 - 1) * 0.35,
+            roll: Math.random() * Math.PI * 2,
+            hit: 0,
+            passed: false,
+          });
+        };
+
+        const spawnDrone = () => {
+          const z = -260 - Math.random() * 190;
+          const spread = 6.7 + Math.min(3.6, world.difficulty * 0.55);
+          const x = (Math.random() * 2 - 1) * spread;
+          const y = (Math.random() * 2 - 1) * (spread * 0.66);
+          obstacles.push({
+            type: "drone",
+            x,
+            y,
+            z,
+            r: 1.05 + Math.random() * 0.55,
+            vx: 0,
+            vy: 0,
+            yaw: 0,
+            pitch: 0,
+            roll: Math.random() * Math.PI * 2,
+            spin: (Math.random() * 2 - 1) * 0.9,
+            hp: Math.floor(3 + world.difficulty * 0.75),
+            fire: 1.2 + Math.random() * 0.9,
+            hit: 0,
+          });
+        };
+
+        const spawnPower = () => {
+          const z = -240 - Math.random() * 180;
+          const spread = 5.2 + Math.min(3.2, world.difficulty * 0.55);
+          const x = (Math.random() * 2 - 1) * spread;
+          const y = (Math.random() * 2 - 1) * (spread * 0.7);
+          const kind = Math.random() < 0.55 ? "shield" : Math.random() < 0.7 ? "spread" : "cool";
+          obstacles.push({
+            type: "power",
+            kind,
+            x,
+            y,
+            z,
+            r: 0.95,
+            yaw: Math.random() * Math.PI * 2,
+            pitch: Math.random() * Math.PI * 2,
+            roll: Math.random() * Math.PI * 2,
+            hit: 0,
+          });
+        };
+
+        const addScore = (base) => {
+          const comboMul = ship.combo;
+          ship.score += Math.floor(base * comboMul);
+          ship.comboTime = 1.8;
+        };
+
+        const bumpCombo = (amount = 1) => {
+          ship.combo = clamp(ship.combo + amount, 1, 20);
+          ship.comboTime = 2.1;
+        };
+
+        const breakCombo = () => {
+          ship.combo = 1;
+          ship.comboTime = 0;
+          ship.gateChain = 0;
+        };
+
+        const damage = (amt, reason) => {
+          if (ship.phase > 0) return;
+          ship.shieldTarget = clamp(ship.shieldTarget - amt, 0, 100);
+          ship.dmgFlash = 0.45;
+          game.shake = Math.max(game.shake, 0.55 * settings.shake);
+          game.flash = Math.max(game.flash, 0.2);
+          if (audio) audio.sfx("hit", clamp(amt / 20, 0.6, 1.2));
+          vibrate([12, 22, 10]);
+          breakCombo();
+          if (reason) {
+            statusSmall.textContent = reason;
+          }
+        };
+
+        const grantPower = (kind) => {
+          if (audio) audio.sfx("ui", 1);
+          if (kind === "shield") {
+            ship.shieldTarget = clamp(ship.shieldTarget + 32, 0, 100);
+            ship.score += 80;
+            statusSmall.textContent = "Power: SHIELD +32";
+          } else if (kind === "cool") {
+            ship.heat = Math.max(0, ship.heat - 0.55);
+            ship.heatLock = 0;
+            ship.score += 70;
+            statusSmall.textContent = "Power: COOLANT";
+          } else if (kind === "spread") {
+            ship.streak = Math.max(ship.streak, 1.0);
+            ship.score += 90;
+            statusSmall.textContent = "Power: SPREAD BURST";
+          }
+          bumpCombo(1);
+        };
+
+        const fire = (dt, force) => {
+          const wants = force || keys.has(" ") || keys.has("Spacebar") || touchState.fireDown;
+          if (!wants) return;
+          if (ship.fireCD > 0) return;
+          if (ship.heatLock > 0) return;
+          const over = ship.heat > 0.98;
+          if (over) {
+            ship.heatLock = 0.45;
+            if (audio) audio.sfx("ui", 0.5);
+            statusSmall.textContent = "Weapon overheated.";
+            return;
+          }
+
+          const spread = ship.streak > 0.01 ? 2 : 1;
+          const baseYaw = ship.yaw;
+          const basePitch = ship.pitch;
+          const aimX = clamp(mouseDX * 0.0022 * settings.sensitivity, -1.4, 1.4);
+          const aimY = clamp(mouseDY * 0.0022 * settings.sensitivity, -1.2, 1.2) * (settings.invertY ? -1 : 1);
+          const yaw = baseYaw + aimX * 0.35;
+          const pitch = basePitch + aimY * 0.35;
+          const dir = rotXYZ(new V3(0, 0, -1), yaw, pitch, ship.roll).norm();
+          const speed = 150;
+
+          for (let i = 0; i < spread; i++) {
+            const spr = spread === 1 ? 0 : i === 0 ? -0.06 : 0.06;
+            const d2 = rotXYZ(new V3(dir.x, dir.y, dir.z), spr, -spr * 0.5, 0).norm();
+            bullets.push({
+              x: ship.x + d2.x * 0.7,
+              y: ship.y + d2.y * 0.7,
+              z: -0.4,
+              vx: d2.x * speed,
+              vy: d2.y * speed,
+              vz: d2.z * speed,
+              life: 1.2,
+              t: 0,
+            });
+          }
+
+          ship.fireCD = spread === 1 ? 0.095 : 0.12;
+          ship.heat = clamp(ship.heat + (spread === 1 ? 0.08 : 0.1), 0, 1.25);
+          ship.comboTime = Math.min(ship.comboTime + 0.05, 2.2);
+
+          if (audio) audio.sfx("laser", 1);
+          if (!settings.reducedMotion) {
+            game.flash = Math.max(game.flash, 0.08);
+            game.shake = Math.max(game.shake, 0.08 * settings.shake);
+          }
+          // Muzzle particles
+          const p = new V3(ship.x + dir.x * 0.85, ship.y + dir.y * 0.85, -0.7);
+          for (let i = 0; i < 4; i++) {
+            spawnParticle(
+              p.x,
+              p.y,
+              p.z,
+              dir.x * 16 + (Math.random() * 2 - 1) * 12,
+              dir.y * 16 + (Math.random() * 2 - 1) * 12,
+              -20 + (Math.random() * 2 - 1) * 20,
+              0.16 + Math.random() * 0.14,
+              1.6 + Math.random() * 1.2,
+              "rgba(255,190,150,0.9)",
+              "rgba(255,150,120,0.95)",
+              "add"
+            );
+          }
+        };
+
+        const doDash = (dx, dy) => {
+          if (ship.dashCD > 0) return false;
+          if (ship.shieldTarget <= 4) return false;
+          ship.dash = 0.22;
+          ship.phase = 0.24;
+          ship.dashCD = 0.62;
+          ship.vx += dx * 18;
+          ship.vy += dy * 18;
+          ship.shieldTarget = clamp(ship.shieldTarget - 2.4, 0, 100);
+          game.shake = Math.max(game.shake, 0.22 * settings.shake);
+          if (audio) audio.sfx("ui", 0.9);
+          vibrate([10]);
+          // afterimage
+          after.push({ x: ship.x, y: ship.y, t: 0, life: 0.22 });
+          return true;
+        };
+
+        const updateInputAndShip = (dt) => {
+          // gamepad
+          let gpX = 0,
+            gpY = 0,
+            gpAimX = 0,
+            gpAimY = 0,
+            gpFire = false,
+            gpBoost = false,
+            gpBrake = false,
+            gpRoll = 0;
+          const gps = navigator.getGamepads ? navigator.getGamepads() : null;
+          if (gps) {
+            const gp = gps[0];
+            if (gp && gp.connected) {
+              const ax0 = gp.axes[0] || 0;
+              const ax1 = gp.axes[1] || 0;
+              const ax2 = gp.axes[2] || 0;
+              const ax3 = gp.axes[3] || 0;
+              const dead = 0.12;
+              const d = (v) => (Math.abs(v) < dead ? 0 : v);
+              gpX = d(ax0);
+              gpY = d(ax1);
+              gpAimX = d(ax2);
+              gpAimY = d(ax3) * (settings.invertY ? -1 : 1);
+              const btn = (i) => (gp.buttons[i] ? gp.buttons[i].pressed : false);
+              const val = (i) => (gp.buttons[i] ? gp.buttons[i].value || 0 : 0);
+              gpFire = btn(0) || btn(1);
+              gpBoost = val(6) > 0.3 || btn(6);
+              gpBrake = val(7) > 0.3 || btn(7);
+              gpRoll = (btn(4) ? -1 : 0) + (btn(5) ? 1 : 0);
+              if (btn(9) && game.state === "playing") pauseGame();
+              if (btn(9) && game.state === "paused") resumeGame();
+            }
+          }
+
+          const left = keys.has("a") || keys.has("A") || keys.has("ArrowLeft");
+          const right = keys.has("d") || keys.has("D") || keys.has("ArrowRight");
+          const up = keys.has("w") || keys.has("W") || keys.has("ArrowUp");
+          const down = keys.has("s") || keys.has("S") || keys.has("ArrowDown");
+          const boost = keys.has("Shift") || gpBoost;
+          const brake = keys.has("c") || keys.has("C") || gpBrake;
+          const rollL = keys.has("q") || keys.has("Q");
+          const rollR = keys.has("e") || keys.has("E");
+
+          let ix = (right ? 1 : 0) - (left ? 1 : 0);
+          let iy = (down ? 1 : 0) - (up ? 1 : 0);
+          if (touchState.enabled) {
+            ix += touchState.joyX;
+            iy += touchState.joyY;
+          }
+          ix += gpX;
+          iy += gpY;
+          const il = Math.hypot(ix, iy);
+          if (il > 1) {
+            ix /= il;
+            iy /= il;
+          } else if (il < 0.001) {
+            ix = 0;
+            iy = 0;
+          }
+
+          const bounds = 8.3;
+          const targetSpeed = boost ? 42 : brake ? 18 : 28;
+          ship.speedTarget = lerp(ship.speedTarget, targetSpeed, expSmoothing(dt, 2.2));
+          ship.speed = lerp(ship.speed, ship.speedTarget, expSmoothing(dt, 1.9));
+
+          // "Improved feel": soft acceleration + gentle banking + speed-aware damping.
+          const accel = 18.5 + ship.speed * 0.12;
+          const damp = 10.0 + ship.speed * 0.08;
+          ship.vx += ix * accel * dt;
+          ship.vy += iy * accel * dt;
+          ship.vx *= Math.exp(-dt * damp);
+          ship.vy *= Math.exp(-dt * damp);
+          ship.x += ship.vx * dt;
+          ship.y += ship.vy * dt;
+
+          // soft clamp with rebound
+          const edge = 6.9;
+          const push = 10.5;
+          if (ship.x < -edge) ship.vx += (-edge - ship.x) * push * dt;
+          if (ship.x > edge) ship.vx += (edge - ship.x) * push * dt;
+          if (ship.y < -edge * 0.72) ship.vy += (-edge * 0.72 - ship.y) * push * dt;
+          if (ship.y > edge * 0.72) ship.vy += (edge * 0.72 - ship.y) * push * dt;
+
+          ship.x = clamp(ship.x, -bounds, bounds);
+          ship.y = clamp(ship.y, -bounds * 0.74, bounds * 0.74);
+
+          // aim / attitude
+          const aimScale = 0.0028 * settings.sensitivity;
+          const mx = clamp(mouseDX * aimScale + gpAimX * 0.95, -2.4, 2.4);
+          const my = clamp(mouseDY * aimScale + gpAimY * 0.95, -2.1, 2.1);
+          mouseDX *= Math.exp(-dt * 14);
+          mouseDY *= Math.exp(-dt * 14);
+
+          const vyN = clamp(ship.vy * 0.04, -1, 1);
+          const vxN = clamp(ship.vx * 0.04, -1, 1);
+          ship.yaw = lerp(ship.yaw, -vxN * 0.65 + mx * 0.18, expSmoothing(dt, 7.5));
+          ship.pitch = lerp(ship.pitch, vyN * 0.62 + my * 0.18 * (settings.invertY ? -1 : 1), expSmoothing(dt, 7.5));
+
+          const rollInput = (rollR ? 1 : 0) - (rollL ? 1 : 0) + gpRoll;
+          const bank = clamp(-vxN * 1.05 + rollInput * 1.15, -1.6, 1.6);
+          ship.roll = lerp(ship.roll, bank, expSmoothing(dt, 6.0));
+
+          // timers
+          ship.fireCD = Math.max(0, ship.fireCD - dt);
+          ship.heatLock = Math.max(0, ship.heatLock - dt);
+          ship.dash = Math.max(0, ship.dash - dt);
+          ship.dashCD = Math.max(0, ship.dashCD - dt);
+          ship.phase = Math.max(0, ship.phase - dt);
+
+          // heat cooldown (faster when not firing)
+          const cooling = boost ? 0.45 : 0.62;
+          ship.heat = Math.max(0, ship.heat - dt * (ship.fireCD > 0 ? 0.26 : cooling));
+          ship.streak = Math.max(0, ship.streak - dt * 0.22);
+
+          // audio engine
+          if (audio) {
+            const throttle = boost ? 1 : brake ? 0.1 : 0.55;
+            const sp = clamp((ship.speed - 18) / 26, 0, 1);
+            audio.setEngine(throttle, sp);
+          }
+
+          // fire via gamepad/touch/keys
+          fire(dt, gpFire);
+        };
+
+        const updateWorld = (dt) => {
+          world.dist += ship.speed * dt;
+          world.difficulty = 1 + Math.pow(world.dist / 1200, 0.72);
+
+          // camera follows ship slightly for depth/interaction cues
+          cam.x = lerp(cam.x, ship.x * 0.32, expSmoothing(dt, 4.0));
+          cam.y = lerp(cam.y, ship.y * 0.22, expSmoothing(dt, 4.0));
+          const aimShake = ship.dmgFlash > 0 ? 0.02 : 0;
+          cam.yaw = lerp(cam.yaw, -ship.x * 0.012 + ship.yaw * 0.12, expSmoothing(dt, 4.0)) + aimShake;
+          cam.pitch = lerp(cam.pitch, ship.y * 0.012 + ship.pitch * 0.12, expSmoothing(dt, 4.0)) + aimShake;
+          cam.roll = lerp(cam.roll, ship.roll * 0.06, expSmoothing(dt, 4.0));
+
+          const fovBase = Math.min(W, H) * 0.86;
+          const boost = keys.has("Shift") ? 1 : 0;
+          const sp = clamp((ship.speed - 18) / 26, 0, 1);
+          cam.fov = fovBase * (0.86 + 0.22 * sp + 0.08 * boost);
+
+          // regen shield slowly when stable
+          const regen = ship.combo > 1 ? 0.08 : 0.12;
+          ship.shieldTarget = clamp(ship.shieldTarget + dt * regen, 0, 100);
+          ship.shield = lerp(ship.shield, ship.shieldTarget, expSmoothing(dt, 6.0));
+
+          ship.dmgFlash = Math.max(0, ship.dmgFlash - dt * 1.8);
+
+          // combo decay
+          ship.comboTime = Math.max(0, ship.comboTime - dt);
+          if (ship.comboTime <= 0 && ship.combo > 1) {
+            ship.combo = Math.max(1, ship.combo - 1);
+            ship.comboTime = ship.combo > 1 ? 0.6 : 0;
+          }
+
+          // spawn logic by distance traveled
+          world.spawnIn -= ship.speed * dt;
+          world.gatesIn -= ship.speed * dt;
+          world.dronesIn -= ship.speed * dt;
+          world.powerIn -= ship.speed * dt;
+          if (world.spawnIn <= 0) {
+            const n = Math.random() < 0.12 + world.difficulty * 0.01 ? 2 : 1;
+            for (let i = 0; i < n; i++) spawnAsteroid();
+            const base = lerp(18, 8.5, clamp((world.difficulty - 1) / 7, 0, 1));
+            world.spawnIn = base + Math.random() * (base * 0.75);
+          }
+          if (world.gatesIn <= 0) {
+            spawnGate();
+            world.gatesIn = lerp(80, 48, clamp((world.difficulty - 1) / 6, 0, 1)) + Math.random() * 26;
+          }
+          if (world.dronesIn <= 0) {
+            if (Math.random() < 0.85) spawnDrone();
+            world.dronesIn = lerp(110, 70, clamp((world.difficulty - 1) / 6, 0, 1)) + Math.random() * 38;
+          }
+          if (world.powerIn <= 0) {
+            if (Math.random() < 0.8) spawnPower();
+            world.powerIn = 85 + Math.random() * 60;
+          }
+
+          // update stars
+          const boost = keys.has("Shift") ? 1 : 0;
+          for (const st of stars) {
+            st.z += ship.speed * dt * (0.9 + st.s * 0.9) * (boost ? 1.9 : 1.0);
+            st.tw = (st.tw + dt * (0.8 + st.s * 1.4)) % 2;
+            if (st.z > -8) {
+              st.z = -220 - Math.random() * 180;
+              st.x = (Math.random() * 2 - 1) * 14;
+              st.y = (Math.random() * 2 - 1) * 10;
+              st.s = 0.2 + Math.random() * 1.0;
+              st.hue = -12 + Math.random() * 24;
+            }
+          }
+
+          // engine particles
+          if (!settings.reducedMotion) {
+            const exhaustN = keys.has("Shift") ? 5 : 2;
+            for (let i = 0; i < exhaustN; i++) {
+              const px = ship.x + (Math.random() * 2 - 1) * 0.16;
+              const py = ship.y + (Math.random() * 2 - 1) * 0.14;
+              const pz = 0.25 + Math.random() * 0.15;
+              spawnParticle(
+                px,
+                py,
+                pz,
+                -ship.vx * 0.4 + (Math.random() * 2 - 1) * 4,
+                -ship.vy * 0.4 + (Math.random() * 2 - 1) * 4,
+                22 + ship.speed * 0.15 + (Math.random() * 2 - 1) * 8,
+                0.22 + Math.random() * 0.22,
+                1.2 + Math.random() * 1.1,
+                "rgba(120,220,255,0.9)",
+                "rgba(120,220,255,0.9)",
+                "add"
+              );
+            }
+          }
+
+          // update obstacles (toward ship)
+          for (let i = obstacles.length - 1; i >= 0; i--) {
+            const o = obstacles[i];
+            o.z += ship.speed * dt;
+            o.hit = Math.max(0, (o.hit || 0) - dt * 2.6);
+            if (o.type === "asteroid") {
+              o.x += o.vx * dt;
+              o.y += o.vy * dt;
+              o.yaw += o.spin * dt * 0.8;
+              o.pitch += o.spin * dt * 0.6;
+              o.roll += o.spin * dt;
+              if (o.z > 20) obstacles.splice(i, 1);
+            } else if (o.type === "gate") {
+              o.roll += dt * 0.8;
+              if (o.z > 12 && !o.passed) {
+                // missed gate breaks chain
+                ship.gateChain = 0;
+                if (ship.combo > 1) ship.combo = Math.max(1, ship.combo - 1);
+                o.passed = true;
+              }
+              if (o.z > 20) obstacles.splice(i, 1);
+            } else if (o.type === "drone") {
+              // hunt
+              const tx = ship.x;
+              const ty = ship.y;
+              const ax = clamp(tx - o.x, -1, 1);
+              const ay = clamp(ty - o.y, -1, 1);
+              o.vx = lerp(o.vx, ax * (1.4 + world.difficulty * 0.08), expSmoothing(dt, 1.6));
+              o.vy = lerp(o.vy, ay * (1.2 + world.difficulty * 0.07), expSmoothing(dt, 1.6));
+              o.x += o.vx * dt;
+              o.y += o.vy * dt;
+              o.roll += o.spin * dt;
+              const dz = Math.max(0.01, -o.z);
+              o.yaw = lerp(o.yaw, (ship.x - o.x) * 0.06, expSmoothing(dt, 3.0));
+              o.pitch = lerp(o.pitch, -(ship.y - o.y) * 0.06, expSmoothing(dt, 3.0));
+              o.fire -= dt;
+              if (o.fire <= 0 && o.z < -22) {
+                o.fire = 0.85 + Math.random() * 0.95 - Math.min(0.25, world.difficulty * 0.02);
+                enemyBullets.push({
+                  x: o.x,
+                  y: o.y,
+                  z: o.z,
+                  vx: (ship.x - o.x) * 2.2,
+                  vy: (ship.y - o.y) * 2.2,
+                  vz: 45 + world.difficulty * 2.5,
+                  life: 2.6,
+                  t: 0,
+                });
+              }
+              if (o.z > 18) obstacles.splice(i, 1);
+            } else if (o.type === "power") {
+              o.roll += dt * 1.0;
+              o.pitch += dt * 0.8;
+              o.yaw += dt * 0.7;
+              if (o.z > 16) obstacles.splice(i, 1);
+            }
+          }
+
+          // bullets
+          for (let i = bullets.length - 1; i >= 0; i--) {
+            const b = bullets[i];
+            b.t += dt;
+            b.life -= dt;
+            b.x += b.vx * dt;
+            b.y += b.vy * dt;
+            b.z += b.vz * dt;
+            if (b.life <= 0 || b.z < -420) bullets.splice(i, 1);
+          }
+          for (let i = enemyBullets.length - 1; i >= 0; i--) {
+            const b = enemyBullets[i];
+            b.t += dt;
+            b.life -= dt;
+            b.x += b.vx * dt;
+            b.y += b.vy * dt;
+            b.z += b.vz * dt;
+            if (b.life <= 0 || b.z > 16) enemyBullets.splice(i, 1);
+          }
+
+          // particles
+          for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.t += dt;
+            p.life -= dt;
+            p.vx *= Math.exp(-dt * 1.2);
+            p.vy *= Math.exp(-dt * 1.2);
+            p.vz *= Math.exp(-dt * 1.2);
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.z += p.vz * dt;
+            if (p.life <= 0 || p.z > 24 || p.z < -520) particles.splice(i, 1);
+          }
+          for (let i = after.length - 1; i >= 0; i--) {
+            after[i].t += dt;
+            after[i].life -= dt;
+            if (after[i].life <= 0) after.splice(i, 1);
+          }
+
+          // collisions
+          const shipR = ship.phase > 0 ? 0.55 : 0.85;
+          // enemy bullet vs ship
+          for (let i = enemyBullets.length - 1; i >= 0; i--) {
+            const b = enemyBullets[i];
+            if (b.z < -2.5 || b.z > 2.5) continue;
+            const dx = b.x - ship.x;
+            const dy = b.y - ship.y;
+            const dz = b.z - 0;
+            const d = Math.hypot(dx, dy, dz);
+            if (d < shipR + 0.45) {
+              enemyBullets.splice(i, 1);
+              damage(9 + world.difficulty * 0.65, "Hit by drone fire.");
+              spawnExplosion(new V3(ship.x, ship.y, 0), 0.42, true);
+            }
+          }
+
+          // obstacles vs ship
+          for (let i = obstacles.length - 1; i >= 0; i--) {
+            const o = obstacles[i];
+            if (o.type === "asteroid") {
+              if (o.z < -2.0 || o.z > 2.0) continue;
+              const dx = o.x - ship.x;
+              const dy = o.y - ship.y;
+              const d = Math.hypot(dx, dy);
+              if (d < o.r + shipR) {
+                obstacles.splice(i, 1);
+                damage(14 + o.r * 7, "Collision: asteroid.");
+                spawnExplosion(new V3(o.x, o.y, o.z), clamp(0.4 + o.r * 0.22, 0.35, 1.0), true);
+                if (audio) audio.sfx("boom", 1);
+              }
+            } else if (o.type === "gate") {
+              if (o.passed) continue;
+              if (Math.abs(o.z) > 2.2) continue;
+              const dx = ship.x - o.x;
+              const dy = ship.y - o.y;
+              const radial = Math.hypot(dx, dy);
+              const inner = o.R - o.t - 0.25;
+              const outer = o.R + o.t + 0.2;
+              if (radial < inner) {
+                o.passed = true;
+                ship.gateChain = clamp(ship.gateChain + 1, 0, 999);
+                const bonus = 40 + ship.gateChain * 10 + Math.floor(world.difficulty * 6);
+                addScore(bonus);
+                bumpCombo(1);
+                if (!settings.reducedMotion) {
+                  game.flash = Math.max(game.flash, 0.12);
+                  game.shake = Math.max(game.shake, 0.12 * settings.shake);
+                  game.slowmo = Math.max(game.slowmo, 0.14);
+                }
+                if (audio) audio.sfx("ui", 1.1);
+                statusSmall.textContent = `Gate chain: ${ship.gateChain}`;
+              } else if (radial > inner && radial < outer) {
+                o.passed = true;
+                damage(10 + world.difficulty * 0.6, "Clipped a gate.");
+                spawnExplosion(new V3(ship.x, ship.y, 0), 0.35, true);
+              }
+            } else if (o.type === "power") {
+              if (o.z < -1.6 || o.z > 1.6) continue;
+              const dx = o.x - ship.x;
+              const dy = o.y - ship.y;
+              const d = Math.hypot(dx, dy);
+              if (d < shipR + o.r) {
+                obstacles.splice(i, 1);
+                grantPower(o.kind);
+                spawnExplosion(new V3(o.x, o.y, o.z), 0.28, false);
+              }
+            } else if (o.type === "drone") {
+              if (o.z < -1.9 || o.z > 2.2) continue;
+              const dx = o.x - ship.x;
+              const dy = o.y - ship.y;
+              const d = Math.hypot(dx, dy);
+              if (d < shipR + o.r * 0.9) {
+                obstacles.splice(i, 1);
+                damage(16 + world.difficulty * 1.1, "Impact: drone.");
+                spawnExplosion(new V3(o.x, o.y, o.z), 0.72, true);
+                if (audio) audio.sfx("boom", 1);
+              }
+            }
+          }
+
+          // bullets vs obstacles
+          for (let bi = bullets.length - 1; bi >= 0; bi--) {
+            const b = bullets[bi];
+            let hitAny = false;
+            for (let oi = obstacles.length - 1; oi >= 0; oi--) {
+              const o = obstacles[oi];
+              if (o.type !== "asteroid" && o.type !== "drone") continue;
+              const dz = o.z - b.z;
+              if (Math.abs(dz) > 6.5) continue;
+              const dx = o.x - b.x;
+              const dy = o.y - b.y;
+              const d = Math.hypot(dx, dy, dz);
+              const rr = o.type === "drone" ? o.r * 0.85 : o.r;
+              if (d < rr + 0.25) {
+                hitAny = true;
+                bullets.splice(bi, 1);
+                o.hp -= 1;
+                o.hit = 0.6;
+                addScore(o.type === "drone" ? 32 : 22);
+                bumpCombo(0);
+                if (!settings.reducedMotion) game.shake = Math.max(game.shake, 0.06 * settings.shake);
+                spawnExplosion(new V3(b.x, b.y, b.z), 0.14, true);
+                if (o.hp <= 0) {
+                  obstacles.splice(oi, 1);
+                  spawnExplosion(new V3(o.x, o.y, o.z), o.type === "drone" ? 0.9 : clamp(0.45 + o.r * 0.2, 0.45, 1.0), true);
+                  if (audio) audio.sfx("boom", 1);
+                  bumpCombo(1);
+                  addScore(o.type === "drone" ? 90 : 45 + Math.floor(o.r * 12));
+                }
+                break;
+              }
+            }
+            if (hitAny) continue;
+          }
+
+          if (ship.shield <= 0.5 && !ship.dead) {
+            ship.dead = true;
+            endGame();
+          }
+        };
+
+        const drawBackground = (dt) => {
+          // space gradient + subtle haze
+          sctx.save();
+          sctx.globalCompositeOperation = "source-over";
+          const g = sctx.createLinearGradient(0, 0, 0, H);
+          g.addColorStop(0, "rgba(2,4,10,1)");
+          g.addColorStop(0.55, "rgba(4,8,18,1)");
+          g.addColorStop(1, "rgba(2,3,8,1)");
+          sctx.fillStyle = g;
+          sctx.fillRect(0, 0, W, H);
+
+          // nebula blobs
+          if (!settings.reducedMotion) {
+            sctx.globalAlpha = 0.28;
+            sctx.globalCompositeOperation = "lighter";
+            const t = game.time;
+            for (let i = 0; i < 5; i++) {
+              const px = cx + Math.sin(t * 0.12 + i * 2.1) * (W * 0.25);
+              const py = cy + Math.cos(t * 0.1 + i * 1.7) * (H * 0.23);
+              const r = Math.min(W, H) * (0.22 + 0.06 * i);
+              const rg = sctx.createRadialGradient(px, py, r * 0.12, px, py, r);
+              rg.addColorStop(0, "rgba(120,220,255,0.10)");
+              rg.addColorStop(0.35, "rgba(255,120,210,0.06)");
+              rg.addColorStop(1, "rgba(0,0,0,0.0)");
+              sctx.fillStyle = rg;
+              sctx.beginPath();
+              sctx.arc(px, py, r, 0, Math.PI * 2);
+              sctx.fill();
+            }
+            sctx.globalCompositeOperation = "source-over";
+          }
+
+          // stars
+          sctx.globalAlpha = 1;
+          sctx.globalCompositeOperation = "source-over";
+          for (const st of stars) {
+            const p = project(new V3(st.x, st.y, st.z));
+            if (!p) continue;
+            const tw = 0.55 + 0.45 * Math.sin(st.tw * Math.PI);
+            const a = clamp(0.22 + st.s * 0.55, 0.2, 0.88) * tw;
+            const s = clamp(0.7 + st.s * 1.7 * p.inv * 0.0022, 0.6, 2.3);
+            sctx.save();
+            sctx.globalAlpha = a;
+            sctx.fillStyle = `rgba(${Math.floor(190 + st.hue * 2)}, ${Math.floor(235 + st.hue)}, 255, 1)`;
+            sctx.shadowBlur = 10;
+            sctx.shadowColor = "rgba(120,220,255,0.35)";
+            sctx.beginPath();
+            sctx.arc(p.x, p.y, s, 0, Math.PI * 2);
+            sctx.fill();
+            sctx.restore();
+
+            if (keys.has("Shift") && !settings.reducedMotion) {
+              // boost streak
+              const len = clamp(14 + st.s * 40, 10, 60) * clamp(p.inv * 0.004, 0.4, 2.2);
+              const dx = (p.x - cx) * 0.02;
+              const dy = (p.y - cy) * 0.02;
+              lineGlow(p.x, p.y, p.x - dx * len, p.y - dy * len, 2.4, "rgba(120,220,255,0.55)", a * 0.65);
+              lineMain(p.x, p.y, p.x - dx * len, p.y - dy * len, 1.1, "rgba(190,255,255,0.85)", a * 0.75);
+            }
+          }
+
+          sctx.restore();
+        };
+
+        const drawParticles = () => {
+          for (const p of particles) {
+            const pr = project(new V3(p.x, p.y, p.z));
+            if (!pr) continue;
+            const lifeT = clamp(p.life / (p.life + p.t + 0.0001), 0, 1);
+            const a = clamp(0.9 * lifeT, 0, 1);
+            const size = clamp(p.size * (0.75 + pr.inv * 0.004), 0.6, 7.5);
+            if (p.glow) {
+              gctx.save();
+              gctx.globalAlpha = a * 0.8;
+              gctx.fillStyle = p.glow;
+              gctx.shadowBlur = 18;
+              gctx.shadowColor = p.glow;
+              gctx.beginPath();
+              gctx.arc(pr.x, pr.y, size * 1.1, 0, Math.PI * 2);
+              gctx.fill();
+              gctx.restore();
+            }
+            sctx.save();
+            if (p.mode === "add") sctx.globalCompositeOperation = "lighter";
+            else if (p.mode === "screen") sctx.globalCompositeOperation = "screen";
+            else sctx.globalCompositeOperation = "source-over";
+            sctx.globalAlpha = a;
+            sctx.fillStyle = p.color;
+            sctx.shadowBlur = 14;
+            sctx.shadowColor = p.color;
+            sctx.beginPath();
+            sctx.arc(pr.x, pr.y, size, 0, Math.PI * 2);
+            sctx.fill();
+            sctx.restore();
+          }
+        };
+
+        const drawObstacles = () => {
+          // sort far to near (painter)
+          const items = [];
+          for (const o of obstacles) {
+            items.push(o);
+          }
+          items.sort((a, b) => a.z - b.z); // more negative (far) first
+
+          for (const o of items) {
+            if (o.type === "asteroid") {
+              const pos = new V3(o.x, o.y, o.z);
+              const glowC = o.hit > 0 ? "rgba(255,150,120,0.9)" : "rgba(120,220,255,0.8)";
+              const mainC = o.hit > 0 ? "rgba(255,200,180,0.9)" : "rgba(210,255,255,0.82)";
+              drawMesh(o.tmpl, pos, o.yaw, o.pitch, o.roll, o.r, mainC, glowC, null, 0, 0.95);
+            } else if (o.type === "gate") {
+              const center = new V3(o.x, o.y, o.z);
+              const seg = 44;
+              const rot = (p) => rotXYZ(p, o.yaw, o.pitch, o.roll).add(center);
+              const outer = [];
+              const inner = [];
+              for (let i = 0; i <= seg; i++) {
+                const a = (i / seg) * Math.PI * 2;
+                outer.push(rot(new V3(Math.cos(a) * o.R, Math.sin(a) * o.R, 0)));
+                inner.push(rot(new V3(Math.cos(a) * (o.R - o.t), Math.sin(a) * (o.R - o.t), 0)));
+              }
+              const col = o.passed ? "rgba(170,255,240,0.72)" : "rgba(220,255,255,0.82)";
+              const glowC = o.passed ? "rgba(120,255,210,0.7)" : "rgba(120,220,255,0.78)";
+              for (let i = 0; i < seg; i++) {
+                const A = project(outer[i]);
+                const B = project(outer[i + 1]);
+                const C = project(inner[i]);
+                const D = project(inner[i + 1]);
+                if (A && B) {
+                  const inv = (A.inv + B.inv) * 0.5;
+                  const w = clamp(1.2 + inv * 0.007, 1.0, 3.4);
+                  lineGlow(A.x, A.y, B.x, B.y, w * 3.0, glowC, 0.45);
+                  lineMain(A.x, A.y, B.x, B.y, w, col, 0.85);
+                }
+                if (C && D) {
+                  const inv = (C.inv + D.inv) * 0.5;
+                  const w = clamp(1.05 + inv * 0.006, 0.9, 3.0);
+                  lineGlow(C.x, C.y, D.x, D.y, w * 2.4, glowC, 0.33);
+                  lineMain(C.x, C.y, D.x, D.y, w, col, 0.72);
+                }
+                if (i % 6 === 0 && A && C) {
+                  const w = clamp(0.9 + A.inv * 0.004, 0.9, 2.1);
+                  lineGlow(A.x, A.y, C.x, C.y, w * 2.2, glowC, 0.22);
+                  lineMain(A.x, A.y, C.x, C.y, w, col, 0.55);
+                }
+              }
+              if (!o.passed && !settings.reducedMotion) {
+                // gate energy haze
+                const p = project(center);
+                if (p) {
+                  gctx.save();
+                  gctx.globalAlpha = 0.22;
+                  gctx.fillStyle = "rgba(120,220,255,0.65)";
+                  gctx.shadowBlur = 28;
+                  gctx.shadowColor = "rgba(120,220,255,0.85)";
+                  gctx.beginPath();
+                  gctx.arc(p.x, p.y, clamp(o.R * p.inv * 0.65, 8, 90), 0, Math.PI * 2);
+                  gctx.fill();
+                  gctx.restore();
+                }
+              }
+            } else if (o.type === "drone") {
+              const pos = new V3(o.x, o.y, o.z);
+              const col = o.hit > 0 ? "rgba(255,210,190,0.92)" : "rgba(220,255,255,0.86)";
+              const glowC = o.hit > 0 ? "rgba(255,150,120,0.9)" : "rgba(120,220,255,0.88)";
+              const fill = o.hit > 0 ? "rgba(255,120,110,0.10)" : "rgba(120,220,255,0.08)";
+              drawMesh(droneMesh, pos, o.yaw, o.pitch, o.roll, o.r, col, glowC, fill, 0.45, 1.0);
+              // core
+              const core = project(new V3(o.x, o.y, o.z - o.r * 0.35));
+              if (core) {
+                gctx.save();
+                gctx.globalAlpha = 0.75;
+                gctx.fillStyle = "rgba(255,180,140,0.75)";
+                gctx.shadowBlur = 30;
+                gctx.shadowColor = "rgba(255,150,120,0.95)";
+                gctx.beginPath();
+                gctx.arc(core.x, core.y, clamp(3 + core.inv * 0.012, 2, 10), 0, Math.PI * 2);
+                gctx.fill();
+                gctx.restore();
+              }
+            } else if (o.type === "power") {
+              const pos = new V3(o.x, o.y, o.z);
+              const k = o.kind;
+              const glowC =
+                k === "shield"
+                  ? "rgba(120,255,210,0.95)"
+                  : k === "cool"
+                  ? "rgba(120,220,255,0.95)"
+                  : "rgba(255,150,120,0.95)";
+              const col =
+                k === "shield"
+                  ? "rgba(220,255,240,0.9)"
+                  : k === "cool"
+                  ? "rgba(210,255,255,0.9)"
+                  : "rgba(255,220,200,0.9)";
+              const fill =
+                k === "shield"
+                  ? "rgba(120,255,210,0.10)"
+                  : k === "cool"
+                  ? "rgba(120,220,255,0.08)"
+                  : "rgba(255,150,120,0.10)";
+              drawMesh(crystalMesh, pos, o.yaw, o.pitch, o.roll, 1.1, col, glowC, fill, 0.55, 1.0);
+            }
+          }
+        };
+
+        const drawBullets = () => {
+          for (const b of bullets) {
+            const p = project(new V3(b.x, b.y, b.z));
+            if (!p) continue;
+            const a = clamp(0.9 - b.t * 0.25, 0, 1);
+            const s = clamp(1.2 + p.inv * 0.012, 1.2, 8);
+            gctx.save();
+            gctx.globalAlpha = a * 0.7;
+            gctx.fillStyle = "rgba(255,160,120,0.8)";
+            gctx.shadowBlur = 26;
+            gctx.shadowColor = "rgba(255,150,120,0.95)";
+            gctx.beginPath();
+            gctx.arc(p.x, p.y, s * 1.1, 0, Math.PI * 2);
+            gctx.fill();
+            gctx.restore();
+            sctx.save();
+            sctx.globalAlpha = a;
+            sctx.fillStyle = "rgba(255,220,200,0.9)";
+            sctx.shadowBlur = 14;
+            sctx.shadowColor = "rgba(255,190,170,0.9)";
+            sctx.beginPath();
+            sctx.arc(p.x, p.y, s * 0.55, 0, Math.PI * 2);
+            sctx.fill();
+            sctx.restore();
+          }
+          for (const b of enemyBullets) {
+            const p = project(new V3(b.x, b.y, b.z));
+            if (!p) continue;
+            const a = clamp(0.8 - b.t * 0.1, 0, 1);
+            const s = clamp(1.2 + p.inv * 0.012, 1.2, 9);
+            gctx.save();
+            gctx.globalAlpha = a * 0.55;
+            gctx.fillStyle = "rgba(120,220,255,0.8)";
+            gctx.shadowBlur = 24;
+            gctx.shadowColor = "rgba(120,220,255,0.95)";
+            gctx.beginPath();
+            gctx.arc(p.x, p.y, s * 1.2, 0, Math.PI * 2);
+            gctx.fill();
+            gctx.restore();
+            sctx.save();
+            sctx.globalAlpha = a;
+            sctx.fillStyle = "rgba(210,255,255,0.9)";
+            sctx.shadowBlur = 12;
+            sctx.shadowColor = "rgba(120,220,255,0.85)";
+            sctx.beginPath();
+            sctx.arc(p.x, p.y, s * 0.55, 0, Math.PI * 2);
+            sctx.fill();
+            sctx.restore();
+          }
+        };
+
+        const drawShip = () => {
+          // afterimages for dash
+          if (after.length) {
+            for (const a of after) {
+              const t = a.t / (a.t + a.life + 1e-6);
+              const alpha = (1 - t) * 0.35;
+              const pos = new V3(a.x, a.y, 0);
+              drawMesh(
+                shipMesh,
+                pos,
+                ship.yaw,
+                ship.pitch,
+                ship.roll,
+                1.1,
+                "rgba(220,255,255,0.6)",
+                "rgba(120,220,255,0.8)",
+                "rgba(120,220,255,0.06)",
+                alpha * 0.7,
+                alpha
+              );
+            }
+          }
+
+          const pos = new V3(ship.x, ship.y, 0);
+          const col = ship.phase > 0 ? "rgba(220,255,255,0.7)" : "rgba(220,255,255,0.9)";
+          const glowC = ship.phase > 0 ? "rgba(120,255,210,0.85)" : "rgba(120,220,255,0.9)";
+          const fill = ship.phase > 0 ? "rgba(120,255,210,0.06)" : "rgba(120,220,255,0.08)";
+          drawMesh(shipMesh, pos, ship.yaw, ship.pitch, ship.roll, 1.14, col, glowC, fill, 0.75, 1.0);
+
+          // cockpit glow
+          const core = project(new V3(ship.x, ship.y, -0.15));
+          if (core) {
+            const a = ship.phase > 0 ? 0.45 : 0.7;
+            gctx.save();
+            gctx.globalAlpha = a;
+            gctx.fillStyle = ship.dmgFlash > 0 ? "rgba(255,150,120,0.85)" : "rgba(120,220,255,0.7)";
+            gctx.shadowBlur = 34;
+            gctx.shadowColor = ship.dmgFlash > 0 ? "rgba(255,150,120,0.95)" : "rgba(120,220,255,0.95)";
+            gctx.beginPath();
+            gctx.arc(core.x, core.y, clamp(8 + core.inv * 0.01, 7, 24), 0, Math.PI * 2);
+            gctx.fill();
+            gctx.restore();
+          }
+        };
+
+        const drawReticle = () => {
+          // implied aim point from mouse movement; keep it subtle
+          const aimX = clamp(mouseDX * 0.22, -W * 0.18, W * 0.18);
+          const aimY = clamp(mouseDY * 0.22, -H * 0.16, H * 0.16) * (settings.invertY ? -1 : 1);
+          const x = cx + aimX;
+          const y = cy + aimY;
+          const s = 8.5 + ship.combo * 0.35;
+          const a = panel.classList.contains("hidden") ? 0.5 : 0.0;
+          if (a <= 0) return;
+          const col = ship.heatLock > 0 ? "rgba(255,180,150,0.8)" : "rgba(170,255,255,0.8)";
+          const glowC = ship.heatLock > 0 ? "rgba(255,150,120,0.8)" : "rgba(120,220,255,0.75)";
+          lineGlow(x - s, y, x + s, y, 2.2, glowC, a * 0.35);
+          lineGlow(x, y - s, x, y + s, 2.2, glowC, a * 0.35);
+          lineMain(x - s, y, x + s, y, 1.05, col, a);
+          lineMain(x, y - s, x, y + s, 1.05, col, a);
+        };
+
+        const drawHUD = () => {
+          // subtle corner brackets and bars
+          sctx.save();
+          sctx.globalCompositeOperation = "source-over";
+          const pad = 22;
+          const w = 140;
+          const x0 = pad;
+          const y0 = H - pad;
+          const shield = ship.shield / 100;
+          const heat = clamp(ship.heat, 0, 1);
+          const phase = ship.phase > 0 ? 1 : 0;
+
+          const bar = (x, y, v, col, glowC) => {
+            gctx.save();
+            gctx.globalAlpha = 0.45;
+            gctx.fillStyle = glowC;
+            gctx.shadowBlur = 18;
+            gctx.shadowColor = glowC;
+            gctx.fillRect(x, y - 8, w * v, 6);
+            gctx.restore();
+            sctx.save();
+            sctx.globalAlpha = 0.85;
+            sctx.fillStyle = col;
+            sctx.fillRect(x, y - 8, w * v, 4);
+            sctx.globalAlpha = 0.22;
+            sctx.fillStyle = "rgba(220,255,255,0.7)";
+            sctx.fillRect(x, y - 8, w, 4);
+            sctx.restore();
+          };
+
+          sctx.font = "12px var(--mono)";
+          sctx.fillStyle = "rgba(220,255,255,0.72)";
+          sctx.textBaseline = "alphabetic";
+          sctx.fillText("SHIELD", x0, y0 - 30);
+          bar(x0, y0 - 20, shield, "rgba(120,255,210,0.92)", "rgba(120,255,210,0.85)");
+          sctx.fillStyle = "rgba(220,255,255,0.6)";
+          sctx.fillText("HEAT", x0, y0 - 6);
+          bar(x0, y0 + 4, heat, "rgba(255,160,120,0.92)", "rgba(255,150,120,0.85)");
+
+          if (phase) {
+            sctx.fillStyle = "rgba(120,255,210,0.72)";
+            sctx.fillText("PHASE", x0 + w + 14, y0 - 20);
+          }
+          sctx.restore();
+        };
+
+        const postFX = (dt) => {
+          // composite glow onto scene
+          sctx.save();
+          sctx.setTransform(1, 0, 0, 1, 0, 0);
+          sctx.globalCompositeOperation = "screen";
+          sctx.globalAlpha = clamp(settings.bloom, 0, 1.5) * 0.9;
+          sctx.drawImage(glow, 0, 0, glow.width, glow.height, 0, 0, scene.width, scene.height);
+          sctx.restore();
+
+          // draw scene to screen with shake
+          ctx.save();
+          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+          let sh = game.shake;
+          sh *= sh;
+          const sx = settings.reducedMotion ? 0 : (Math.random() * 2 - 1) * 10 * sh;
+          const sy = settings.reducedMotion ? 0 : (Math.random() * 2 - 1) * 10 * sh;
+          const rot = settings.reducedMotion ? 0 : (Math.random() * 2 - 1) * 0.02 * sh;
+          ctx.translate(sx, sy);
+          ctx.translate(cx, cy);
+          ctx.rotate(rot);
+          ctx.translate(-cx, -cy);
+          ctx.drawImage(scene, 0, 0, W, H);
+          ctx.restore();
+
+          // CRT overlays
+          ctx.save();
+          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+          if (!settings.reducedMotion) {
+            // dynamic noise
+            const data = noiseImg.data;
+            const grain = 24;
+            for (let i = 0; i < data.length; i += 4) {
+              const v = (Math.random() * grain) | 0;
+              data[i] = v;
+              data[i + 1] = v;
+              data[i + 2] = v;
+              data[i + 3] = (Math.random() * 32) | 0;
+            }
+            nctx.putImageData(noiseImg, 0, 0);
+            ctx.globalAlpha = 0.06;
+            ctx.globalCompositeOperation = "overlay";
+            ctx.drawImage(noise, 0, 0, W, H);
+            ctx.globalCompositeOperation = "source-over";
+            // minor chroma shift
+            ctx.globalAlpha = 0.08;
+            ctx.globalCompositeOperation = "screen";
+            ctx.filter = "hue-rotate(-10deg) saturate(1.2)";
+            ctx.drawImage(scene, -1.3, 0.8, W, H);
+            ctx.filter = "hue-rotate(14deg) saturate(1.1)";
+            ctx.drawImage(scene, 1.1, -0.7, W, H);
+            ctx.filter = "none";
+            ctx.globalCompositeOperation = "source-over";
+          }
+
+          // scanlines and vignette
+          ctx.globalAlpha = 0.16;
+          ctx.fillStyle = scanPattern;
+          ctx.fillRect(0, 0, W, H);
+          ctx.globalAlpha = 1;
+
+          const vg = ctx.createRadialGradient(cx, cy, Math.min(W, H) * 0.18, cx, cy, Math.min(W, H) * 0.8);
+          vg.addColorStop(0, "rgba(0,0,0,0.0)");
+          vg.addColorStop(1, "rgba(0,0,0,0.38)");
+          ctx.fillStyle = vg;
+          ctx.fillRect(0, 0, W, H);
+
+          // slight curved mask
+          ctx.globalAlpha = 0.22;
+          ctx.strokeStyle = "rgba(120,220,255,0.08)";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(10, 10, W - 20, H - 20, 18);
+          else ctx.rect(10, 10, W - 20, H - 20);
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+
+          // flashes
+          if (game.flash > 0.001) {
+            const a = clamp(game.flash, 0, 1);
+            ctx.globalAlpha = a * 0.45;
+            ctx.fillStyle = "rgba(255,220,200,1)";
+            ctx.fillRect(0, 0, W, H);
+            ctx.globalAlpha = 1;
+          }
+
+          ctx.restore();
+
+          // decay
+          game.shake = Math.max(0, game.shake - dt * 1.6);
+          game.flash = Math.max(0, game.flash - dt * 2.6);
+        };
+
+        // UI updates
+        const updateHUD = () => {
+          elScore.textContent = String(Math.floor(ship.score));
+          elCombo.textContent = "x" + String(Math.floor(ship.combo));
+          elShield.textContent = String(Math.floor(ship.shield));
+          elHeat.textContent = ship.heatLock > 0 ? "LOCK" : String(Math.floor(clamp(ship.heat, 0, 1) * 100));
+          elSpd.textContent = String(Math.floor(ship.speed));
+        };
+
+        const openPanel = (mode) => {
+          panel.classList.remove("hidden");
+          settingsPanel.classList.add("hidden");
+          btnResume.classList.toggle("hidden", game.state !== "paused");
+          btnStart.classList.toggle("hidden", game.state !== "menu");
+          btnRestart.classList.toggle("hidden", game.state === "menu");
+          if (mode === "help") {
+            panelTitle.textContent = "STARDRIFT-3D";
+            panelTag.textContent = "HELP / CONTROLS / TIPS";
+            statusLine.textContent = "Tips for maximum flow:";
+            statusSmall.textContent =
+              "Pointer lock improves precision. Gates build combo. Dashing phases collisions but drains shield.";
+          }
+        };
+
+        const openSettings = () => {
+          settingsPanel.classList.remove("hidden");
+          panel.classList.add("hidden");
+          applySettingsToUI();
+        };
+
+        const closePanels = () => {
+          panel.classList.add("hidden");
+          settingsPanel.classList.add("hidden");
+        };
+
+        const startGame = async (restart) => {
+          closePanels();
+          if (restart) resetWorld();
+          if (!audio) await audioInit();
+          if (audio && audio.ac.state === "suspended") {
+            try {
+              await audio.ac.resume();
+            } catch {}
+          }
+          if (audio) audio.setMaster();
+          touchEnableIfNeeded();
+          game.state = "playing";
+          hint.classList.toggle("show", !touchState.enabled && !pointerLocked);
+          statusLine.textContent = "In flight.";
+          statusSmall.textContent = "Boost through gates to build combo, but watch heat.";
+          if (!pointerLocked && !touchState.enabled) requestLock();
+        };
+
+        const endGame = () => {
+          game.state = "gameover";
+          if (document.pointerLockElement === canvas) document.exitPointerLock();
+          panel.classList.remove("hidden");
+          btnStart.classList.add("hidden");
+          btnResume.classList.add("hidden");
+          btnRestart.classList.remove("hidden");
+          panelTitle.textContent = "GAME OVER";
+          panelTag.textContent = "SHIP SYSTEMS OFFLINE";
+          statusLine.textContent = `Final score: ${Math.floor(ship.score)}  |  Best: ${Math.max(
+            hiScore,
+            Math.floor(ship.score)
+          )}`;
+          statusSmall.textContent = "Press R to restart. (Tip: dash to phase through chaos.)";
+          if (audio) audio.sfx("boom", 1);
+          game.shake = Math.max(game.shake, 1.0 * settings.shake);
+          game.flash = Math.max(game.flash, 0.5);
+          if (ship.score > hiScore) {
+            hiScore = Math.floor(ship.score);
+            elHi.textContent = String(hiScore);
+            setHighscore(hiScore);
+          }
+        };
+
+        const pauseGame = () => {
+          if (game.state !== "playing") return;
+          game.state = "paused";
+          if (document.pointerLockElement === canvas) document.exitPointerLock();
+          openPanel("pause");
+          panelTitle.textContent = "PAUSED";
+          panelTag.textContent = "SYSTEM HOLD";
+          statusLine.textContent = "Paused. Resume when ready.";
+          statusSmall.textContent = "Tip: Double-tap direction to dash.";
+          if (audio) audio.sfx("ui", 0.8);
+        };
+
+        const resumeGame = () => {
+          if (game.state !== "paused") return;
+          closePanels();
+          game.state = "playing";
+          if (!touchState.enabled) requestLock();
+          if (audio) audio.sfx("ui", 1);
+        };
+
+        // Buttons
+        btnStart.addEventListener("click", () => startGame(true));
+        btnResume.addEventListener("click", () => resumeGame());
+        btnRestart.addEventListener("click", () => startGame(true));
+        btnSettings.addEventListener("click", () => {
+          if (audio) audio.sfx("ui", 1);
+          openSettings();
+        });
+        btnHelp.addEventListener("click", () => {
+          if (audio) audio.sfx("ui", 1);
+          openPanel("help");
+        });
+        btnBack.addEventListener("click", () => {
+          if (audio) audio.sfx("ui", 1);
+          applyUIToSettings();
+          openPanel("help");
+        });
+        btnDefaults.addEventListener("click", () => {
+          settings.invertY = false;
+          settings.sensitivity = 1.0;
+          settings.bloom = 1.0;
+          settings.shake = 1.0;
+          settings.reducedMotion = prefersReduced ? prefersReduced.matches : false;
+          settings.volume = 0.72;
+          settings.muted = false;
+          saveSettings();
+          applySettingsToUI();
+          if (audio) audio.setMaster();
+        });
+        btnMute.addEventListener("click", () => {
+          settings.muted = !settings.muted;
+          saveSettings();
+          applySettingsToUI();
+          if (audio) audio.setMaster();
+          if (audio) audio.sfx("ui", 0.8);
+        });
+
+        for (const el of Object.values(uiSettings)) {
+          el.addEventListener("input", () => {
+            applyUIToSettings();
+            if (audio) audio.setMaster();
+          });
+          el.addEventListener("change", () => {
+            applyUIToSettings();
+            if (audio) audio.setMaster();
+          });
+        }
+
+        // Main loop
+        const frame = (tms) => {
+          const t = tms * 0.001;
+          if (!game.lastT) game.lastT = t;
+          let dt = t - game.lastT;
+          game.lastT = t;
+          dt = clamp(dt, 0, 0.05);
+          game.time += dt;
+
+          // slowmo
+          game.slowmo = Math.max(0, game.slowmo - dt * 0.9);
+          const slow = settings.reducedMotion ? 0 : game.slowmo;
+          const timeScale = 1 - slow * 0.55;
+          const sdt = dt * timeScale;
+
+          if (game.state === "playing") {
+            updateInputAndShip(sdt);
+            updateWorld(sdt);
+          } else if (audio) {
+            // idle engine fade
+            audio.setEngine(0, 0);
+          }
+
+          // render
+          gctx.clearRect(0, 0, W, H);
+          drawBackground(sdt);
+          drawObstacles();
+          drawBullets();
+          drawParticles();
+          drawShip();
+          drawReticle();
+          drawHUD();
+          postFX(sdt);
+
+          updateHUD();
+          requestAnimationFrame(frame);
+        };
+
+        // Boot
+        resize();
+        initStars();
+        resetWorld();
+        touchEnableIfNeeded();
+        hint.classList.add("show");
+        openPanel("help");
+        btnResume.classList.add("hidden");
+        btnRestart.classList.add("hidden");
+        btnStart.classList.remove("hidden");
+        panelTitle.textContent = "STARDRIFT-3D";
+        panelTag.textContent = "NEON VECTOR FLIGHT";
+        statusLine.textContent = "Ready to launch.";
+        statusSmall.textContent = "Click Start. For best control, click canvas to lock pointer.";
+        requestAnimationFrame(frame);
+      })();
+    </script>
+  </body>
+</html>

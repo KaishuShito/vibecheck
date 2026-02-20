@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pelican Forest Ride</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0f1b18;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <svg id="scene" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" aria-label="A pelican riding a bicycle through a forest">
+    <defs>
+      <linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#8fd2ff" />
+        <stop offset="38%" stop-color="#a5e3ff" />
+        <stop offset="100%" stop-color="#e6f8ff" />
+      </linearGradient>
+
+      <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fff6b8" stop-opacity="0.95" />
+        <stop offset="100%" stop-color="#fff6b8" stop-opacity="0" />
+      </radialGradient>
+
+      <linearGradient id="trunkGradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#6d4f33" />
+        <stop offset="100%" stop-color="#3f2d1d" />
+      </linearGradient>
+
+      <linearGradient id="roadGradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#7d5b3d" />
+        <stop offset="100%" stop-color="#4b3726" />
+      </linearGradient>
+
+      <linearGradient id="grassGradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#4e8d43" />
+        <stop offset="100%" stop-color="#2f5f2d" />
+      </linearGradient>
+
+      <symbol id="treeFar" viewBox="-70 -300 140 330">
+        <rect x="-8" y="-80" width="16" height="110" rx="6" fill="url(#trunkGradient)" />
+        <ellipse cx="0" cy="-210" rx="58" ry="74" fill="#6fae66" />
+        <ellipse cx="-26" cy="-165" rx="44" ry="54" fill="#5f9f57" />
+        <ellipse cx="28" cy="-168" rx="46" ry="58" fill="#6bad62" />
+      </symbol>
+
+      <symbol id="treeMid" viewBox="-90 -380 180 420">
+        <rect x="-11" y="-96" width="22" height="136" rx="7" fill="url(#trunkGradient)" />
+        <ellipse cx="0" cy="-260" rx="70" ry="86" fill="#4f8d45" />
+        <ellipse cx="-34" cy="-215" rx="52" ry="64" fill="#3f7f3a" />
+        <ellipse cx="36" cy="-222" rx="56" ry="68" fill="#4a8a41" />
+        <ellipse cx="0" cy="-185" rx="62" ry="56" fill="#3a7836" />
+      </symbol>
+
+      <symbol id="treeNear" viewBox="-120 -520 240 560">
+        <rect x="-14" y="-120" width="28" height="170" rx="8" fill="url(#trunkGradient)" />
+        <ellipse cx="0" cy="-360" rx="88" ry="100" fill="#376c33" />
+        <ellipse cx="-45" cy="-318" rx="68" ry="78" fill="#2f5f2d" />
+        <ellipse cx="47" cy="-326" rx="72" ry="80" fill="#356a32" />
+        <ellipse cx="0" cy="-278" rx="85" ry="70" fill="#2b5628" />
+      </symbol>
+
+      <symbol id="bush" viewBox="-80 -60 160 80">
+        <ellipse cx="-25" cy="-18" rx="34" ry="26" fill="#2d6a30" />
+        <ellipse cx="10" cy="-24" rx="38" ry="28" fill="#327136" />
+        <ellipse cx="40" cy="-14" rx="32" ry="24" fill="#2b5d2d" />
+      </symbol>
+
+      <symbol id="cloud" viewBox="-160 -80 320 160">
+        <ellipse cx="-38" cy="8" rx="66" ry="38" fill="#f8fdff" />
+        <ellipse cx="18" cy="-8" rx="72" ry="46" fill="#f8fdff" />
+        <ellipse cx="72" cy="10" rx="56" ry="34" fill="#f8fdff" />
+      </symbol>
+
+      <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="4" />
+      </filter>
+    </defs>
+
+    <rect width="1920" height="1080" fill="url(#skyGradient)" />
+
+    <g>
+      <circle cx="1500" cy="170" r="175" fill="url(#sunGlow)" />
+      <circle cx="1500" cy="170" r="68" fill="#fff1a6" opacity="0.92" />
+    </g>
+
+    <g id="cloudLayer" class="scroll-layer" data-parallax="0.06"></g>
+    <g id="mountainLayer" class="scroll-layer" data-parallax="0.12"></g>
+
+    <g id="forestFar" class="scroll-layer" data-parallax="0.22"></g>
+    <g id="forestMid" class="scroll-layer" data-parallax="0.39"></g>
+    <g id="forestNear" class="scroll-layer" data-parallax="0.62"></g>
+
+    <g id="groundLayer" class="scroll-layer" data-parallax="1"></g>
+
+    <g id="dustLayer"></g>
+    <g id="particleLayer"></g>
+
+    <g id="bikeRig" transform="translate(720 830)">
+      <g id="bikeSuspension">
+        <g id="wheelRear" transform="translate(-180 0)">
+          <circle r="110" fill="#2f3a33" />
+          <circle r="98" fill="#1a221e" />
+          <circle r="88" fill="none" stroke="#8ca39a" stroke-width="4" opacity="0.65" />
+          <g id="rearSpokes" stroke="#94a9a1" stroke-width="2.6" stroke-linecap="round" opacity="0.78">
+            <line x1="0" y1="0" x2="0" y2="84" />
+            <line x1="0" y1="0" x2="59" y2="59" />
+            <line x1="0" y1="0" x2="84" y2="0" />
+            <line x1="0" y1="0" x2="59" y2="-59" />
+            <line x1="0" y1="0" x2="0" y2="-84" />
+            <line x1="0" y1="0" x2="-59" y2="-59" />
+            <line x1="0" y1="0" x2="-84" y2="0" />
+            <line x1="0" y1="0" x2="-59" y2="59" />
+          </g>
+          <circle r="16" fill="#95a79f" />
+        </g>
+
+        <g id="wheelFront" transform="translate(190 0)">
+          <circle r="110" fill="#2f3a33" />
+          <circle r="98" fill="#1a221e" />
+          <circle r="88" fill="none" stroke="#8ca39a" stroke-width="4" opacity="0.65" />
+          <g id="frontSpokes" stroke="#94a9a1" stroke-width="2.6" stroke-linecap="round" opacity="0.78">
+            <line x1="0" y1="0" x2="0" y2="84" />
+            <line x1="0" y1="0" x2="59" y2="59" />
+            <line x1="0" y1="0" x2="84" y2="0" />
+            <line x1="0" y1="0" x2="59" y2="-59" />
+            <line x1="0" y1="0" x2="0" y2="-84" />
+            <line x1="0" y1="0" x2="-59" y2="-59" />
+            <line x1="0" y1="0" x2="-84" y2="0" />
+            <line x1="0" y1="0" x2="-59" y2="59" />
+          </g>
+          <circle r="16" fill="#95a79f" />
+        </g>
+
+        <g stroke-linecap="round" stroke-linejoin="round">
+          <line x1="-180" y1="0" x2="-20" y2="-132" stroke="#57c0c3" stroke-width="14" />
+          <line x1="-20" y1="-132" x2="190" y2="0" stroke="#57c0c3" stroke-width="14" />
+          <line x1="-20" y1="-132" x2="0" y2="-60" stroke="#57c0c3" stroke-width="14" />
+          <line x1="-180" y1="0" x2="0" y2="-60" stroke="#57c0c3" stroke-width="14" />
+          <line x1="0" y1="-60" x2="190" y2="0" stroke="#57c0c3" stroke-width="14" />
+          <line x1="130" y1="-172" x2="190" y2="0" stroke="#57c0c3" stroke-width="12" />
+          <line x1="-20" y1="-132" x2="-78" y2="-152" stroke="#4aa2a7" stroke-width="12" />
+          <line x1="120" y1="-170" x2="158" y2="-170" stroke="#2d3f46" stroke-width="10" />
+          <line x1="148" y1="-182" x2="178" y2="-182" stroke="#2d3f46" stroke-width="8" />
+        </g>
+
+        <g id="crankRig" transform="translate(0 -60)">
+          <circle r="20" fill="#20312d" />
+          <circle r="9" fill="#91b6ab" />
+          <line id="crankArmA" x1="0" y1="0" x2="0" y2="32" stroke="#9bc2b7" stroke-width="8" stroke-linecap="round" />
+          <line id="crankArmB" x1="0" y1="0" x2="0" y2="-32" stroke="#9bc2b7" stroke-width="8" stroke-linecap="round" />
+          <circle id="pedalDotA" cx="0" cy="32" r="6" fill="#d7e7e2" />
+          <circle id="pedalDotB" cx="0" cy="-32" r="6" fill="#d7e7e2" />
+        </g>
+
+        <polyline id="legBack" points="-74,-172 -50,-126 -30,-90" fill="none" stroke="#f1ba64" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+        <polyline id="legFront" points="-52,-174 -28,-126 30,-92" fill="none" stroke="#f6c879" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+
+        <g id="pelicanRig" transform="translate(-60 -210)">
+          <g id="wingBackRig" transform="translate(-6 -16)">
+            <path d="M-5,-8 C-80,-18 -114,34 -72,74 C-42,98 -10,72 20,34 C8,18 0,4 -5,-8 Z" fill="#dce9ef" />
+          </g>
+
+          <ellipse cx="0" cy="0" rx="84" ry="60" fill="#edf3f6" />
+          <ellipse cx="14" cy="12" rx="58" ry="35" fill="#f7fbfd" opacity="0.9" />
+
+          <g id="wingFrontRig" transform="translate(-2 -10)">
+            <path d="M0,-2 C-78,-10 -118,40 -78,90 C-40,124 22,80 38,26 C24,18 12,6 0,-2 Z" fill="#e4eef3" />
+          </g>
+
+          <g id="tailRig" transform="translate(-84 -8)">
+            <path d="M0,0 L-48,18 L-56,-4 L-10,-24 Z" fill="#d4e3ea" />
+          </g>
+
+          <g id="headRig" transform="translate(78 -52)">
+            <circle cx="0" cy="0" r="32" fill="#f0f6f9" />
+            <circle cx="8" cy="-5" r="7" fill="#1d2327" />
+            <circle cx="10" cy="-7" r="2.5" fill="#ffffff" />
+            <g id="beakRig" transform="translate(12 6)">
+              <path d="M0,-8 C38,-22 94,-18 132,-6 C132,6 36,8 0,-2 Z" fill="#f4be6f" />
+              <path id="lowerBeak" d="M4,0 C36,14 106,18 128,10 C94,34 32,34 4,20 Z" fill="#e8a958" />
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </svg>
+
+  <script>
+    (() => {
+      const NS = "http://www.w3.org/2000/svg";
+      const SCENE_W = 1920;
+      const SCENE_H = 1080;
+      const TILE_COUNT = 3;
+      const SPEED = 285;
+      const WHEEL_R = 98;
+      const CRANK_R = 32;
+
+      const cloudLayer = document.getElementById("cloudLayer");
+      const mountainLayer = document.getElementById("mountainLayer");
+      const forestFar = document.getElementById("forestFar");
+      const forestMid = document.getElementById("forestMid");
+      const forestNear = document.getElementById("forestNear");
+      const groundLayer = document.getElementById("groundLayer");
+      const particleLayer = document.getElementById("particleLayer");
+      const dustLayer = document.getElementById("dustLayer");
+
+      const bikeSuspension = document.getElementById("bikeSuspension");
+      const rearSpokes = document.getElementById("rearSpokes");
+      const frontSpokes = document.getElementById("frontSpokes");
+      const crankRig = document.getElementById("crankRig");
+      const legFront = document.getElementById("legFront");
+      const legBack = document.getElementById("legBack");
+      const pelicanRig = document.getElementById("pelicanRig");
+      const wingFrontRig = document.getElementById("wingFrontRig");
+      const wingBackRig = document.getElementById("wingBackRig");
+      const tailRig = document.getElementById("tailRig");
+      const headRig = document.getElementById("headRig");
+      const lowerBeak = document.getElementById("lowerBeak");
+
+      function mulberry32(seed) {
+        let t = seed >>> 0;
+        return function rand() {
+          t += 0x6d2b79f5;
+          let x = Math.imul(t ^ (t >>> 15), 1 | t);
+          x ^= x + Math.imul(x ^ (x >>> 7), 61 | x);
+          return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function createSvg(tag, attrs) {
+        const el = document.createElementNS(NS, tag);
+        Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, String(v)));
+        return el;
+      }
+
+      function roadY(x) {
+        const wrap = ((x % SCENE_W) + SCENE_W) % SCENE_W;
+        return (
+          820 +
+          16 * Math.sin((Math.PI * 2 * wrap) / 320) +
+          8 * Math.sin((Math.PI * 2 * wrap) / 96)
+        );
+      }
+
+      function roadSlope(x) {
+        const wrap = ((x % SCENE_W) + SCENE_W) % SCENE_W;
+        return (
+          16 * ((Math.PI * 2) / 320) * Math.cos((Math.PI * 2 * wrap) / 320) +
+          8 * ((Math.PI * 2) / 96) * Math.cos((Math.PI * 2 * wrap) / 96)
+        );
+      }
+
+      function createClouds() {
+        const rand = mulberry32(41);
+        const base = [];
+        for (let i = 0; i < 9; i++) {
+          base.push({
+            x: rand() * SCENE_W,
+            y: 120 + rand() * 190,
+            s: 0.72 + rand() * 0.7,
+            o: 0.62 + rand() * 0.28,
+          });
+        }
+
+        for (let t = 0; t < TILE_COUNT; t++) {
+          const shift = t * SCENE_W;
+          for (const c of base) {
+            const use = createSvg("use", {
+              href: "#cloud",
+              transform: `translate(${(c.x + shift).toFixed(2)} ${(c.y).toFixed(2)}) scale(${c.s.toFixed(3)})`,
+              opacity: c.o.toFixed(3),
+            });
+            cloudLayer.appendChild(use);
+          }
+        }
+      }
+
+      function createMountainTile(seed, yBase, amp1, amp2, color, opacity) {
+        const rand = mulberry32(seed);
+        const phase1 = rand() * Math.PI * 2;
+        const phase2 = rand() * Math.PI * 2;
+        let d = `M0 ${SCENE_H} L0 ${yBase.toFixed(2)} `;
+
+        for (let x = 0; x <= SCENE_W; x += 40) {
+          const y =
+            yBase +
+            amp1 * Math.sin((Math.PI * 2 * x) / 640 + phase1) +
+            amp2 * Math.sin((Math.PI * 2 * x) / 240 + phase2);
+          d += `L${x.toFixed(2)} ${y.toFixed(2)} `;
+        }
+
+        d += `L${SCENE_W} ${SCENE_H} Z`;
+
+        return createSvg("path", {
+          d,
+          fill: color,
+          opacity,
+        });
+      }
+
+      function createMountains() {
+        const layers = [
+          { seed: 70, yBase: 520, amp1: 50, amp2: 24, color: "#9bbdc7", opacity: 0.78 },
+          { seed: 91, yBase: 590, amp1: 66, amp2: 30, color: "#7ea2ad", opacity: 0.88 },
+          { seed: 108, yBase: 650, amp1: 54, amp2: 26, color: "#698e96", opacity: 0.92 },
+        ];
+
+        layers.forEach((layerConf) => {
+          const tile = createMountainTile(
+            layerConf.seed,
+            layerConf.yBase,
+            layerConf.amp1,
+            layerConf.amp2,
+            layerConf.color,
+            layerConf.opacity
+          );
+
+          for (let t = 0; t < TILE_COUNT; t++) {
+            const clone = tile.cloneNode(true);
+            clone.setAttribute("transform", `translate(${t * SCENE_W} 0)`);
+            mountainLayer.appendChild(clone);
+          }
+        });
+      }
+
+      function populateForest(layer, symbolId, cfg) {
+        const rand = mulberry32(cfg.seed);
+        const items = [];
+
+        for (let i = 0; i < cfg.count; i++) {
+          items.push({
+            x: rand() * SCENE_W,
+            y: cfg.y + (rand() - 0.5) * cfg.jitter,
+            s: cfg.scaleMin + rand() * (cfg.scaleMax - cfg.scaleMin),
+            o: cfg.opacityMin + rand() * (cfg.opacityMax - cfg.opacityMin),
+          });
+        }
+
+        items.sort((a, b) => a.s - b.s);
+
+        for (let t = 0; t < TILE_COUNT; t++) {
+          const shift = t * SCENE_W;
+          for (const it of items) {
+            const x = it.x + shift;
+            const use = createSvg("use", {
+              href: `#${symbolId}`,
+              transform: `translate(${x.toFixed(2)} ${it.y.toFixed(2)}) scale(${it.s.toFixed(3)})`,
+              opacity: it.o.toFixed(3),
+            });
+            layer.appendChild(use);
+          }
+        }
+      }
+
+      function populateBushes() {
+        const rand = mulberry32(209);
+        const bushes = [];
+
+        for (let i = 0; i < 56; i++) {
+          bushes.push({
+            x: rand() * SCENE_W,
+            y: 806 + rand() * 66,
+            s: 0.66 + rand() * 0.82,
+            o: 0.62 + rand() * 0.3,
+          });
+        }
+
+        for (let t = 0; t < TILE_COUNT; t++) {
+          const shift = t * SCENE_W;
+          for (const b of bushes) {
+            const use = createSvg("use", {
+              href: "#bush",
+              transform: `translate(${(b.x + shift).toFixed(2)} ${b.y.toFixed(2)}) scale(${b.s.toFixed(3)})`,
+              opacity: b.o.toFixed(3),
+            });
+            forestNear.appendChild(use);
+          }
+        }
+      }
+
+      function createGround() {
+        for (let t = 0; t < TILE_COUNT; t++) {
+          const g = createSvg("g", { transform: `translate(${t * SCENE_W} 0)` });
+
+          g.appendChild(
+            createSvg("rect", {
+              x: 0,
+              y: 760,
+              width: SCENE_W,
+              height: 320,
+              fill: "url(#grassGradient)",
+            })
+          );
+
+          const roadPts = [];
+          for (let x = 0; x <= SCENE_W; x += 24) {
+            roadPts.push(`${x.toFixed(2)},${roadY(x).toFixed(2)}`);
+          }
+          roadPts.push(`${SCENE_W},1080`, `0,1080`);
+
+          g.appendChild(
+            createSvg("polygon", {
+              points: roadPts.join(" "),
+              fill: "url(#roadGradient)",
+            })
+          );
+
+          const trailPts = [];
+          for (let x = 0; x <= SCENE_W; x += 32) {
+            const y = roadY(x) + 28 + 3 * Math.sin((Math.PI * 2 * x) / 160);
+            trailPts.push(`${x.toFixed(2)},${y.toFixed(2)}`);
+          }
+
+          g.appendChild(
+            createSvg("polyline", {
+              points: trailPts.join(" "),
+              fill: "none",
+              stroke: "#9f7b57",
+              "stroke-width": 8,
+              "stroke-linecap": "round",
+              "stroke-dasharray": "12 20",
+              opacity: 0.6,
+            })
+          );
+
+          const rand = mulberry32(350 + t * 17);
+          for (let i = 0; i < 340; i++) {
+            const x = rand() * SCENE_W;
+            const y = 760 + rand() * 120;
+            const len = 5 + rand() * 11;
+            const tilt = -25 + rand() * 50;
+            g.appendChild(
+              createSvg("line", {
+                x1: x.toFixed(2),
+                y1: y.toFixed(2),
+                x2: (x + Math.sin((tilt * Math.PI) / 180) * len).toFixed(2),
+                y2: (y - len).toFixed(2),
+                stroke: "#6ea661",
+                "stroke-width": (0.8 + rand() * 1.4).toFixed(2),
+                opacity: (0.25 + rand() * 0.35).toFixed(3),
+                "stroke-linecap": "round",
+              })
+            );
+          }
+
+          groundLayer.appendChild(g);
+        }
+      }
+
+      function createParticles() {
+        const rand = mulberry32(500);
+        const particles = [];
+
+        for (let i = 0; i < 34; i++) {
+          const p = {
+            x: rand() * SCENE_W,
+            y: 450 + rand() * 430,
+            z: 0.7 + rand() * 1.4,
+            vx: 70 + rand() * 220,
+            vy: -18 + rand() * 36,
+            wav: 0.8 + rand() * 1.8,
+            phase: rand() * Math.PI * 2,
+            spin: -65 + rand() * 130,
+          };
+
+          const node = createSvg("ellipse", {
+            cx: 0,
+            cy: 0,
+            rx: (1.8 + p.z * 1.8).toFixed(2),
+            ry: (1.1 + p.z).toFixed(2),
+            fill: "#f4cf8a",
+            opacity: (0.22 + p.z * 0.2).toFixed(3),
+            filter: "url(#softBlur)",
+          });
+
+          p.node = node;
+          particles.push(p);
+          particleLayer.appendChild(node);
+        }
+
+        return particles;
+      }
+
+      function createDustPuffs() {
+        const puffs = [];
+        for (let i = 0; i < 10; i++) {
+          const node = createSvg("circle", {
+            cx: 0,
+            cy: 0,
+            r: 10,
+            fill: "#ccb08d",
+            opacity: "0",
+            filter: "url(#softBlur)",
+          });
+          dustLayer.appendChild(node);
+          puffs.push({ node, age: Math.random(), side: i % 2 === 0 ? -1 : 1 });
+        }
+        return puffs;
+      }
+
+      function solveKnee(hip, foot, l1, l2, bend) {
+        const dx = foot.x - hip.x;
+        const dy = foot.y - hip.y;
+        const dRaw = Math.hypot(dx, dy);
+        const d = Math.max(0.0001, Math.min(dRaw, l1 + l2 - 0.0001));
+
+        const a = (l1 * l1 - l2 * l2 + d * d) / (2 * d);
+        const h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
+        const mx = hip.x + (a * dx) / d;
+        const my = hip.y + (a * dy) / d;
+
+        const nx = (-dy / d) * h * bend;
+        const ny = (dx / d) * h * bend;
+
+        return { x: mx + nx, y: my + ny };
+      }
+
+      function setLeg(polyline, hip, foot, bend) {
+        const knee = solveKnee(hip, foot, 64, 58, bend);
+        polyline.setAttribute(
+          "points",
+          `${hip.x.toFixed(2)},${hip.y.toFixed(2)} ${knee.x.toFixed(2)},${knee.y.toFixed(2)} ${foot.x.toFixed(2)},${foot.y.toFixed(2)}`
+        );
+      }
+
+      createClouds();
+      createMountains();
+      populateForest(forestFar, "treeFar", {
+        seed: 701,
+        count: 130,
+        y: 760,
+        jitter: 42,
+        scaleMin: 0.45,
+        scaleMax: 0.88,
+        opacityMin: 0.4,
+        opacityMax: 0.68,
+      });
+      populateForest(forestMid, "treeMid", {
+        seed: 809,
+        count: 108,
+        y: 805,
+        jitter: 56,
+        scaleMin: 0.58,
+        scaleMax: 1.05,
+        opacityMin: 0.56,
+        opacityMax: 0.82,
+      });
+      populateForest(forestNear, "treeNear", {
+        seed: 917,
+        count: 82,
+        y: 860,
+        jitter: 74,
+        scaleMin: 0.7,
+        scaleMax: 1.3,
+        opacityMin: 0.72,
+        opacityMax: 0.98,
+      });
+      populateBushes();
+      createGround();
+
+      const particles = createParticles();
+      const dustPuffs = createDustPuffs();
+      const scrollLayers = Array.from(document.querySelectorAll(".scroll-layer"));
+
+      const motion = {
+        worldX: 0,
+        last: performance.now(),
+        bobY: 0,
+        tilt: 0,
+      };
+
+      function updateDust(dt, t) {
+        for (let i = 0; i < dustPuffs.length; i++) {
+          const puff = dustPuffs[i];
+          puff.age += dt * (0.65 + (i % 3) * 0.15);
+          if (puff.age > 1) puff.age -= 1;
+
+          const life = puff.age;
+          const sideX = puff.side === -1 ? 540 : 910;
+          const startY = puff.side === -1 ? 836 : 832;
+          const drift = puff.side * (10 + life * 24);
+
+          const x = sideX - life * 210 + drift;
+          const y = startY - life * 18 - Math.sin(t * 3.1 + i) * 2;
+          const radius = 6 + life * 18;
+          const opacity = Math.max(0, 0.22 - life * 0.22);
+
+          puff.node.setAttribute("r", radius.toFixed(2));
+          puff.node.setAttribute("opacity", opacity.toFixed(3));
+          puff.node.setAttribute("transform", `translate(${x.toFixed(2)} ${y.toFixed(2)})`);
+        }
+      }
+
+      function updateParticles(dt, t) {
+        for (const p of particles) {
+          p.x -= p.vx * dt;
+          p.y += p.vy * dt + Math.sin(t * p.wav + p.phase) * 0.42;
+
+          if (p.x < -120) {
+            p.x = SCENE_W + Math.random() * 200;
+            p.y = 450 + Math.random() * 430;
+          }
+
+          if (p.y < 360) p.y = 900;
+          if (p.y > 980) p.y = 420;
+
+          const rot = (t * p.spin) % 360;
+          p.node.setAttribute(
+            "transform",
+            `translate(${p.x.toFixed(2)} ${p.y.toFixed(2)}) rotate(${rot.toFixed(2)})`
+          );
+        }
+      }
+
+      function animate(now) {
+        const dt = Math.min(0.034, (now - motion.last) / 1000);
+        motion.last = now;
+        motion.worldX += SPEED * dt;
+
+        for (const layer of scrollLayers) {
+          const factor = Number(layer.dataset.parallax || "1");
+          const offset = -((motion.worldX * factor) % SCENE_W);
+          layer.setAttribute("transform", `translate(${offset.toFixed(3)} 0)`);
+        }
+
+        const wheelAngle = (motion.worldX / WHEEL_R) * (180 / Math.PI);
+        rearSpokes.setAttribute("transform", `rotate(${wheelAngle.toFixed(3)})`);
+        frontSpokes.setAttribute("transform", `rotate(${wheelAngle.toFixed(3)})`);
+
+        const crankAngle = (motion.worldX * 1.16) % 360;
+        const crankRad = (crankAngle * Math.PI) / 180;
+        crankRig.setAttribute("transform", `translate(0 -60) rotate(${crankAngle.toFixed(3)})`);
+
+        const pedalA = {
+          x: CRANK_R * Math.cos(crankRad),
+          y: -60 + CRANK_R * Math.sin(crankRad),
+        };
+        const pedalB = {
+          x: -CRANK_R * Math.cos(crankRad),
+          y: -60 - CRANK_R * Math.sin(crankRad),
+        };
+
+        const hipFront = { x: -52, y: -174 };
+        const hipBack = { x: -74, y: -172 };
+
+        setLeg(legFront, hipFront, { x: pedalA.x + 8, y: pedalA.y + 3 }, 1);
+        setLeg(legBack, hipBack, { x: pedalB.x + 7, y: pedalB.y + 4 }, 1);
+
+        const roadSampleX = motion.worldX + 720;
+        const targetBob = roadY(roadSampleX) - 820;
+        motion.bobY += (targetBob - motion.bobY) * Math.min(1, dt * 8.2);
+
+        const targetTilt = Math.atan(roadSlope(roadSampleX)) * 0.46;
+        motion.tilt += (targetTilt - motion.tilt) * Math.min(1, dt * 6.4);
+
+        const tiltDeg = (motion.tilt * 180) / Math.PI;
+        bikeSuspension.setAttribute(
+          "transform",
+          `translate(0 ${motion.bobY.toFixed(3)}) rotate(${tiltDeg.toFixed(3)} 0 -40)`
+        );
+
+        const t = now / 1000;
+        const bodyBob = Math.sin(t * 8.2) * 2.4;
+        const wing = Math.sin(t * 11.7) * 8.5 + Math.sin(t * 4.5) * 2;
+        const headNod = Math.sin(t * 7.5 + 0.6) * 4;
+        const beakOpen = 8 + Math.max(0, Math.sin(t * 9.3 - 0.5)) * 11;
+        const tailSwing = Math.sin(t * 8.4) * 7;
+
+        pelicanRig.setAttribute(
+          "transform",
+          `translate(-60 ${(-210 + bodyBob).toFixed(3)}) rotate(${(tiltDeg * 0.26).toFixed(3)} 0 0)`
+        );
+        wingFrontRig.setAttribute(
+          "transform",
+          `translate(-2 -10) rotate(${wing.toFixed(3)} 14 12)`
+        );
+        wingBackRig.setAttribute(
+          "transform",
+          `translate(-6 -16) rotate(${(wing * 0.7).toFixed(3)} 8 12)`
+        );
+        headRig.setAttribute(
+          "transform",
+          `translate(78 -52) rotate(${headNod.toFixed(3)} -10 0)`
+        );
+        tailRig.setAttribute(
+          "transform",
+          `translate(-84 -8) rotate(${tailSwing.toFixed(3)} 16 6)`
+        );
+        lowerBeak.setAttribute(
+          "transform",
+          `rotate(${beakOpen.toFixed(3)} 6 1)`
+        );
+
+        updateParticles(dt, t);
+        updateDust(dt, t);
+        requestAnimationFrame(animate);
+      }
+
+      requestAnimationFrame(animate);
+    })();
+  </script>
+</body>
+</html>

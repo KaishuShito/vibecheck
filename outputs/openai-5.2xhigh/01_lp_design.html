@@ -1,0 +1,1651 @@
+<!doctype html>
+<html lang="ja" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>和庵 | 現代茶室</title>
+    <meta
+      name="description"
+      content="和モダンな茶室の美学を基調に、静謐な一服の体験を設計する。和庵 | 現代茶室"
+    />
+
+    <script>
+      (function () {
+        const root = document.documentElement;
+        root.classList.add("js");
+        try {
+          const saved = localStorage.getItem("waan-theme");
+          const prefersDark =
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (saved === "dark" || (!saved && prefersDark)) root.classList.add("dark");
+        } catch (_) {}
+
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
+          root.classList.add("reduce-motion");
+        }
+      })();
+    </script>
+
+    <script>
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              ink: "#1B1B1A",
+              paper: "#F7F1E5",
+              soot: "#0F0F0E",
+              tea: "#6B7A5B",
+              clay: "#C9A57C",
+              gold: "#C8A34A",
+              mist: "#E9E1D4",
+            },
+            fontFamily: {
+              serif: [
+                '"Hiragino Mincho ProN"',
+                '"Yu Mincho"',
+                "ui-serif",
+                "Georgia",
+                "serif",
+              ],
+              sans: [
+                '"Hiragino Sans"',
+                '"Yu Gothic"',
+                "ui-sans-serif",
+                "system-ui",
+                "sans-serif",
+              ],
+            },
+            boxShadow: {
+              washi:
+                "0 24px 70px -40px rgba(27,27,26,.35), 0 10px 30px -20px rgba(27,27,26,.18)",
+              ember:
+                "0 0 0 1px rgba(200,163,74,.22), 0 16px 45px -28px rgba(200,163,74,.45)",
+            },
+            keyframes: {
+              drift: {
+                "0%, 100%": { transform: "translate3d(0,0,0)" },
+                "50%": { transform: "translate3d(0,-10px,0)" },
+              },
+              hush: {
+                "0%": { opacity: ".35" },
+                "50%": { opacity: ".6" },
+                "100%": { opacity: ".35" },
+              },
+              emberline: {
+                "0%": { "background-position": "0% 50%" },
+                "100%": { "background-position": "100% 50%" },
+              },
+            },
+            animation: {
+              drift: "drift 6s ease-in-out infinite",
+              hush: "hush 7s ease-in-out infinite",
+              emberline: "emberline 10s linear infinite",
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      :root {
+        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      .reduce-motion,
+      .reduce-motion * {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+
+      /* Soft grain without external assets */
+      .grain {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+        background-size: 260px 260px;
+      }
+
+      .tatami {
+        background-image: repeating-linear-gradient(
+            90deg,
+            rgba(27, 27, 26, 0.08) 0 1px,
+            transparent 1px 56px
+          ),
+          repeating-linear-gradient(
+            0deg,
+            rgba(27, 27, 26, 0.06) 0 1px,
+            transparent 1px 56px
+          );
+      }
+
+      .dark .tatami {
+        background-image: repeating-linear-gradient(
+            90deg,
+            rgba(247, 241, 229, 0.08) 0 1px,
+            transparent 1px 56px
+          ),
+          repeating-linear-gradient(
+            0deg,
+            rgba(247, 241, 229, 0.06) 0 1px,
+            transparent 1px 56px
+          );
+      }
+
+      .shoji {
+        background-image: linear-gradient(
+            to right,
+            rgba(27, 27, 26, 0.09) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(27, 27, 26, 0.09) 1px,
+            transparent 1px
+          );
+        background-size: 44px 44px;
+        opacity: 0.35;
+      }
+
+      .dark .shoji {
+        background-image: linear-gradient(
+            to right,
+            rgba(247, 241, 229, 0.11) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(247, 241, 229, 0.11) 1px,
+            transparent 1px
+          );
+        opacity: 0.28;
+      }
+
+      /* Reveal: only hide when JS is available */
+      .js [data-reveal] {
+        opacity: 0;
+        transform: translateY(18px);
+        filter: blur(10px);
+        transition:
+          opacity 900ms var(--ease-out),
+          transform 900ms var(--ease-out),
+          filter 900ms var(--ease-out);
+        transition-delay: var(--d, 0ms);
+        will-change: transform, opacity, filter;
+      }
+
+      .js [data-reveal].is-revealed {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+
+      /* Scroll spy accents */
+      .spy-link[aria-current="true"] {
+        color: rgb(200 163 74);
+      }
+
+      .spy-link[aria-current="true"] .spy-dot {
+        transform: scale(1.2);
+        box-shadow:
+          0 0 0 1px rgba(200, 163, 74, 0.4),
+          0 10px 30px -18px rgba(200, 163, 74, 0.6);
+        background: linear-gradient(180deg, rgba(200, 163, 74, 0.95), rgba(201, 165, 124, 0.55));
+      }
+
+      /* Shoji door: open by default; close only when JS is present */
+      .door-panel {
+        transition: transform 1400ms var(--ease-out);
+        will-change: transform;
+      }
+
+      .door-panel::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+            900px 700px at 30% 10%,
+            rgba(201, 165, 124, 0.18),
+            transparent 55%
+          ),
+          radial-gradient(
+            900px 700px at 70% 90%,
+            rgba(107, 122, 91, 0.16),
+            transparent 58%
+          ),
+          linear-gradient(180deg, rgba(247, 241, 229, 0.9), rgba(247, 241, 229, 0.65));
+        opacity: 0.95;
+      }
+
+      .dark .door-panel::before {
+        background: radial-gradient(
+            900px 700px at 30% 10%,
+            rgba(200, 163, 74, 0.14),
+            transparent 55%
+          ),
+          radial-gradient(
+            900px 700px at 70% 90%,
+            rgba(107, 122, 91, 0.16),
+            transparent 58%
+          ),
+          linear-gradient(180deg, rgba(27, 27, 26, 0.65), rgba(27, 27, 26, 0.35));
+        opacity: 0.85;
+      }
+
+      .door-panel::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.55;
+        background-image: linear-gradient(
+            to right,
+            rgba(27, 27, 26, 0.09) 1px,
+            transparent 1px
+          ),
+          linear-gradient(to bottom, rgba(27, 27, 26, 0.09) 1px, transparent 1px);
+        background-size: 44px 44px;
+      }
+
+      .dark .door-panel::after {
+        opacity: 0.32;
+        background-image: linear-gradient(
+            to right,
+            rgba(247, 241, 229, 0.12) 1px,
+            transparent 1px
+          ),
+          linear-gradient(to bottom, rgba(247, 241, 229, 0.12) 1px, transparent 1px);
+      }
+
+      /* Default: open state (no JS) */
+      .door .door-panel.left {
+        transform: translateX(-86%);
+      }
+
+      .door .door-panel.right {
+        transform: translateX(86%);
+      }
+
+      /* JS-enabled: start closed, then open by adding .is-open */
+      .js .door .door-panel.left,
+      .js .door .door-panel.right {
+        transform: translateX(0);
+      }
+
+      .js .door.is-open .door-panel.left {
+        transform: translateX(-86%);
+      }
+
+      .js .door.is-open .door-panel.right {
+        transform: translateX(86%);
+      }
+
+      .reduce-motion .door-panel {
+        transition: none !important;
+      }
+
+      /* Subtle focus style */
+      :where(a, button, input, select, textarea):focus-visible {
+        outline: 2px solid rgba(200, 163, 74, 0.75);
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+
+  <body
+    class="h-full bg-paper text-ink antialiased selection:bg-tea/25 selection:text-ink dark:bg-soot dark:text-paper"
+  >
+    <a
+      href="#content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:border focus:border-ink/10 focus:bg-paper focus:px-4 focus:py-3 focus:text-sm focus:text-ink dark:focus:border-paper/15 dark:focus:bg-soot dark:focus:text-paper"
+      >本文へ</a
+    >
+
+    <!-- Backdrop layers -->
+    <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-50">
+      <div class="absolute inset-0 bg-paper transition-colors duration-700 dark:bg-soot"></div>
+      <div
+        class="absolute -inset-24 opacity-90 transition-opacity duration-700 dark:opacity-70"
+        style="
+          background: radial-gradient(
+              950px 740px at 14% 8%,
+              rgba(107, 122, 91, 0.18),
+              transparent 60%
+            ),
+            radial-gradient(
+              900px 720px at 86% 6%,
+              rgba(201, 165, 124, 0.22),
+              transparent 56%
+            ),
+            radial-gradient(
+              980px 820px at 72% 88%,
+              rgba(200, 163, 74, 0.1),
+              transparent 62%
+            );
+        "
+      ></div>
+      <div
+        class="absolute inset-0 tatami opacity-[0.55] mix-blend-multiply transition-opacity duration-700 dark:opacity-[0.35] dark:mix-blend-screen"
+      ></div>
+      <div
+        class="absolute inset-0 grain opacity-[0.28] transition-opacity duration-700 dark:opacity-[0.2]"
+      ></div>
+    </div>
+
+    <!-- Scroll progress -->
+    <div class="fixed left-0 top-0 z-[55] h-0.5 w-full bg-ink/5 dark:bg-paper/10">
+      <div
+        id="scrollProgress"
+        class="h-full origin-left scale-x-0 bg-gradient-to-r from-tea via-gold to-clay"
+      ></div>
+    </div>
+
+    <!-- Header -->
+    <header class="fixed left-0 top-0 z-50 w-full">
+      <div class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+        <div
+          class="flex items-center justify-between rounded-2xl border border-ink/10 bg-paper/65 px-2 py-2 shadow-washi backdrop-blur-xl transition-colors duration-700 dark:border-paper/12 dark:bg-soot/55"
+        >
+          <a
+            href="#top"
+            class="group flex items-baseline gap-3 rounded-xl px-3 py-2"
+          >
+            <span
+              class="font-serif text-lg tracking-[0.26em] text-ink transition-colors dark:text-paper"
+              >和庵</span
+            >
+            <span
+              class="hidden text-xs tracking-[0.28em] text-ink/60 transition-colors dark:text-paper/60 sm:inline"
+              >現代茶室</span
+            >
+          </a>
+
+          <nav class="hidden items-center gap-1 md:flex" aria-label="主要ナビゲーション">
+            <a
+              href="#ma"
+              class="rounded-xl px-3 py-2 text-xs tracking-[0.28em] text-ink/65 transition hover:bg-ink/5 hover:text-ink dark:text-paper/65 dark:hover:bg-paper/10 dark:hover:text-paper"
+              >間</a
+            >
+            <a
+              href="#setting"
+              class="rounded-xl px-3 py-2 text-xs tracking-[0.28em] text-ink/65 transition hover:bg-ink/5 hover:text-ink dark:text-paper/65 dark:hover:bg-paper/10 dark:hover:text-paper"
+              >設え</a
+            >
+            <a
+              href="#flow"
+              class="rounded-xl px-3 py-2 text-xs tracking-[0.28em] text-ink/65 transition hover:bg-ink/5 hover:text-ink dark:text-paper/65 dark:hover:bg-paper/10 dark:hover:text-paper"
+              >一服</a
+            >
+            <a
+              href="#reserve"
+              class="rounded-xl px-3 py-2 text-xs tracking-[0.28em] text-ink/65 transition hover:bg-ink/5 hover:text-ink dark:text-paper/65 dark:hover:bg-paper/10 dark:hover:text-paper"
+              >予約</a
+            >
+          </nav>
+
+          <div class="flex items-center gap-2 pr-1">
+            <button
+              id="themeToggle"
+              type="button"
+              class="group relative grid h-10 w-10 place-items-center rounded-xl border border-ink/10 bg-white/30 text-xs tracking-[0.2em] text-ink shadow-sm transition hover:bg-white/45 dark:border-paper/12 dark:bg-ink/30 dark:text-paper dark:hover:bg-ink/45"
+              aria-label="配色を切り替える"
+              title="灯"
+            >
+              <span class="font-serif">灯</span>
+              <span
+                aria-hidden="true"
+                class="pointer-events-none absolute inset-0 rounded-xl opacity-0 shadow-ember transition group-hover:opacity-100"
+              ></span>
+            </button>
+            <a
+              href="#reserve"
+              class="hidden rounded-xl bg-ink px-4 py-2 text-xs tracking-[0.26em] text-paper shadow-sm transition hover:bg-ink/90 dark:bg-paper dark:text-ink dark:hover:bg-paper/90 sm:inline"
+              >席を取る</a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scroll spy: shiori -->
+    <nav
+      aria-label="しおり"
+      class="pointer-events-none fixed right-6 top-1/2 z-40 hidden -translate-y-1/2 lg:block"
+    >
+      <div
+        class="pointer-events-auto flex flex-col items-center gap-3 rounded-2xl border border-ink/10 bg-paper/55 px-3 py-4 shadow-washi backdrop-blur-xl transition-colors duration-700 dark:border-paper/12 dark:bg-soot/45"
+      >
+        <a
+          class="spy-link group flex items-center gap-3 rounded-xl px-2 py-2 text-xs tracking-[0.28em] text-ink/70 transition hover:text-ink dark:text-paper/70 dark:hover:text-paper"
+          href="#top"
+          data-nav-link
+          aria-label="序"
+        >
+          <span
+            class="spy-dot h-2.5 w-2.5 rounded-full border border-ink/25 bg-ink/10 transition dark:border-paper/25 dark:bg-paper/10"
+          ></span>
+          <span class="font-serif">序</span>
+        </a>
+        <a
+          class="spy-link group flex items-center gap-3 rounded-xl px-2 py-2 text-xs tracking-[0.28em] text-ink/70 transition hover:text-ink dark:text-paper/70 dark:hover:text-paper"
+          href="#ma"
+          data-nav-link
+          aria-label="間"
+        >
+          <span
+            class="spy-dot h-2.5 w-2.5 rounded-full border border-ink/25 bg-ink/10 transition dark:border-paper/25 dark:bg-paper/10"
+          ></span>
+          <span class="font-serif">間</span>
+        </a>
+        <a
+          class="spy-link group flex items-center gap-3 rounded-xl px-2 py-2 text-xs tracking-[0.28em] text-ink/70 transition hover:text-ink dark:text-paper/70 dark:hover:text-paper"
+          href="#setting"
+          data-nav-link
+          aria-label="設え"
+        >
+          <span
+            class="spy-dot h-2.5 w-2.5 rounded-full border border-ink/25 bg-ink/10 transition dark:border-paper/25 dark:bg-paper/10"
+          ></span>
+          <span class="font-serif">設</span>
+        </a>
+        <a
+          class="spy-link group flex items-center gap-3 rounded-xl px-2 py-2 text-xs tracking-[0.28em] text-ink/70 transition hover:text-ink dark:text-paper/70 dark:hover:text-paper"
+          href="#flow"
+          data-nav-link
+          aria-label="一服"
+        >
+          <span
+            class="spy-dot h-2.5 w-2.5 rounded-full border border-ink/25 bg-ink/10 transition dark:border-paper/25 dark:bg-paper/10"
+          ></span>
+          <span class="font-serif">服</span>
+        </a>
+        <a
+          class="spy-link group flex items-center gap-3 rounded-xl px-2 py-2 text-xs tracking-[0.28em] text-ink/70 transition hover:text-ink dark:text-paper/70 dark:hover:text-paper"
+          href="#reserve"
+          data-nav-link
+          aria-label="予約"
+        >
+          <span
+            class="spy-dot h-2.5 w-2.5 rounded-full border border-ink/25 bg-ink/10 transition dark:border-paper/25 dark:bg-paper/10"
+          ></span>
+          <span class="font-serif">予</span>
+        </a>
+      </div>
+    </nav>
+
+    <main id="content" class="pt-28">
+      <!-- HERO -->
+      <section
+        id="top"
+        data-section
+        class="relative scroll-mt-28"
+        aria-label="和庵"
+      >
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div
+            class="grid min-h-[calc(100vh-8rem)] items-center gap-10 py-14 md:grid-cols-12 md:gap-14 md:py-16"
+          >
+            <div class="md:col-span-5 lg:col-span-5">
+              <p
+                data-reveal
+                class="text-xs tracking-[0.38em] text-ink/60 dark:text-paper/60"
+              >
+                静けさの中に、現代の輪郭。
+              </p>
+              <h1
+                data-reveal
+                style="--d: 120ms"
+                class="mt-5 font-serif text-5xl leading-[1.05] tracking-[0.08em] sm:text-6xl lg:text-7xl"
+              >
+                和庵
+              </h1>
+              <p
+                data-reveal
+                style="--d: 240ms"
+                class="mt-6 max-w-prose text-sm leading-relaxed text-ink/75 dark:text-paper/75 sm:text-base"
+              >
+                茶室は、ただの部屋ではない。光の粒度、素材の温度、そして沈黙の厚みまでを設える場所。
+                和庵は、古典の気配を残しながら、いまの生活の速度に合う一服を再構成します。
+              </p>
+
+              <div
+                data-reveal
+                style="--d: 360ms"
+                class="mt-8 flex flex-wrap items-center gap-3"
+              >
+                <a
+                  href="#reserve"
+                  class="inline-flex items-center gap-2 rounded-2xl bg-ink px-5 py-3 text-xs tracking-[0.28em] text-paper shadow-sm transition hover:bg-ink/90 dark:bg-paper dark:text-ink dark:hover:bg-paper/90"
+                >
+                  <span>席を予約する</span>
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    class="h-4 w-4 opacity-90"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h12" />
+                    <path d="M13 6l6 6-6 6" />
+                  </svg>
+                </a>
+                <a
+                  href="#ma"
+                  class="inline-flex items-center gap-2 rounded-2xl border border-ink/12 bg-paper/30 px-5 py-3 text-xs tracking-[0.28em] text-ink/80 transition hover:bg-paper/50 dark:border-paper/14 dark:bg-soot/25 dark:text-paper/80 dark:hover:bg-soot/35"
+                >
+                  <span>空間を見る</span>
+                  <span aria-hidden="true" class="h-px w-8 bg-ink/25 dark:bg-paper/25"></span>
+                </a>
+              </div>
+
+              <dl
+                data-reveal
+                style="--d: 480ms"
+                class="mt-10 grid max-w-md grid-cols-3 gap-4"
+              >
+                <div
+                  class="rounded-2xl border border-ink/10 bg-white/35 p-4 backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25"
+                >
+                  <dt class="text-[11px] tracking-[0.32em] text-ink/55 dark:text-paper/55">
+                    席数
+                  </dt>
+                  <dd class="mt-2 font-serif text-lg tracking-[0.12em]">四</dd>
+                </div>
+                <div
+                  class="rounded-2xl border border-ink/10 bg-white/35 p-4 backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25"
+                >
+                  <dt class="text-[11px] tracking-[0.32em] text-ink/55 dark:text-paper/55">
+                    一席
+                  </dt>
+                  <dd class="mt-2 font-serif text-lg tracking-[0.12em]">四十五分</dd>
+                </div>
+                <div
+                  class="rounded-2xl border border-ink/10 bg-white/35 p-4 backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25"
+                >
+                  <dt class="text-[11px] tracking-[0.32em] text-ink/55 dark:text-paper/55">
+                    所作
+                  </dt>
+                  <dd class="mt-2 font-serif text-lg tracking-[0.12em]">軽やか</dd>
+                </div>
+              </dl>
+
+              <div
+                class="mt-10 hidden items-center gap-3 md:flex"
+                aria-hidden="true"
+              >
+                <div class="h-px w-10 bg-ink/25 dark:bg-paper/25"></div>
+                <div class="text-xs tracking-[0.35em] text-ink/55 dark:text-paper/55">
+                  風の音まで、設える。
+                </div>
+              </div>
+            </div>
+
+            <div class="md:col-span-7 lg:col-span-7">
+              <div
+                id="heroDoor"
+                class="door relative overflow-hidden rounded-[2.25rem] border border-ink/10 bg-paper/45 shadow-washi backdrop-blur-2xl transition-colors duration-700 dark:border-paper/12 dark:bg-ink/25"
+              >
+                <div class="absolute inset-0 shoji animate-hush"></div>
+
+                <!-- Decorative ink + kintsugi -->
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 900 650"
+                  class="pointer-events-none absolute -right-32 -top-28 h-[520px] w-[520px] opacity-25 dark:opacity-20"
+                >
+                  <defs>
+                    <radialGradient id="inkwash" cx="35%" cy="35%" r="70%">
+                      <stop offset="0%" stop-color="#1B1B1A" stop-opacity="0.65" />
+                      <stop offset="60%" stop-color="#1B1B1A" stop-opacity="0.12" />
+                      <stop offset="100%" stop-color="#1B1B1A" stop-opacity="0" />
+                    </radialGradient>
+                  </defs>
+                  <circle cx="420" cy="300" r="290" fill="url(#inkwash)" />
+                </svg>
+
+                <div
+                  aria-hidden="true"
+                  class="pointer-events-none absolute left-10 top-12 h-[2px] w-[62%] rotate-[-10deg] rounded-full bg-[linear-gradient(90deg,rgba(200,163,74,.0),rgba(200,163,74,.55),rgba(201,165,124,.35),rgba(200,163,74,.0))] bg-[length:240%_100%] animate-emberline"
+                ></div>
+
+                <!-- Shoji panels -->
+                <div aria-hidden="true" class="absolute inset-0">
+                  <div class="door-panel left absolute inset-y-0 left-0 w-1/2">
+                    <div class="absolute inset-0"></div>
+                  </div>
+                  <div class="door-panel right absolute inset-y-0 right-0 w-1/2">
+                    <div class="absolute inset-0"></div>
+                  </div>
+                </div>
+
+                <div class="relative p-8 sm:p-10 lg:p-12">
+                  <div class="flex items-start justify-between gap-8">
+                    <div>
+                      <p
+                        class="text-xs tracking-[0.38em] text-ink/60 dark:text-paper/60"
+                      >
+                        床の間
+                      </p>
+                      <h2
+                        class="mt-4 font-serif text-2xl tracking-[0.06em] sm:text-3xl"
+                      >
+                        一輪、ひらく静けさ
+                      </h2>
+                      <p
+                        class="mt-5 max-w-prose text-sm leading-relaxed text-ink/70 dark:text-paper/70"
+                      >
+                        余白が主役。飾りすぎない設えが、香りと湯気に輪郭を与えます。
+                        触れずに伝わるものを、見えるかたちへ。
+                      </p>
+                    </div>
+
+                    <svg
+                      aria-hidden="true"
+                      class="hidden h-20 w-20 shrink-0 opacity-90 sm:block"
+                      viewBox="0 0 100 100"
+                      fill="none"
+                    >
+                      <path
+                        d="M74 15c-18-6-39 6-47 23-9 18 1 39 20 50 20 11 43 1 52-18"
+                        stroke="currentColor"
+                        stroke-opacity="0.28"
+                        stroke-width="10"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M78 20c-16-8-35 3-42 19-8 18 2 39 21 48 20 10 39-2 44-17"
+                        stroke="currentColor"
+                        stroke-opacity="0.18"
+                        stroke-width="10"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </div>
+
+                  <div class="mt-10 grid gap-4 sm:grid-cols-2">
+                    <div
+                      class="rounded-2xl border border-ink/10 bg-white/35 p-5 backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25"
+                    >
+                      <div class="flex items-center justify-between gap-4">
+                        <p class="text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60">
+                          素材
+                        </p>
+                        <span class="h-px w-14 bg-ink/20 dark:bg-paper/20"></span>
+                      </div>
+                      <p class="mt-4 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                        竹、木、紙。光を柔らかく受け止める、透ける境界。
+                      </p>
+                    </div>
+                    <div
+                      class="rounded-2xl border border-ink/10 bg-white/35 p-5 backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25"
+                    >
+                      <div class="flex items-center justify-between gap-4">
+                        <p class="text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60">
+                          余白
+                        </p>
+                        <span class="h-px w-14 bg-ink/20 dark:bg-paper/20"></span>
+                      </div>
+                      <p class="mt-4 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                        音も香りも、余白で際立つ。静けさが輪郭になる。
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="mt-10 flex items-center justify-between gap-6">
+                    <a
+                      href="#ma"
+                      class="group inline-flex items-center gap-3 text-xs tracking-[0.32em] text-ink/60 transition hover:text-ink dark:text-paper/60 dark:hover:text-paper"
+                    >
+                      <span>静けさを辿る</span>
+                      <span
+                        aria-hidden="true"
+                        class="h-px w-10 bg-ink/25 transition-all group-hover:w-14 dark:bg-paper/25"
+                      ></span>
+                    </a>
+                    <div class="hidden md:block">
+                      <span
+                        class="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-paper/30 px-4 py-2 text-xs tracking-[0.28em] text-ink/70 dark:border-paper/12 dark:bg-soot/20 dark:text-paper/70"
+                      >
+                        <span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-tea"></span>
+                        <span>予約は先着ではなく、調和で。</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-6 flex items-center justify-end">
+                <a
+                  href="#ma"
+                  class="group inline-flex items-center gap-3 rounded-2xl border border-ink/10 bg-paper/35 px-5 py-3 text-xs tracking-[0.32em] text-ink/70 shadow-sm backdrop-blur-md transition hover:bg-paper/55 dark:border-paper/12 dark:bg-soot/25 dark:text-paper/70 dark:hover:bg-soot/35"
+                >
+                  <span>下へ</span>
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    class="h-4 w-4 opacity-80 transition group-hover:translate-y-0.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12 5v14" />
+                    <path d="M7 14l5 5 5-5" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MA / PHILOSOPHY -->
+      <section id="ma" data-section class="scroll-mt-28 py-24 md:py-32">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="grid gap-12 lg:grid-cols-12 lg:items-start">
+            <div class="lg:col-span-5">
+              <p
+                data-reveal
+                class="text-xs tracking-[0.38em] text-ink/60 dark:text-paper/60"
+              >
+                PHILOSOPHY
+              </p>
+              <h2
+                data-reveal
+                style="--d: 120ms"
+                class="mt-4 font-serif text-3xl tracking-[0.06em] sm:text-4xl"
+              >
+                間を、設計する
+              </h2>
+              <p
+                data-reveal
+                style="--d: 240ms"
+                class="mt-6 max-w-prose text-sm leading-relaxed text-ink/75 dark:text-paper/75 sm:text-base"
+              >
+                茶室の美学は、足し算ではなく引き算。削ぎ落とした先に残るのは、時間の密度と、触れない輪郭。
+                和庵は、その「間」をモダンに再編集し、都市の中にも静けさの層をつくります。
+              </p>
+
+              <div
+                data-reveal
+                style="--d: 360ms"
+                class="mt-8 flex flex-wrap gap-3"
+              >
+                <span
+                  class="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-paper/35 px-4 py-2 text-xs tracking-[0.28em] text-ink/70 backdrop-blur-md dark:border-paper/12 dark:bg-soot/25 dark:text-paper/70"
+                  ><span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-tea"></span
+                  >静</span
+                >
+                <span
+                  class="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-paper/35 px-4 py-2 text-xs tracking-[0.28em] text-ink/70 backdrop-blur-md dark:border-paper/12 dark:bg-soot/25 dark:text-paper/70"
+                  ><span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-clay"></span
+                  >素</span
+                >
+                <span
+                  class="inline-flex items-center gap-2 rounded-full border border-ink/10 bg-paper/35 px-4 py-2 text-xs tracking-[0.28em] text-ink/70 backdrop-blur-md dark:border-paper/12 dark:bg-soot/25 dark:text-paper/70"
+                  ><span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-gold"></span
+                  >余</span
+                >
+              </div>
+            </div>
+
+            <div class="lg:col-span-7">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <figure
+                  data-reveal
+                  style="--d: 120ms"
+                  class="relative overflow-hidden rounded-3xl border border-ink/10 bg-white/40 p-6 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25 sm:p-7"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="pointer-events-none absolute -left-16 -top-16 h-40 w-40 rounded-full bg-tea/10 blur-2xl dark:bg-tea/15"
+                  ></div>
+                  <blockquote class="font-serif text-lg leading-relaxed tracking-[0.05em]">
+                    「うつろい」
+                  </blockquote>
+                  <figcaption class="mt-3 text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60">
+                    光と影の呼吸
+                  </figcaption>
+                  <div class="mt-6 h-px w-full bg-gradient-to-r from-transparent via-gold/40 to-transparent"></div>
+                  <p class="mt-5 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                    季節の角度に合わせて、素材の表情が変わる。見え方ごと設計する。
+                  </p>
+                </figure>
+
+                <figure
+                  data-reveal
+                  style="--d: 220ms"
+                  class="relative overflow-hidden rounded-3xl border border-ink/10 bg-white/40 p-6 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25 sm:p-7"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="pointer-events-none absolute -right-16 -bottom-16 h-44 w-44 rounded-full bg-clay/10 blur-2xl dark:bg-clay/15"
+                  ></div>
+                  <blockquote class="font-serif text-lg leading-relaxed tracking-[0.05em]">
+                    「手触り」
+                  </blockquote>
+                  <figcaption class="mt-3 text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60">
+                    目で触れる温度
+                  </figcaption>
+                  <div class="mt-6 h-px w-full bg-gradient-to-r from-transparent via-gold/40 to-transparent"></div>
+                  <p class="mt-5 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                    ざらつき、艶、乾き。触れずに分かる質感が、所作を整える。
+                  </p>
+                </figure>
+
+                <figure
+                  data-reveal
+                  style="--d: 320ms"
+                  class="relative overflow-hidden rounded-3xl border border-ink/10 bg-white/40 p-6 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25 sm:p-7"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="pointer-events-none absolute left-12 top-10 h-24 w-24 rounded-full bg-gold/10 blur-xl dark:bg-gold/15"
+                  ></div>
+                  <blockquote class="font-serif text-lg leading-relaxed tracking-[0.05em]">
+                    「沈黙」
+                  </blockquote>
+                  <figcaption class="mt-3 text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60">
+                    音の余白
+                  </figcaption>
+                  <div class="mt-6 h-px w-full bg-gradient-to-r from-transparent via-gold/40 to-transparent"></div>
+                  <p class="mt-5 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                    聞こえるものを減らすと、湯の音が立つ。沈黙は音のデザイン。
+                  </p>
+                </figure>
+
+                <figure
+                  data-reveal
+                  style="--d: 420ms"
+                  class="relative overflow-hidden rounded-3xl border border-ink/10 bg-white/40 p-6 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25 sm:p-7"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="pointer-events-none absolute -left-10 -bottom-10 h-36 w-36 rounded-full bg-mist/40 blur-2xl dark:bg-mist/10"
+                  ></div>
+                  <blockquote class="font-serif text-lg leading-relaxed tracking-[0.05em]">
+                    「一息」
+                  </blockquote>
+                  <figcaption class="mt-3 text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60">
+                    時間の密度
+                  </figcaption>
+                  <div class="mt-6 h-px w-full bg-gradient-to-r from-transparent via-gold/40 to-transparent"></div>
+                  <p class="mt-5 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                    45分の中に、季節をひとつ折りたたむ。短く、深く。
+                  </p>
+                </figure>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTING -->
+      <section id="setting" data-section class="scroll-mt-28 py-24 md:py-32">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="grid gap-12 lg:grid-cols-12 lg:items-start">
+            <div class="lg:col-span-5">
+              <p
+                data-reveal
+                class="text-xs tracking-[0.38em] text-ink/60 dark:text-paper/60"
+              >
+                SETTING
+              </p>
+              <h2
+                data-reveal
+                style="--d: 120ms"
+                class="mt-4 font-serif text-3xl tracking-[0.06em] sm:text-4xl"
+              >
+                しつらえの輪郭
+              </h2>
+              <p
+                data-reveal
+                style="--d: 240ms"
+                class="mt-6 max-w-prose text-sm leading-relaxed text-ink/75 dark:text-paper/75 sm:text-base"
+              >
+                ひとつひとつの要素は控えめに。けれど重なり合うと、空間がひとつの「器」になる。
+                置かれるものより、置かれない場所が語る設えです。
+              </p>
+
+              <div
+                data-reveal
+                style="--d: 360ms"
+                class="mt-8 rounded-3xl border border-ink/10 bg-paper/35 p-6 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-soot/20"
+              >
+                <div class="flex items-center justify-between gap-6">
+                  <div>
+                    <p class="text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60">
+                      静謐のレイヤー
+                    </p>
+                    <p class="mt-2 font-serif text-lg tracking-[0.04em]">
+                      紙の透け、木の影、湯の白
+                    </p>
+                  </div>
+                  <div class="hidden sm:block">
+                    <div
+                      aria-hidden="true"
+                      class="h-12 w-12 rounded-2xl border border-ink/10 bg-white/30 shadow-sm dark:border-paper/12 dark:bg-ink/25"
+                    ></div>
+                  </div>
+                </div>
+                <div class="mt-6 h-px w-full bg-gradient-to-r from-transparent via-gold/45 to-transparent"></div>
+                <p class="mt-5 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                  視線は自然に落ち着く場所へ。照明は「照らす」のではなく、「影をつくる」ために。
+                </p>
+              </div>
+            </div>
+
+            <div class="lg:col-span-7">
+              <div class="grid gap-4 md:grid-cols-2">
+                <article
+                  data-reveal
+                  style="--d: 120ms"
+                  class="group relative overflow-hidden rounded-3xl border border-ink/10 bg-white/40 p-7 shadow-washi backdrop-blur-md transition-colors hover:bg-white/55 dark:border-paper/12 dark:bg-ink/25 dark:hover:bg-ink/35"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-tea/10 blur-2xl transition dark:bg-tea/15"
+                  ></div>
+                  <div class="flex items-start justify-between gap-6">
+                    <div>
+                      <p class="text-xs tracking-[0.34em] text-ink/60 dark:text-paper/60">
+                        畳
+                      </p>
+                      <h3 class="mt-3 font-serif text-xl tracking-[0.05em]">
+                        目を整える格子
+                      </h3>
+                    </div>
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      class="h-6 w-6 text-ink/45 transition group-hover:rotate-6 dark:text-paper/45"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M4 7h16" />
+                      <path d="M4 12h16" />
+                      <path d="M4 17h16" />
+                      <path d="M7 4v16" />
+                      <path d="M12 4v16" />
+                      <path d="M17 4v16" />
+                    </svg>
+                  </div>
+                  <p class="mt-5 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                    視線のリズムを整える、静かな座標。呼吸が「揃う」感覚をつくる。
+                  </p>
+                </article>
+
+                <article
+                  data-reveal
+                  style="--d: 200ms"
+                  class="group relative overflow-hidden rounded-3xl border border-ink/10 bg-white/40 p-7 shadow-washi backdrop-blur-md transition-colors hover:bg-white/55 dark:border-paper/12 dark:bg-ink/25 dark:hover:bg-ink/35"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="pointer-events-none absolute -left-20 -bottom-20 h-44 w-44 rounded-full bg-clay/10 blur-2xl transition dark:bg-clay/15"
+                  ></div>
+                  <div class="flex items-start justify-between gap-6">
+                    <div>
+                      <p class="text-xs tracking-[0.34em] text-ink/60 dark:text-paper/60">
+                        障子
+                      </p>
+                      <h3 class="mt-3 font-serif text-xl tracking-[0.05em]">
+                        透ける境界
+                      </h3>
+                    </div>
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      class="h-6 w-6 text-ink/45 transition group-hover:-rotate-6 dark:text-paper/45"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M5 3h14v18H5z" />
+                      <path d="M5 9h14" />
+                      <path d="M10 3v18" />
+                      <path d="M14 3v18" />
+                    </svg>
+                  </div>
+                  <p class="mt-5 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                    隔てるのではなく、やわらげる。光を「紙越し」に受け取るための膜。
+                  </p>
+                </article>
+
+                <article
+                  data-reveal
+                  style="--d: 280ms"
+                  class="group relative overflow-hidden rounded-3xl border border-ink/10 bg-white/40 p-7 shadow-washi backdrop-blur-md transition-colors hover:bg-white/55 dark:border-paper/12 dark:bg-ink/25 dark:hover:bg-ink/35"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="pointer-events-none absolute -right-14 -bottom-14 h-40 w-40 rounded-full bg-gold/10 blur-2xl transition dark:bg-gold/15"
+                  ></div>
+                  <div class="flex items-start justify-between gap-6">
+                    <div>
+                      <p class="text-xs tracking-[0.34em] text-ink/60 dark:text-paper/60">
+                        床の間
+                      </p>
+                      <h3 class="mt-3 font-serif text-xl tracking-[0.05em]">
+                        置かない勇気
+                      </h3>
+                    </div>
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      class="h-6 w-6 text-ink/45 transition group-hover:translate-y-0.5 dark:text-paper/45"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M12 3v18" />
+                      <path d="M7 8l5-5 5 5" />
+                      <path d="M7 16h10" />
+                    </svg>
+                  </div>
+                  <p class="mt-5 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                    余白が視線を受け止め、所作が整う。飾りは「少ないほど濃い」。
+                  </p>
+                </article>
+
+                <article
+                  data-reveal
+                  style="--d: 360ms"
+                  class="group relative overflow-hidden rounded-3xl border border-ink/10 bg-white/40 p-7 shadow-washi backdrop-blur-md transition-colors hover:bg-white/55 dark:border-paper/12 dark:bg-ink/25 dark:hover:bg-ink/35"
+                >
+                  <div
+                    aria-hidden="true"
+                    class="pointer-events-none absolute left-10 top-8 h-24 w-24 rounded-full bg-mist/45 blur-xl transition dark:bg-mist/10"
+                  ></div>
+                  <div class="flex items-start justify-between gap-6">
+                    <div>
+                      <p class="text-xs tracking-[0.34em] text-ink/60 dark:text-paper/60">
+                        器
+                      </p>
+                      <h3 class="mt-3 font-serif text-xl tracking-[0.05em]">
+                        口当たりの景色
+                      </h3>
+                    </div>
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      class="h-6 w-6 text-ink/45 transition group-hover:scale-[1.04] dark:text-paper/45"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M7 8h10v6a5 5 0 0 1-10 0V8z" />
+                      <path d="M6 8c0-2 2-4 6-4s6 2 6 4" />
+                      <path d="M9 20h6" />
+                    </svg>
+                  </div>
+                  <p class="mt-5 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                    薄い釉薬の光り方、土の粒度。味覚は、触覚と視覚で先に始まっている。
+                  </p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FLOW -->
+      <section id="flow" data-section class="scroll-mt-28 py-24 md:py-32">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="grid gap-12 lg:grid-cols-12">
+            <div class="lg:col-span-5">
+              <p
+                data-reveal
+                class="text-xs tracking-[0.38em] text-ink/60 dark:text-paper/60"
+              >
+                FLOW
+              </p>
+              <h2
+                data-reveal
+                style="--d: 120ms"
+                class="mt-4 font-serif text-3xl tracking-[0.06em] sm:text-4xl"
+              >
+                一服の流れ
+              </h2>
+              <p
+                data-reveal
+                style="--d: 240ms"
+                class="mt-6 max-w-prose text-sm leading-relaxed text-ink/75 dark:text-paper/75 sm:text-base"
+              >
+                ただ飲むのではなく、心拍が落ち着くまでの道筋を用意する。速度の切り替えは、手順ではなく
+                風景の連なりで起こります。
+              </p>
+            </div>
+
+            <div class="lg:col-span-7">
+              <div class="relative">
+                <div
+                  aria-hidden="true"
+                  class="absolute left-6 top-0 h-full w-px bg-gradient-to-b from-gold/0 via-gold/35 to-gold/0 dark:via-gold/25"
+                ></div>
+                <ol class="relative space-y-6">
+                  <li
+                  data-reveal
+                  style="--d: 120ms"
+                  class="relative rounded-3xl border border-ink/10 bg-white/40 p-7 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25"
+                >
+                  <div class="flex gap-6">
+                    <div
+                      class="grid h-12 w-12 place-items-center rounded-2xl border border-ink/10 bg-paper/35 font-serif text-lg tracking-[0.08em] text-ink shadow-sm dark:border-paper/12 dark:bg-soot/25 dark:text-paper"
+                    >
+                      01
+                    </div>
+                    <div>
+                      <h3 class="font-serif text-xl tracking-[0.05em]">迎え</h3>
+                      <p class="mt-3 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                        靴音がほどけるまで待つ。最初の数分は「何もしない」を許可する時間。
+                      </p>
+                      <div class="mt-5 flex flex-wrap gap-2">
+                        <span
+                          class="rounded-full border border-ink/10 bg-paper/30 px-3 py-1 text-[11px] tracking-[0.28em] text-ink/65 dark:border-paper/12 dark:bg-soot/20 dark:text-paper/65"
+                          >香</span
+                        >
+                        <span
+                          class="rounded-full border border-ink/10 bg-paper/30 px-3 py-1 text-[11px] tracking-[0.28em] text-ink/65 dark:border-paper/12 dark:bg-soot/20 dark:text-paper/65"
+                          >音</span
+                        >
+                        <span
+                          class="rounded-full border border-ink/10 bg-paper/30 px-3 py-1 text-[11px] tracking-[0.28em] text-ink/65 dark:border-paper/12 dark:bg-soot/20 dark:text-paper/65"
+                          >影</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                  <li
+                  data-reveal
+                  style="--d: 220ms"
+                  class="relative rounded-3xl border border-ink/10 bg-white/40 p-7 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25"
+                >
+                  <div class="flex gap-6">
+                    <div
+                      class="grid h-12 w-12 place-items-center rounded-2xl border border-ink/10 bg-paper/35 font-serif text-lg tracking-[0.08em] text-ink shadow-sm dark:border-paper/12 dark:bg-soot/25 dark:text-paper"
+                    >
+                      02
+                    </div>
+                    <div>
+                      <h3 class="font-serif text-xl tracking-[0.05em]">湯</h3>
+                      <p class="mt-3 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                        沸騰ではなく、輪郭のある温度へ。湯気の立ち方が、心拍の速度を下げる。
+                      </p>
+                      <div class="mt-5 h-px w-full bg-gradient-to-r from-transparent via-ink/20 to-transparent dark:via-paper/20"></div>
+                      <p class="mt-5 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                        一口目は味ではなく、空気の層を飲む。
+                      </p>
+                    </div>
+                  </div>
+                </li>
+
+                  <li
+                  data-reveal
+                  style="--d: 320ms"
+                  class="relative rounded-3xl border border-ink/10 bg-white/40 p-7 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25"
+                >
+                  <div class="flex gap-6">
+                    <div
+                      class="grid h-12 w-12 place-items-center rounded-2xl border border-ink/10 bg-paper/35 font-serif text-lg tracking-[0.08em] text-ink shadow-sm dark:border-paper/12 dark:bg-soot/25 dark:text-paper"
+                    >
+                      03
+                    </div>
+                    <div>
+                      <h3 class="font-serif text-xl tracking-[0.05em]">点て</h3>
+                      <p class="mt-3 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                        所作は流れるほどよい。速さではなく、均一なリズムが静けさを生む。
+                      </p>
+                      <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                        <div
+                          class="rounded-2xl border border-ink/10 bg-paper/30 p-4 text-sm leading-relaxed text-ink/70 dark:border-paper/12 dark:bg-soot/20 dark:text-paper/70"
+                        >
+                          <span class="font-serif tracking-[0.05em]">薄茶</span
+                          ><span class="text-ink/55 dark:text-paper/55">
+                            ：軽やかな余韻</span
+                          >
+                        </div>
+                        <div
+                          class="rounded-2xl border border-ink/10 bg-paper/30 p-4 text-sm leading-relaxed text-ink/70 dark:border-paper/12 dark:bg-soot/20 dark:text-paper/70"
+                        >
+                          <span class="font-serif tracking-[0.05em]">濃茶</span
+                          ><span class="text-ink/55 dark:text-paper/55">
+                            ：深い密度</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+
+                  <li
+                  data-reveal
+                  style="--d: 420ms"
+                  class="relative rounded-3xl border border-ink/10 bg-white/40 p-7 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25"
+                >
+                  <div class="flex gap-6">
+                    <div
+                      class="grid h-12 w-12 place-items-center rounded-2xl border border-ink/10 bg-paper/35 font-serif text-lg tracking-[0.08em] text-ink shadow-sm dark:border-paper/12 dark:bg-soot/25 dark:text-paper"
+                    >
+                      04
+                    </div>
+                    <div>
+                      <h3 class="font-serif text-xl tracking-[0.05em]">余韻</h3>
+                      <p class="mt-3 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                        終わりを急がない。余韻の時間は「次」のためではなく、「今」を固定するために。
+                      </p>
+                      <p class="mt-5 text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60">
+                        小さな所作を、暮らしへ持ち帰る。
+                      </p>
+                    </div>
+                  </div>
+                </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESERVE -->
+      <section id="reserve" data-section class="scroll-mt-28 py-24 md:py-32">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="grid gap-12 lg:grid-cols-12 lg:items-start">
+            <div class="lg:col-span-5">
+              <p
+                data-reveal
+                class="text-xs tracking-[0.38em] text-ink/60 dark:text-paper/60"
+              >
+                RESERVE
+              </p>
+              <h2
+                data-reveal
+                style="--d: 120ms"
+                class="mt-4 font-serif text-3xl tracking-[0.06em] sm:text-4xl"
+              >
+                席の予約
+              </h2>
+              <p
+                data-reveal
+                style="--d: 240ms"
+                class="mt-6 max-w-prose text-sm leading-relaxed text-ink/75 dark:text-paper/75 sm:text-base"
+              >
+                空間の調和を守るため、人数・時間帯を限定しています。ご希望の所作や好みを添えてください。
+                その一行が、席の温度を決めます。
+              </p>
+
+              <div
+                data-reveal
+                style="--d: 360ms"
+                class="mt-8 grid gap-4"
+              >
+                <div
+                  class="rounded-3xl border border-ink/10 bg-paper/35 p-6 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-soot/20"
+                >
+                  <p class="text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60">
+                    空きの目安
+                  </p>
+                  <div class="mt-4 grid grid-cols-3 gap-3 text-xs tracking-[0.28em]">
+                    <div
+                      class="rounded-2xl border border-ink/10 bg-white/35 p-4 text-ink/70 dark:border-paper/12 dark:bg-ink/25 dark:text-paper/70"
+                    >
+                      朝
+                      <div class="mt-2 h-1.5 w-full rounded-full bg-ink/10 dark:bg-paper/10">
+                        <div class="h-1.5 w-[72%] rounded-full bg-tea"></div>
+                      </div>
+                    </div>
+                    <div
+                      class="rounded-2xl border border-ink/10 bg-white/35 p-4 text-ink/70 dark:border-paper/12 dark:bg-ink/25 dark:text-paper/70"
+                    >
+                      昼
+                      <div class="mt-2 h-1.5 w-full rounded-full bg-ink/10 dark:bg-paper/10">
+                        <div class="h-1.5 w-[48%] rounded-full bg-clay"></div>
+                      </div>
+                    </div>
+                    <div
+                      class="rounded-2xl border border-ink/10 bg-white/35 p-4 text-ink/70 dark:border-paper/12 dark:bg-ink/25 dark:text-paper/70"
+                    >
+                      夕
+                      <div class="mt-2 h-1.5 w-full rounded-full bg-ink/10 dark:bg-paper/10">
+                        <div class="h-1.5 w-[58%] rounded-full bg-gold"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="mt-4 text-[11px] leading-relaxed tracking-[0.28em] text-ink/55 dark:text-paper/55">
+                    表示はデザイン上の演出です。実際の予約受付は運用に合わせて接続してください。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-7">
+              <form
+                class="rounded-[2rem] border border-ink/10 bg-white/40 p-7 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-ink/25 sm:p-9"
+                action="#"
+                method="post"
+              >
+                <div class="grid gap-5 sm:grid-cols-2">
+                  <label class="block">
+                    <span class="text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60"
+                      >お名前</span
+                    >
+                    <input
+                      class="mt-2 w-full rounded-2xl border border-ink/10 bg-paper/35 px-4 py-3 text-sm text-ink placeholder:text-ink/40 shadow-sm backdrop-blur-md transition focus:border-gold/60 focus:bg-paper/55 dark:border-paper/12 dark:bg-soot/25 dark:text-paper dark:placeholder:text-paper/35 dark:focus:bg-soot/35"
+                      type="text"
+                      name="name"
+                      placeholder="例: 山田 太郎"
+                      autocomplete="name"
+                    />
+                  </label>
+
+                  <label class="block">
+                    <span class="text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60"
+                      >ご連絡先</span
+                    >
+                    <input
+                      class="mt-2 w-full rounded-2xl border border-ink/10 bg-paper/35 px-4 py-3 text-sm text-ink placeholder:text-ink/40 shadow-sm backdrop-blur-md transition focus:border-gold/60 focus:bg-paper/55 dark:border-paper/12 dark:bg-soot/25 dark:text-paper dark:placeholder:text-paper/35 dark:focus:bg-soot/35"
+                      type="email"
+                      name="email"
+                      placeholder="you@example.com"
+                      autocomplete="email"
+                    />
+                  </label>
+
+                  <label class="block">
+                    <span class="text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60"
+                      >日付</span
+                    >
+                    <input
+                      class="mt-2 w-full rounded-2xl border border-ink/10 bg-paper/35 px-4 py-3 text-sm text-ink shadow-sm backdrop-blur-md transition focus:border-gold/60 focus:bg-paper/55 dark:border-paper/12 dark:bg-soot/25 dark:text-paper dark:focus:bg-soot/35"
+                      type="date"
+                      name="date"
+                    />
+                  </label>
+
+                  <label class="block">
+                    <span class="text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60"
+                      >時間帯</span
+                    >
+                    <select
+                      class="mt-2 w-full rounded-2xl border border-ink/10 bg-paper/35 px-4 py-3 text-sm text-ink shadow-sm backdrop-blur-md transition focus:border-gold/60 focus:bg-paper/55 dark:border-paper/12 dark:bg-soot/25 dark:text-paper dark:focus:bg-soot/35"
+                      name="slot"
+                    >
+                      <option>朝 (8:30 - 10:00)</option>
+                      <option>昼 (12:00 - 13:30)</option>
+                      <option>夕 (16:30 - 18:00)</option>
+                      <option>夜 (19:30 - 21:00)</option>
+                    </select>
+                  </label>
+                </div>
+
+                <fieldset class="mt-7">
+                  <legend class="text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60">
+                    ご希望
+                  </legend>
+                  <div class="mt-3 grid gap-3 sm:grid-cols-3">
+                    <label
+                      class="group flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-ink/10 bg-paper/30 px-4 py-3 text-sm text-ink/75 transition hover:bg-paper/45 dark:border-paper/12 dark:bg-soot/20 dark:text-paper/75 dark:hover:bg-soot/30"
+                    >
+                      <span class="font-serif tracking-[0.05em]">薄茶</span>
+                      <input
+                        type="checkbox"
+                        name="wish"
+                        value="usucha"
+                        class="h-4 w-4 rounded border-ink/25 bg-transparent text-gold focus:ring-0 dark:border-paper/25"
+                      />
+                    </label>
+                    <label
+                      class="group flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-ink/10 bg-paper/30 px-4 py-3 text-sm text-ink/75 transition hover:bg-paper/45 dark:border-paper/12 dark:bg-soot/20 dark:text-paper/75 dark:hover:bg-soot/30"
+                    >
+                      <span class="font-serif tracking-[0.05em]">濃茶</span>
+                      <input
+                        type="checkbox"
+                        name="wish"
+                        value="koicha"
+                        class="h-4 w-4 rounded border-ink/25 bg-transparent text-gold focus:ring-0 dark:border-paper/25"
+                      />
+                    </label>
+                    <label
+                      class="group flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-ink/10 bg-paper/30 px-4 py-3 text-sm text-ink/75 transition hover:bg-paper/45 dark:border-paper/12 dark:bg-soot/20 dark:text-paper/75 dark:hover:bg-soot/30"
+                    >
+                      <span class="font-serif tracking-[0.05em]">静席</span>
+                      <input
+                        type="checkbox"
+                        name="wish"
+                        value="quiet"
+                        class="h-4 w-4 rounded border-ink/25 bg-transparent text-gold focus:ring-0 dark:border-paper/25"
+                      />
+                    </label>
+                  </div>
+                </fieldset>
+
+                <label class="mt-7 block">
+                  <span class="text-xs tracking-[0.32em] text-ink/60 dark:text-paper/60"
+                    >ひとこと</span
+                  >
+                  <textarea
+                    class="mt-2 min-h-[120px] w-full resize-none rounded-2xl border border-ink/10 bg-paper/35 px-4 py-3 text-sm leading-relaxed text-ink placeholder:text-ink/40 shadow-sm backdrop-blur-md transition focus:border-gold/60 focus:bg-paper/55 dark:border-paper/12 dark:bg-soot/25 dark:text-paper dark:placeholder:text-paper/35 dark:focus:bg-soot/35"
+                    name="note"
+                    placeholder="例: 初めての茶室です。静かな時間を過ごしたい。"
+                  ></textarea>
+                </label>
+
+                <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p class="text-[11px] leading-relaxed tracking-[0.28em] text-ink/55 dark:text-paper/55">
+                    送信ボタンはUI用のダミーです。実運用では送信先API/フォームに接続してください。
+                  </p>
+                  <button
+                    type="button"
+                    class="inline-flex items-center justify-center gap-2 rounded-2xl bg-ink px-6 py-3 text-xs tracking-[0.28em] text-paper shadow-sm transition hover:bg-ink/90 dark:bg-paper dark:text-ink dark:hover:bg-paper/90"
+                  >
+                    <span>リクエストを送る</span>
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4 opacity-90"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M4 12h16" />
+                      <path d="M14 6l6 6-6 6" />
+                    </svg>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="pb-16 pt-10">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div
+            class="rounded-3xl border border-ink/10 bg-paper/35 p-7 shadow-washi backdrop-blur-md transition-colors dark:border-paper/12 dark:bg-soot/20 sm:p-9"
+          >
+            <div class="grid gap-8 md:grid-cols-12 md:items-start">
+              <div class="md:col-span-7">
+                <p class="text-xs tracking-[0.38em] text-ink/60 dark:text-paper/60">
+                  和庵 | 現代茶室
+                </p>
+                <p class="mt-4 max-w-prose text-sm leading-relaxed text-ink/70 dark:text-paper/70">
+                  古典の気配を残しながら、いまの暮らしに馴染む静けさを。小さな一服が、今日の速度を変える。
+                </p>
+              </div>
+              <div class="md:col-span-5">
+                <div class="grid grid-cols-2 gap-3 text-xs tracking-[0.28em]">
+                  <a
+                    href="#top"
+                    class="rounded-2xl border border-ink/10 bg-white/35 px-4 py-3 text-ink/70 transition hover:bg-white/55 dark:border-paper/12 dark:bg-ink/25 dark:text-paper/70 dark:hover:bg-ink/35"
+                    >序へ</a
+                  >
+                  <a
+                    href="#reserve"
+                    class="rounded-2xl border border-ink/10 bg-white/35 px-4 py-3 text-ink/70 transition hover:bg-white/55 dark:border-paper/12 dark:bg-ink/25 dark:text-paper/70 dark:hover:bg-ink/35"
+                    >予約へ</a
+                  >
+                  <a
+                    href="#ma"
+                    class="rounded-2xl border border-ink/10 bg-white/35 px-4 py-3 text-ink/70 transition hover:bg-white/55 dark:border-paper/12 dark:bg-ink/25 dark:text-paper/70 dark:hover:bg-ink/35"
+                    >間へ</a
+                  >
+                  <a
+                    href="#flow"
+                    class="rounded-2xl border border-ink/10 bg-white/35 px-4 py-3 text-ink/70 transition hover:bg-white/55 dark:border-paper/12 dark:bg-ink/25 dark:text-paper/70 dark:hover:bg-ink/35"
+                    >一服へ</a
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-8 h-px w-full bg-gradient-to-r from-transparent via-gold/40 to-transparent"></div>
+            <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p class="text-[11px] tracking-[0.28em] text-ink/55 dark:text-paper/55">
+                © 和庵. A quiet page, designed with intention.
+              </p>
+              <p class="text-[11px] tracking-[0.28em] text-ink/55 dark:text-paper/55">
+                Tailwind CSS / Smooth scroll / Responsive layout.
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+      (function () {
+        const root = document.documentElement;
+        const prefersReduced = root.classList.contains("reduce-motion");
+
+        const themeToggle = document.getElementById("themeToggle");
+        if (themeToggle) {
+          themeToggle.addEventListener("click", () => {
+            const isDark = root.classList.toggle("dark");
+            try {
+              localStorage.setItem("waan-theme", isDark ? "dark" : "light");
+            } catch (_) {}
+          });
+        }
+
+        // Reveal on scroll
+        const revealNodes = Array.from(document.querySelectorAll("[data-reveal]"));
+        if (!prefersReduced && "IntersectionObserver" in window) {
+          const io = new IntersectionObserver(
+            (entries) => {
+              for (const e of entries) {
+                if (e.isIntersecting) {
+                  e.target.classList.add("is-revealed");
+                  io.unobserve(e.target);
+                }
+              }
+            },
+            { threshold: 0.14, rootMargin: "0px 0px -10% 0px" }
+          );
+          for (const node of revealNodes) io.observe(node);
+        } else {
+          for (const node of revealNodes) node.classList.add("is-revealed");
+        }
+
+        // Shoji door opening
+        const heroDoor = document.getElementById("heroDoor");
+        if (heroDoor) {
+          if (prefersReduced) {
+            heroDoor.classList.add("is-open");
+          } else {
+            requestAnimationFrame(() => {
+              setTimeout(() => heroDoor.classList.add("is-open"), 240);
+            });
+          }
+        }
+
+        // Scroll progress + spy
+        const progressEl = document.getElementById("scrollProgress");
+        const sections = Array.from(document.querySelectorAll("[data-section]"));
+        const navLinks = Array.from(document.querySelectorAll("[data-nav-link]"));
+
+        let ticking = false;
+        function clamp01(v) {
+          return Math.max(0, Math.min(1, v));
+        }
+
+        function update() {
+          ticking = false;
+
+          const scrollY = window.scrollY || window.pageYOffset || 0;
+          const docH =
+            Math.max(
+              document.body.scrollHeight,
+              document.documentElement.scrollHeight
+            ) - window.innerHeight;
+          const p = docH > 0 ? clamp01(scrollY / docH) : 0;
+          if (progressEl) progressEl.style.transform = "scaleX(" + p + ")";
+
+          // Find current section
+          let currentId = sections.length ? sections[0].id : "";
+          const threshold = window.innerHeight * 0.35;
+          for (const sec of sections) {
+            const r = sec.getBoundingClientRect();
+            if (r.top <= threshold) currentId = sec.id;
+          }
+
+          for (const a of navLinks) {
+            const isActive = a.getAttribute("href") === "#" + currentId;
+            if (isActive) a.setAttribute("aria-current", "true");
+            else a.removeAttribute("aria-current");
+          }
+        }
+
+        function onScroll() {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        update();
+
+        // Gentle anchor scroll override (keeps focus behavior consistent)
+        document.addEventListener("click", (ev) => {
+          const a = ev.target && ev.target.closest ? ev.target.closest("a") : null;
+          if (!a) return;
+          const href = a.getAttribute("href") || "";
+          if (!href.startsWith("#") || href === "#") return;
+          const target = document.querySelector(href);
+          if (!target) return;
+          ev.preventDefault();
+          target.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth" });
+          try {
+            history.replaceState(null, "", href);
+          } catch (_) {}
+        });
+      })();
+    </script>
+  </body>
+</html>

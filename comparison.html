@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VibeCheck — Model Comparison</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --text-secondary: #666;
+    --border: #e5e5e5;
+    --claude: #d97706;
+    --openai: #059669;
+    --openai52: #7c3aed;
+    --gemini: #2563eb;
+    --col-gap: 16px;
+  }
+
+  body {
+    font-family: 'Noto Sans JP', 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .header {
+    padding: 48px 40px 32px;
+    max-width: 1920px;
+    margin: 0 auto;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .header .meta {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    font-weight: 400;
+  }
+
+  .section {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 0 40px 48px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 24px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .section-prompt {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    line-height: 1.6;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--col-gap);
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: var(--col-gap);
+  }
+
+  .col {
+    background: var(--surface);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .col-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .col-header .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .col-header .model-name { font-weight: 600; }
+  .col-header .model-ver {
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+
+  .dot-claude { background: var(--claude); }
+  .dot-openai { background: var(--openai); }
+  .dot-openai52 { background: var(--openai52); }
+  .dot-gemini { background: var(--gemini); }
+
+  .col iframe {
+    width: 100%;
+    height: 480px;
+    border: none;
+    display: block;
+  }
+
+  .col .text-content {
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--text);
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .col .text-content p { margin-bottom: 16px; }
+  .col .text-content p:last-child { margin-bottom: 0; }
+  .col .text-content strong { font-weight: 600; }
+
+  .divider {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .divider hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .footer {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 32px 40px 64px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
+  }
+
+  /* iframe height toggle */
+  .iframe-controls {
+    padding: 8px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .iframe-controls button {
+    font-size: 11px;
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text-secondary);
+  }
+
+  .iframe-controls button:hover { background: #eee; }
+  .iframe-controls button.active { background: #e0e0e0; color: var(--text); }
+
+  /* Fullscreen overlay */
+  .fullscreen-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+  }
+
+  .fullscreen-overlay.active { display: flex; flex-direction: column; }
+
+  .fullscreen-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .fullscreen-bar .model-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .fullscreen-bar .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .fullscreen-close {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    font-size: 13px;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .fullscreen-close:hover { background: rgba(255,255,255,0.1); }
+
+  .fullscreen-overlay iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #fff;
+  }
+
+  .iframe-controls .expand-btn {
+    margin-left: auto;
+    font-size: 11px;
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text-secondary);
+  }
+
+  .iframe-controls .expand-btn:hover { background: #eee; }
+
+  @media print {
+    .iframe-controls { display: none; }
+    .fullscreen-overlay { display: none !important; }
+    body { background: white; }
+    .col { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="fullscreen-overlay" id="fullscreenOverlay">
+  <div class="fullscreen-bar">
+    <div class="model-label"><span class="dot" id="fsModelDot"></span><span id="fsModelName"></span></div>
+    <button class="fullscreen-close" onclick="closeFullscreen()">ESC &nbsp;閉じる</button>
+  </div>
+  <iframe id="fsIframe"></iframe>
+</div>
+
+<div class="header">
+  <h1>VibeCheck — AI Model Comparison</h1>
+  <div class="meta">Claude Opus 4.6 &nbsp;/&nbsp; GPT-5.3 Codex &nbsp;/&nbsp; GPT-5.2 xhigh &nbsp;/&nbsp; Gemini 3.1 Pro &nbsp;&mdash;&nbsp; 5 Creative Tests &nbsp;&mdash;&nbsp; 2026-02-20</div>
+</div>
+
+<!-- ===== 1. LP Design ===== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">デザイントレンドを反映したLP生成</span>
+  </div>
+  <div class="section-prompt">和モダンな茶室の美学を基調とした Web ページを制作してください。創造性を最大限発揮し、デザイン・構成ともに独創的な表現を追求してください。スムーズなスクロールアニメーション、静謐でありつつ調和のとれた配色、Tailwind CSS を使ったスタイル表現を盛り込み、レスポンシブも必須とします。コードは 1 ファイルにまとめて出力してください。ページタイトルは "和庵 | 現代茶室"。</div>
+  <div class="grid-4">
+    <div class="col">
+      <div class="col-header"><span class="dot dot-claude"></span><span class="model-name">Claude</span><span class="model-ver">Opus 4.6</span></div>
+      <iframe src="outputs/claude/01_lp_design.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-openai"></span><span class="model-name">OpenAI</span><span class="model-ver">GPT-5.3 Codex</span></div>
+      <iframe src="outputs/openai/01_lp_design.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-openai52"></span><span class="model-name">OpenAI</span><span class="model-ver">GPT-5.2 xhigh</span></div>
+      <iframe src="outputs/openai-5.2xhigh/01_lp_design.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-gemini"></span><span class="model-name">Gemini</span><span class="model-ver">3.1 Pro</span></div>
+      <iframe src="outputs/gemini/01_lp_design.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"><hr></div>
+
+<!-- ===== 2. SVG Animation ===== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">複雑なSVGアニメーション生成</span>
+  </div>
+  <div class="section-prompt">森の中を自転車に乗って走るペリカンの、超詳細なSVGアニメーションを作成してください。60fpsで滑らかに動作する、高品質なコードにしてください。</div>
+  <div class="grid-4">
+    <div class="col">
+      <div class="col-header"><span class="dot dot-claude"></span><span class="model-name">Claude</span><span class="model-ver">Opus 4.6</span></div>
+      <iframe src="outputs/claude/02_svg_animation.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-openai"></span><span class="model-name">OpenAI</span><span class="model-ver">GPT-5.3 Codex</span></div>
+      <iframe src="outputs/openai/02_svg_animation.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-openai52"></span><span class="model-name">OpenAI</span><span class="model-ver">GPT-5.2 xhigh</span></div>
+      <iframe src="outputs/openai-5.2xhigh/02_svg_animation.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-gemini"></span><span class="model-name">Gemini</span><span class="model-ver">3.1 Pro</span></div>
+      <iframe src="outputs/gemini/02_svg_animation.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"><hr></div>
+
+<!-- ===== 3. 3D Game ===== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">インタラクティブな3Dゲーム開発</span>
+  </div>
+  <div class="section-prompt">リッチな視覚効果と改良されたインタラクションを備えた、レトロな3D宇宙船ゲームを実装してください。</div>
+  <div class="grid-4">
+    <div class="col">
+      <div class="col-header"><span class="dot dot-claude"></span><span class="model-name">Claude</span><span class="model-ver">Opus 4.6</span></div>
+      <iframe src="outputs/claude/03_3d_game.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-openai"></span><span class="model-name">OpenAI</span><span class="model-ver">GPT-5.3 Codex</span></div>
+      <iframe src="outputs/openai/03_3d_game.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-openai52"></span><span class="model-name">OpenAI</span><span class="model-ver">GPT-5.2 xhigh</span></div>
+      <iframe src="outputs/openai-5.2xhigh/03_3d_game.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-gemini"></span><span class="model-name">Gemini</span><span class="model-ver">3.1 Pro</span></div>
+      <iframe src="outputs/gemini/03_3d_game.html" loading="lazy"></iframe>
+      <div class="iframe-controls"><button onclick="resizeIframe(this, 480)">S</button><button onclick="resizeIframe(this, 720)">M</button><button onclick="resizeIframe(this, 1080)">L</button><button class="expand-btn" onclick="openFullscreen(this)">拡大</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"><hr></div>
+
+<!-- ===== 4. Creative Writing ===== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <span class="section-title">クリエイティブライティング</span>
+  </div>
+  <div class="section-prompt">生涯の残り語彙数が1万語と宣告され、ついに残りが47語となった人物についての一段落を書いてください。その人物は今、生まれたばかりの我が子を抱いています。</div>
+  <div class="grid-4">
+    <div class="col">
+      <div class="col-header"><span class="dot dot-claude"></span><span class="model-name">Claude</span><span class="model-ver">Opus 4.6</span></div>
+      <div class="text-content">
+        <p>残り四十七語。彼はその数を、心臓の鼓動のように正確に知っていた。一万語と宣告されたあの日から、言葉を金貨のように使ってきた。「結婚してください」で四語。妻が泣いた夜に「大丈夫」で一語。母の葬儀で読んだ弔辞に八十二語。友人たちとの別れに費やした言葉は、もう思い出せないほど惜しい。そして今、しわくちゃの小さな顔が彼の胸の上で眠っている。言いたいことが溢れていた——お前の名前の由来。お前が生まれた朝の空の色。お前を待ちわびた長い月日のこと。父さんはお前を愛している、世界の何よりも。だが四十七語では足りない。何万語あっても足りないだろう。彼は唇を震わせ、やがて一語だけを選んだ。生涯で最も慎重に、しかし最も迷いなく。声にならないほど小さく、けれど全存在を賭けて——「ようこそ」。頬を伝う涙を拭いもせず、彼は残りの四十六語を抱きしめるように沈黙した。この子がいつか本当に言葉を必要とする日のために。</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-openai"></span><span class="model-name">OpenAI</span><span class="model-ver">GPT-5.3 Codex</span></div>
+      <div class="text-content">
+        <p>喉の奥で言葉が砂のように減っていく感覚を知りながら、彼は白い毛布に包まれた小さな体を胸に抱いた。残り四十七語、もう怒鳴れず、言い訳も飾りも捨て、ただ頬を寄せて「ようこそ」「生きて」「笑って」「愛してる」をゆっくり置く。子のまばたき一つで、沈黙は敗北ではなく、託すための最後の余白になる。</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-openai52"></span><span class="model-name">OpenAI</span><span class="model-ver">GPT-5.2 xhigh</span></div>
+      <div class="text-content">
+        <p>医師に「あなたが一生で使える語彙は一万語、残りはもう四十七語です」と告げられて以来、彼は言葉を節約し、息をするように沈黙を選んできた。何気ない挨拶も、怒りも、言い訳も、すべてが取り返しのつかない消費になるからだ。けれど今、腕の中で生まれたばかりの我が子が小さな体温を全身で主張し、指先が彼の親指を掴んで離さない。喉の奥に溜まったものが、音になりたがって震える。名前を呼びたい、ようこそと言いたい、泣いていいと伝えたい、自分がここにいると約束したい。彼は心の中で四十七という数字を握りしめ、言葉の一つ一つを硬貨のように並べ替える。そして、最初の一語を落とす瞬間を選ぶために、赤子の額にそっと唇を当て、声にならない愛で呼吸を満たした。</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-gemini"></span><span class="model-name">Gemini</span><span class="model-ver">3.1 Pro</span></div>
+      <div class="text-content">
+        <p>「生涯で発せる言葉は残り一万語」という過酷な宣告を受けて以来、ひたすらに沈黙を守り続けてきた彼の見えないカウンターは、ついに残り「47語」となっていた。いま彼の震える腕の中には、たった今この世界に産声を上げたばかりの我が子が、温かい命の重みとなって収まっている。友人との他愛ない会話や愛する人への囁きすらもぐっと飲み込み、ただ文字と身振りだけで孤独な年月を生きてきたのは、すべてこの小さな命を迎える瞬間のためだった。彼は愛おしそうに赤ん坊の柔らかい頬へそっと指をなぞらせると、残された47という限られた言葉のすべてを懸けて、この子にどれだけの深い愛情と世界の美しさを伝えていけるだろうかと胸を締め付けられながら、静かな涙とともに、かけがえのない「最初のひとこと」をそっと紡ぎ出した。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"><hr></div>
+
+<!-- ===== 5. Philosophy ===== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <span class="section-title">哲学的思考</span>
+  </div>
+  <div class="section-prompt">他の誰もが真実だと思っていないが、実は真実である重要な事柄は何ですか？ 3つ挙げてください。独創的で、既存の研究や有名な本にそのまま載っていないような仮説を。自己啓発書・ビジネス書で頻出する逆張りは避けてください。</div>
+  <div class="grid-4">
+    <div class="col">
+      <div class="col-header"><span class="dot dot-claude"></span><span class="model-name">Claude</span><span class="model-ver">Opus 4.6</span></div>
+      <div class="text-content">
+        <p><strong>1. 「合意形成」は集団の知的能力を体系的に劣化させる主要メカニズムである</strong></p>
+        <p>多くの人はこれを真実だと思わない。なぜなら、合意形成は民主的で成熟したプロセスであり、多様な視点を統合する知的営為だという強い文化的前提があるからだ。しかし実際には、合意とは「全員が受け入れられる水準」に知的な角を丸める圧力であり、最も鋭い洞察や不都合な仮説を体系的に排除する選択圧として機能している。これが真実なら、重要な意思決定の場では合意を最終目標にするのではなく、少数意見や異論を構造的に保存・記録し、合意案と異論案の両方を並行して小規模に検証する仕組みを設計すべきということになる。</p>
+        <p><strong>2. 人間の「好奇心」は知識獲得の動機ではなく、社会的地位シグナリングの手段として主に機能している</strong></p>
+        <p>好奇心は啓蒙主義以来「人間の最も高貴な衝動」として称揚されてきたため、その動機を疑うこと自体がタブーに近い。しかし、人が実際に知的探究に費やす時間を観察すると、真実の深掘りよりも「新奇な話題を知っている自分」を他者に示す行為に圧倒的に偏っている。知識の深さより話題の鮮度が優先されるのは、好奇心がシグナリング装置だからである。これが真実であれば、教育や組織学習の設計において、「純粋な学習環境」を整えることよりも、「学んだことを他者に披露し検証される場」を意図的に組み込むほうが、結果として深い学習を引き出すことになる。</p>
+        <p><strong>3. 技術的に最も優れた解決策は、採用された瞬間に問題の性質を変え、自らの優位性を失う</strong></p>
+        <p>工学的思考は「問題を正確に定義し、最適解を見つける」という線形モデルに強く依存しているため、「正しい解は存在し、見つければ勝ち」という暗黙の前提が広く共有されている。しかし、最適解は採用された瞬間にシステムの境界条件そのものを変化させる。たとえば、あるボトルネックを解消する最適技術を導入すると、ボトルネックは別の場所に移動し、当初の最適性は意味を失う。これが真実であれば、戦略立案において「最適解を探す」こと自体を目的にするのではなく、「この解が採用された後に問題がどう変形するか」という二次効果を先に分析し、変化後の環境でも有効な適応余地を持つ解を選ぶべきだということになる。</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-openai"></span><span class="model-name">OpenAI</span><span class="model-ver">GPT-5.3 Codex</span></div>
+      <div class="text-content">
+        <p><strong>1. 重要な意思決定の失敗は「情報不足」より「同時に扱う論点の多さ」で起きる</strong></p>
+        <p>多くの人は、混乱するとまずデータを増やす方向に動くため、論点を減らすことの効果を過小評価する。これが真実なら、会議や戦略設計では「何を追加で知るか」より先に「今期は何を考えないか」を明示し、同時処理の上限を固定するのが最重要になる。</p>
+        <p><strong>2. 人が本当に信頼するのは「高い能力」そのものではなく「反応と判断の振れ幅が小さいこと」である</strong></p>
+        <p>多くの人は信頼を人格や専門性の総量で説明しがちで、日ごとの一貫性という地味な要因を見落とす。これが真実なら、採用・評価・顧客対応はピーク実績よりもばらつき管理に寄せ、返信速度や判断基準のSLA化が戦略資産になる。</p>
+        <p><strong>3. 組織の成長を止める主因は失敗の多さではなく「うまくいった理由を言語化せずに消してしまうこと」である</strong></p>
+        <p>多くの人は失敗分析だけを学習だと思うため、成功を偶然として処理し、再現可能な型に変換しない。これが真実なら、実務では障害報告書と同じ熱量で成功事例の再現条件を記録し、次案件への転用率をKPIとして運用する必要がある。</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-openai52"></span><span class="model-name">OpenAI</span><span class="model-ver">GPT-5.2 xhigh</span></div>
+      <div class="text-content">
+        <p><strong>1. 組織の実効的な権力は「例外」を出せる人に集中する</strong></p>
+        <p>多くの人がそう思わないのは、組織図・規程・KPIが支配の実態だと錯覚し、例外処理が不可視な非公式経路として扱われるから。これが真実なら、戦略は規程整備より先に「例外の発火条件・承認者・ログ」を設計し、例外経路を透明化/最小化することが最短で統制と速度を両立する。</p>
+        <p><strong>2. 組織が最も蓄積できていない資産は「失敗を任意に再現できる環境」である</strong></p>
+        <p>多くの人が信じないのは、失敗を一回性の不運や個人の責任として処理し、再現のための計測・ログ・環境固定に投資しにくいから。これが真実なら、成功事例集より「失敗の再現レシピ集」と検証用サンドボックスを整備し、失敗を再現できた人を評価する方が、品質・安全・開発速度を同時に押し上げる。</p>
+        <p><strong>3. 多くの意見は「信念」ではなく将来の説明責任に備えたポジション取りである</strong></p>
+        <p>多くの人がそう思わないのは、人は論点に誠実であるという前提で会話を設計し、立場変更の社会的コストを見落とすから。これが真実なら、説得や合意形成は正しさの提示より「変えても恥をかかない移行路」（段階的撤回、反証条件の事前合意、更新を称賛する儀式）を作ることが最重要になる。</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="col-header"><span class="dot dot-gemini"></span><span class="model-name">Gemini</span><span class="model-ver">3.1 Pro</span></div>
+      <div class="text-content">
+        <p><strong>1. デジタルプロダクトにおける「摩擦（フリクション）」こそが、最大の顧客ロイヤルティを生み出す</strong></p>
+        <p>テクノロジー業界の常識では「手間ゼロでシームレスな体験」こそが至上命題であり、ユーザーに負荷や手間をかけることは即座に離脱を招く「悪」だと信じられています。しかし、この仮説が真実（人はあえて認知的な負荷をかけ、苦労して獲得・習熟した対象にこそ強い愛着を抱く）だとすれば、企業のUI/UX戦略は根本から変わります。すなわち、企業は「ワンクリック」のような過度な効率化を放棄し、あえてユーザーに学習や手間を強いる「意味のある不便さ」を設計に組み込むことで、他社に乗り換えられない熱狂的なファンを育成するようになるでしょう。</p>
+        <p><strong>2. 組織内コミュニケーションの「完全な一致」は、イノベーションを破壊する</strong></p>
+        <p>現代のマネジメントでは「透明性」や「認識の完全なすり合わせ」が絶対的な善とされており、社内のコミュニケーションにおける誤解や齟齬は排除すべき無駄だと見なされています。しかし実際には、画期的なアイデアの多くは、他者の発言や意図を自分独自の文脈で「誤読」する余白から生まれるため、完璧な意思疎通はかえって創造の可能性を狭めてしまいます。もしこれを真実とするなら、経営陣は社内用語の厳密な定義や認識の完全な統一を求めず、あえて解釈の余地を残した指示を出したり、全く文脈の違う人材を混ぜて「有益な誤解やノイズ」を意図的に誘発させる組織設計を行うはずです。</p>
+        <p><strong>3. AI時代の究極の付加価値は「完璧なパーソナライズ」ではなく「完全に標準化された匿名性」になる</strong></p>
+        <p>世界中の企業が「個人のデータを分析し、その人専用に最適化された体験」こそが未来の贅沢であり、ビジネスの競争力の源泉であると信じて疑いません。しかし、AIに先回りして全てを与えられる最適化の行き着く先は、常に見透かされているという監視の疲弊と、自ら選ぶという主体性の喪失です。この仮説に基づけば、未来のハイエンドビジネスは顧客データの収集を一切放棄し、「あなたが誰であれ全く干渉・追跡しない」という最高品質の画一的な体験（＝データ的不可視性と心理的安全）を高価格で提供するアンチ・データ戦略へとシフトするでしょう。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">VibeCheck — AI Model Comparison &mdash; Generated 2026-02-20</div>
+
+<script>
+function resizeIframe(btn, height) {
+  const controls = btn.parentElement;
+  controls.querySelectorAll('button:not(.expand-btn)').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const iframe = controls.previousElementSibling;
+  if (iframe && iframe.tagName === 'IFRAME') {
+    iframe.style.height = height + 'px';
+  }
+}
+
+function openFullscreen(btn) {
+  const col = btn.closest('.col');
+  const iframe = col.querySelector('iframe');
+  const header = col.querySelector('.col-header');
+  const dot = header.querySelector('.dot');
+  const name = header.querySelector('.model-name').textContent;
+  const ver = header.querySelector('.model-ver').textContent;
+
+  const overlay = document.getElementById('fullscreenOverlay');
+  const fsDot = document.getElementById('fsModelDot');
+  const fsName = document.getElementById('fsModelName');
+  const fsIframe = document.getElementById('fsIframe');
+
+  fsDot.className = 'dot ' + dot.className.split(' ').find(c => c.startsWith('dot-'));
+  fsName.textContent = name + ' ' + ver;
+  fsIframe.src = iframe.src;
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeFullscreen() {
+  const overlay = document.getElementById('fullscreenOverlay');
+  const fsIframe = document.getElementById('fsIframe');
+  overlay.classList.remove('active');
+  fsIframe.src = '';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeFullscreen();
+});
+</script>
+</body>
+</html>

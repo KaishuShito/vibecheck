@@ -1,0 +1,1315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <title>Pelican Bicycle Forest (SVG)</title>
+    <style>
+      :root {
+        --bg: #040f0a;
+        --ink: rgba(255, 255, 255, 0.92);
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: radial-gradient(1200px 900px at 55% 30%, #0b2b18 0%, #04120b 55%, #030b07 100%);
+        overflow: hidden;
+      }
+
+      #wrap {
+        width: 100vw;
+        height: 100vh;
+        display: grid;
+        place-items: stretch;
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .hint {
+        shape-rendering: geometricPrecision;
+        text-rendering: geometricPrecision;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .motion-only {
+          display: none;
+        }
+      }
+
+      /* Subtle internal motion that doesn't require JS updates */
+      @keyframes hazeDrift {
+        0% {
+          transform: translateX(0px);
+        }
+        100% {
+          transform: translateX(-140px);
+        }
+      }
+
+      @keyframes rayPulse {
+        0% {
+          opacity: 0.22;
+        }
+        45% {
+          opacity: 0.34;
+        }
+        100% {
+          opacity: 0.22;
+        }
+      }
+
+      @keyframes sparkle {
+        0% {
+          opacity: 0.0;
+          transform: translateY(0px) scale(0.9);
+        }
+        10% {
+          opacity: 0.22;
+        }
+        55% {
+          opacity: 0.0;
+          transform: translateY(-18px) scale(1.06);
+        }
+        100% {
+          opacity: 0.0;
+          transform: translateY(-18px) scale(1.06);
+        }
+      }
+
+      .haze {
+        animation: hazeDrift 8s linear infinite;
+      }
+
+      .rays {
+        animation: rayPulse 4.6s ease-in-out infinite;
+      }
+
+      .spark {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: sparkle 3.8s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrap">
+      <svg
+        id="scene"
+        class="hint"
+        viewBox="0 0 1200 675"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        role="img"
+        aria-label="A pelican riding a bicycle through a forest"
+      >
+        <defs>
+          <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0f3a2a" />
+            <stop offset="0.35" stop-color="#0a251a" />
+            <stop offset="1" stop-color="#04120b" />
+          </linearGradient>
+
+          <radialGradient id="gSun" cx="0.72" cy="0.22" r="0.7">
+            <stop offset="0" stop-color="#ffe9a8" stop-opacity="0.95" />
+            <stop offset="0.18" stop-color="#ffd07a" stop-opacity="0.55" />
+            <stop offset="0.5" stop-color="#7bd0c1" stop-opacity="0.10" />
+            <stop offset="1" stop-color="#0b2b18" stop-opacity="0" />
+          </radialGradient>
+
+          <linearGradient id="gHills" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#092016" />
+            <stop offset="0.4" stop-color="#0b2a1c" />
+            <stop offset="1" stop-color="#071a12" />
+          </linearGradient>
+
+          <linearGradient id="gMist" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#d8fff3" stop-opacity="0" />
+            <stop offset="0.35" stop-color="#b3efe3" stop-opacity="0.18" />
+            <stop offset="0.65" stop-color="#a0dfd1" stop-opacity="0.14" />
+            <stop offset="1" stop-color="#d8fff3" stop-opacity="0" />
+          </linearGradient>
+
+          <linearGradient id="gTrunk" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#1a231f" />
+            <stop offset="0.38" stop-color="#2a3a33" />
+            <stop offset="0.62" stop-color="#15211d" />
+            <stop offset="1" stop-color="#0e1714" />
+          </linearGradient>
+
+          <linearGradient id="gCanopy" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2bc49b" stop-opacity="0.26" />
+            <stop offset="0.22" stop-color="#1f7f62" stop-opacity="0.55" />
+            <stop offset="1" stop-color="#08301f" stop-opacity="0.92" />
+          </linearGradient>
+
+          <linearGradient id="gNearCanopy" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#5df0c9" stop-opacity="0.24" />
+            <stop offset="0.18" stop-color="#2bd9ad" stop-opacity="0.44" />
+            <stop offset="1" stop-color="#062315" stop-opacity="0.95" />
+          </linearGradient>
+
+          <linearGradient id="gTrail" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2a3c34" />
+            <stop offset="0.28" stop-color="#182a24" />
+            <stop offset="1" stop-color="#0b1612" />
+          </linearGradient>
+
+          <linearGradient id="gTrailHighlight" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#ffd78c" stop-opacity="0" />
+            <stop offset="0.5" stop-color="#ffd78c" stop-opacity="0.22" />
+            <stop offset="1" stop-color="#ffd78c" stop-opacity="0" />
+          </linearGradient>
+
+          <linearGradient id="gMetal" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#c8d6df" stop-opacity="0.35" />
+            <stop offset="0.3" stop-color="#ffffff" stop-opacity="0.75" />
+            <stop offset="0.55" stop-color="#9db5c4" stop-opacity="0.35" />
+            <stop offset="1" stop-color="#eaf2f7" stop-opacity="0.55" />
+          </linearGradient>
+
+          <linearGradient id="gFrame" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#0d5f8c" />
+            <stop offset="0.5" stop-color="#1bb7c3" />
+            <stop offset="1" stop-color="#0d4b6d" />
+          </linearGradient>
+
+          <linearGradient id="gTire" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2a2f35" />
+            <stop offset="1" stop-color="#0e1114" />
+          </linearGradient>
+
+          <linearGradient id="gFeather" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#f6f3e9" />
+            <stop offset="0.55" stop-color="#e4dfd2" />
+            <stop offset="1" stop-color="#c9c3b6" />
+          </linearGradient>
+
+          <linearGradient id="gFeatherShade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f8f6ee" stop-opacity="0.95" />
+            <stop offset="0.6" stop-color="#b9b1a3" stop-opacity="0.55" />
+            <stop offset="1" stop-color="#8e867a" stop-opacity="0.22" />
+          </linearGradient>
+
+          <linearGradient id="gBeak" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#ffcf7e" />
+            <stop offset="0.55" stop-color="#ff9b62" />
+            <stop offset="1" stop-color="#ffdc9f" />
+          </linearGradient>
+
+          <linearGradient id="gPouch" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffb07a" stop-opacity="0.88" />
+            <stop offset="0.5" stop-color="#ff7c6e" stop-opacity="0.62" />
+            <stop offset="1" stop-color="#ffcfaa" stop-opacity="0.78" />
+          </linearGradient>
+
+          <pattern id="pBark" width="28" height="48" patternUnits="userSpaceOnUse">
+            <rect width="28" height="48" fill="rgba(10, 18, 14, 0.18)" />
+            <path d="M4 0 V48" stroke="rgba(255,255,255,0.06)" stroke-width="2" />
+            <path d="M11 0 V48" stroke="rgba(0,0,0,0.18)" stroke-width="3" />
+            <path d="M18 0 V48" stroke="rgba(255,255,255,0.05)" stroke-width="2" />
+            <path d="M25 0 V48" stroke="rgba(0,0,0,0.16)" stroke-width="2" />
+            <path d="M0 9 H28" stroke="rgba(0,0,0,0.09)" stroke-width="1" />
+            <path d="M0 27 H28" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+          </pattern>
+
+          <pattern id="pFeathers" width="16" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)">
+            <path d="M0 9 C4 6 8 6 16 9" fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="1" />
+            <path d="M0 3 C4 0 8 0 16 3" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+          </pattern>
+
+          <pattern id="pTrail" width="34" height="26" patternUnits="userSpaceOnUse">
+            <rect width="34" height="26" fill="rgba(0,0,0,0)" />
+            <circle cx="6" cy="8" r="1.2" fill="rgba(255,255,255,0.08)" />
+            <circle cx="14" cy="18" r="0.9" fill="rgba(255,255,255,0.06)" />
+            <circle cx="24" cy="10" r="1" fill="rgba(0,0,0,0.18)" />
+            <circle cx="30" cy="20" r="1.1" fill="rgba(0,0,0,0.16)" />
+            <path d="M4 22 L10 19" stroke="rgba(0,0,0,0.18)" stroke-width="1" />
+            <path d="M20 24 L29 21" stroke="rgba(255,255,255,0.04)" stroke-width="1" />
+          </pattern>
+
+          <filter id="fSoftShadow" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="6" result="b" />
+            <feOffset dx="0" dy="7" result="o" />
+            <feColorMatrix
+              in="o"
+              type="matrix"
+              values="0 0 0 0 0.01  0 0 0 0 0.06  0 0 0 0 0.04  0 0 0 0.55 0"
+              result="c"
+            />
+            <feMerge>
+              <feMergeNode in="c" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          <filter id="fMist" x="-30%" y="-80%" width="160%" height="240%" color-interpolation-filters="sRGB">
+            <feGaussianBlur stdDeviation="10" />
+          </filter>
+
+          <filter id="fGlow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+            <feGaussianBlur stdDeviation="16" result="g" />
+            <feColorMatrix
+              in="g"
+              type="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.75 0"
+              result="a"
+            />
+            <feMerge>
+              <feMergeNode in="a" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          <filter id="fVignette" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+            <feGaussianBlur stdDeviation="18" />
+          </filter>
+
+          <symbol id="treeSil" viewBox="-70 -260 140 280">
+            <path
+              d="M0 -250 C 26 -224 12 -197 42 -168 C 18 -160 28 -130 2 -112 C 26 -100 40 -66 10 -42 C 36 -30 42 10 0 0 C -42 10 -36 -30 -10 -42 C -40 -66 -26 -100 -2 -112 C -28 -130 -18 -160 -42 -168 C -12 -197 -26 -224 0 -250 Z"
+              fill="#061c12"
+              opacity="0.92"
+            />
+            <path d="M-6 0 C -8 -52 -7 -96 -2 -136 C -6 -168 -7 -214 0 -250 C 7 -214 6 -168 2 -136 C 7 -96 8 -52 6 0 Z" fill="#04130c" />
+          </symbol>
+
+          <symbol id="treeMid" viewBox="-110 -320 220 340">
+            <g>
+              <path
+                d="M-20 0 C -30 -78 -22 -164 -12 -214 C -30 -238 -34 -278 -18 -308 C -2 -338 22 -338 32 -306 C 44 -270 38 -240 18 -214 C 30 -164 40 -78 30 0 Z"
+                fill="url(#gTrunk)"
+              />
+              <path
+                d="M-18 0 C -25 -80 -20 -148 -10 -206 C -22 -238 -24 -274 -12 -296 C 2 -322 18 -322 28 -296 C 38 -270 36 -238 22 -206 C 32 -148 38 -80 34 0 Z"
+                fill="url(#pBark)"
+                opacity="0.55"
+              />
+
+              <path
+                d="M0 -310 C 44 -292 40 -256 72 -240 C 44 -224 64 -190 30 -174 C 54 -152 56 -114 22 -98 C 46 -74 36 -44 10 -30 C 30 -18 22 10 0 0 C -22 10 -30 -18 -10 -30 C -36 -44 -46 -74 -22 -98 C -56 -114 -54 -152 -30 -174 C -64 -190 -44 -224 -72 -240 C -40 -256 -44 -292 0 -310 Z"
+                fill="url(#gCanopy)"
+              />
+              <path
+                d="M-36 -252 C -22 -270 0 -278 22 -272 C 8 -292 -12 -294 -28 -286 C -14 -304 6 -304 18 -298 C 8 -312 -12 -312 -26 -306"
+                fill="none"
+                stroke="rgba(255,255,255,0.10)"
+                stroke-width="3"
+                stroke-linecap="round"
+                opacity="0.55"
+              />
+              <path
+                d="M-56 -202 C -30 -228 12 -222 38 -198 C 18 -222 -12 -232 -38 -218 C -20 -246 14 -246 36 -232"
+                fill="none"
+                stroke="rgba(0,0,0,0.18)"
+                stroke-width="4"
+                stroke-linecap="round"
+                opacity="0.6"
+              />
+            </g>
+          </symbol>
+
+          <symbol id="treeNear" viewBox="-160 -380 320 400">
+            <g>
+              <path
+                d="M-40 0 C -70 -98 -56 -210 -34 -282 C -66 -318 -72 -356 -48 -372 C -16 -396 26 -390 48 -360 C 68 -336 60 -308 30 -282 C 54 -210 70 -98 50 0 Z"
+                fill="#0e1714"
+              />
+              <path
+                d="M-38 0 C -62 -102 -50 -204 -30 -276 C -52 -306 -56 -338 -40 -350 C -20 -368 10 -366 28 -344 C 42 -326 40 -302 20 -276 C 40 -204 52 -102 44 0 Z"
+                fill="url(#pBark)"
+                opacity="0.65"
+              />
+              <path
+                d="M0 -360 C 62 -332 66 -286 114 -260 C 78 -240 100 -200 54 -182 C 84 -156 86 -110 42 -92 C 72 -62 62 -24 22 -12 C 44 0 30 24 0 12 C -30 24 -44 0 -22 -12 C -62 -24 -72 -62 -42 -92 C -86 -110 -84 -156 -54 -182 C -100 -200 -78 -240 -114 -260 C -66 -286 -62 -332 0 -360 Z"
+                fill="url(#gNearCanopy)"
+                opacity="0.95"
+              />
+              <path
+                d="M-76 -264 C -52 -292 -18 -298 14 -286 C -8 -316 -38 -318 -62 -304 C -34 -344 10 -340 34 -320"
+                fill="none"
+                stroke="rgba(255,255,255,0.08)"
+                stroke-width="5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M-64 -220 C -30 -254 24 -246 54 -214 C 26 -252 -20 -268 -52 -248 C -20 -288 26 -288 52 -262"
+                fill="none"
+                stroke="rgba(0,0,0,0.18)"
+                stroke-width="6"
+                stroke-linecap="round"
+                opacity="0.6"
+              />
+            </g>
+          </symbol>
+
+          <symbol id="fern" viewBox="-120 -60 240 120">
+            <g opacity="0.88">
+              <path
+                d="M-108 42 C -72 12 -36 14 0 40 C 36 12 72 12 108 42"
+                fill="none"
+                stroke="rgba(55, 220, 176, 0.18)"
+                stroke-width="6"
+                stroke-linecap="round"
+              />
+              <path
+                d="M-110 44 C -84 26 -58 24 -28 36 C -52 26 -78 34 -98 52"
+                fill="none"
+                stroke="rgba(24, 132, 100, 0.55)"
+                stroke-width="5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M110 44 C 84 26 58 24 28 36 C 52 26 78 34 98 52"
+                fill="none"
+                stroke="rgba(24, 132, 100, 0.55)"
+                stroke-width="5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M-86 52 C -62 38 -38 38 -16 48"
+                fill="none"
+                stroke="rgba(0,0,0,0.18)"
+                stroke-width="4"
+                stroke-linecap="round"
+                opacity="0.6"
+              />
+              <path
+                d="M86 52 C 62 38 38 38 16 48"
+                fill="none"
+                stroke="rgba(0,0,0,0.18)"
+                stroke-width="4"
+                stroke-linecap="round"
+                opacity="0.6"
+              />
+            </g>
+          </symbol>
+
+          <symbol id="leaf" viewBox="-22 -22 44 44">
+            <path
+              d="M0 -18 C 10 -18 18 -10 18 0 C 18 10 10 18 0 18 C -10 18 -18 10 -18 0 C -18 -10 -10 -18 0 -18 Z"
+              fill="rgba(100, 255, 220, 0.12)"
+              stroke="rgba(0,0,0,0.26)"
+              stroke-width="1.5"
+            />
+            <path
+              d="M-12 -2 C -6 -8 4 -8 12 -2"
+              fill="none"
+              stroke="rgba(255,255,255,0.22)"
+              stroke-width="2"
+              stroke-linecap="round"
+              opacity="0.6"
+            />
+            <path
+              d="M0 -14 C 2 -6 2 6 0 14"
+              fill="none"
+              stroke="rgba(0,0,0,0.18)"
+              stroke-width="2"
+              stroke-linecap="round"
+              opacity="0.55"
+            />
+          </symbol>
+
+          <symbol id="rock" viewBox="-40 -30 80 60">
+            <path
+              d="M-34 12 C -38 -2 -28 -22 -8 -24 C 8 -28 28 -16 34 -2 C 42 16 22 28 0 26 C -22 30 -30 24 -34 12 Z"
+              fill="rgba(210, 232, 240, 0.10)"
+              stroke="rgba(0,0,0,0.22)"
+              stroke-width="2"
+            />
+            <path
+              d="M-18 2 C -6 -10 10 -10 20 2"
+              fill="none"
+              stroke="rgba(255,255,255,0.12)"
+              stroke-width="3"
+              stroke-linecap="round"
+              opacity="0.7"
+            />
+          </symbol>
+
+          <symbol id="wheel" viewBox="-120 -120 240 240">
+            <g>
+              <circle r="98" fill="none" stroke="url(#gTire)" stroke-width="18" />
+              <circle r="80" fill="none" stroke="rgba(240,248,255,0.18)" stroke-width="8" />
+              <circle r="70" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+              <g stroke="rgba(255,255,255,0.14)" stroke-width="2" stroke-linecap="round">
+                <path d="M0 -74 V74" />
+                <path d="M-74 0 H74" />
+                <path d="M-52 -52 L52 52" />
+                <path d="M-52 52 L52 -52" />
+                <path d="M-18 -72 L18 72" opacity="0.8" />
+                <path d="M-72 -18 L72 18" opacity="0.8" />
+                <path d="M-36 -66 L36 66" opacity="0.65" />
+                <path d="M-66 36 L66 -36" opacity="0.65" />
+              </g>
+              <circle r="10" fill="rgba(240,248,255,0.55)" />
+              <circle r="4" fill="rgba(10,16,14,0.9)" />
+            </g>
+          </symbol>
+
+          <symbol id="sparkle" viewBox="-10 -10 20 20">
+            <path d="M0 -8 L2 -2 L8 0 L2 2 L0 8 L-2 2 L-8 0 L-2 -2 Z" fill="rgba(255, 233, 168, 0.25)" />
+          </symbol>
+
+          <g id="tileFar">
+            <path
+              d="M0 395 C 120 380 210 390 320 382 C 430 374 520 360 650 372 C 780 384 860 372 980 362 C 1100 352 1240 360 1400 346 L1400 530 L0 530 Z"
+              fill="url(#gHills)"
+              opacity="0.95"
+            />
+            <g opacity="0.85">
+              <use href="#treeSil" transform="translate(120 410) scale(1.0)" opacity="0.75" />
+              <use href="#treeSil" transform="translate(210 402) scale(1.25)" opacity="0.72" />
+              <use href="#treeSil" transform="translate(320 412) scale(1.05)" opacity="0.78" />
+              <use href="#treeSil" transform="translate(430 398) scale(1.3)" opacity="0.72" />
+              <use href="#treeSil" transform="translate(560 416) scale(1.0)" opacity="0.76" />
+              <use href="#treeSil" transform="translate(680 404) scale(1.15)" opacity="0.74" />
+              <use href="#treeSil" transform="translate(820 414) scale(1.05)" opacity="0.78" />
+              <use href="#treeSil" transform="translate(950 400) scale(1.28)" opacity="0.72" />
+              <use href="#treeSil" transform="translate(1090 416) scale(0.98)" opacity="0.76" />
+              <use href="#treeSil" transform="translate(1210 404) scale(1.2)" opacity="0.74" />
+              <use href="#treeSil" transform="translate(1340 414) scale(1.06)" opacity="0.78" />
+            </g>
+
+            <g class="haze" opacity="0.85" filter="url(#fMist)">
+              <path
+                d="M-40 430 C 140 410 250 426 360 420 C 520 410 640 392 780 404 C 920 414 1010 402 1150 392 C 1290 382 1440 394 1540 384"
+                fill="none"
+                stroke="url(#gMist)"
+                stroke-width="70"
+                stroke-linecap="round"
+              />
+            </g>
+          </g>
+
+          <g id="tileMid">
+            <g opacity="0.95">
+              <use href="#treeMid" transform="translate(90 472) scale(0.96)" opacity="0.82" />
+              <use href="#treeMid" transform="translate(180 486) scale(0.82)" opacity="0.74" />
+              <use href="#treeMid" transform="translate(290 470) scale(1.05)" opacity="0.80" />
+              <use href="#treeMid" transform="translate(410 488) scale(0.86)" opacity="0.74" />
+              <use href="#treeMid" transform="translate(520 472) scale(1.10)" opacity="0.80" />
+              <use href="#treeMid" transform="translate(650 490) scale(0.84)" opacity="0.72" />
+              <use href="#treeMid" transform="translate(760 474) scale(1.04)" opacity="0.80" />
+              <use href="#treeMid" transform="translate(880 490) scale(0.86)" opacity="0.72" />
+              <use href="#treeMid" transform="translate(1000 470) scale(1.10)" opacity="0.80" />
+              <use href="#treeMid" transform="translate(1130 490) scale(0.86)" opacity="0.72" />
+              <use href="#treeMid" transform="translate(1240 472) scale(1.02)" opacity="0.80" />
+              <use href="#treeMid" transform="translate(1350 488) scale(0.86)" opacity="0.72" />
+            </g>
+
+            <g opacity="0.22" filter="url(#fMist)">
+              <path
+                d="M-30 510 C 170 486 290 506 450 494 C 610 482 720 474 900 486 C 1040 496 1170 482 1430 472"
+                fill="none"
+                stroke="rgba(210,255,243,0.35)"
+                stroke-width="84"
+                stroke-linecap="round"
+              />
+            </g>
+          </g>
+
+          <g id="tileNear">
+            <g opacity="0.98">
+              <use href="#treeNear" transform="translate(120 560) scale(0.82)" opacity="0.96" />
+              <use href="#treeNear" transform="translate(320 560) scale(0.95)" opacity="0.92" />
+              <use href="#treeNear" transform="translate(540 560) scale(0.86)" opacity="0.96" />
+              <use href="#treeNear" transform="translate(760 560) scale(1.00)" opacity="0.92" />
+              <use href="#treeNear" transform="translate(1000 560) scale(0.88)" opacity="0.96" />
+              <use href="#treeNear" transform="translate(1220 560) scale(1.02)" opacity="0.92" />
+              <use href="#treeNear" transform="translate(1400 560) scale(0.84)" opacity="0.96" />
+            </g>
+
+            <g opacity="0.92">
+              <use href="#fern" transform="translate(210 612) scale(1.0)" opacity="0.8" />
+              <use href="#fern" transform="translate(430 618) scale(1.12)" opacity="0.88" />
+              <use href="#fern" transform="translate(660 614) scale(0.98)" opacity="0.82" />
+              <use href="#fern" transform="translate(870 620) scale(1.10)" opacity="0.9" />
+              <use href="#fern" transform="translate(1090 616) scale(1.0)" opacity="0.84" />
+              <use href="#fern" transform="translate(1300 622) scale(1.12)" opacity="0.9" />
+            </g>
+          </g>
+
+          <g id="tileGround">
+            <path
+              d="M0 520 C 120 506 250 522 360 514 C 470 506 560 488 700 500 C 840 512 920 502 1040 492 C 1160 482 1280 490 1400 476 L1400 675 L0 675 Z"
+              fill="url(#gTrail)"
+            />
+            <path
+              d="M0 540 C 150 526 260 538 370 530 C 520 520 630 510 760 520 C 900 532 1020 518 1400 506"
+              fill="none"
+              stroke="url(#gTrailHighlight)"
+              stroke-width="18"
+              stroke-linecap="round"
+              opacity="0.65"
+            />
+            <path
+              d="M0 538 C 180 528 300 544 440 534 C 580 524 700 514 860 526 C 1020 538 1160 526 1400 516"
+              fill="none"
+              stroke="url(#pTrail)"
+              stroke-width="34"
+              stroke-linecap="round"
+              opacity="0.40"
+            />
+            <g opacity="0.75">
+              <use href="#rock" transform="translate(200 596) scale(0.82) rotate(-8)" />
+              <use href="#rock" transform="translate(460 608) scale(0.68) rotate(14)" opacity="0.85" />
+              <use href="#rock" transform="translate(700 602) scale(0.76) rotate(-18)" opacity="0.82" />
+              <use href="#rock" transform="translate(930 612) scale(0.70) rotate(10)" opacity="0.80" />
+              <use href="#rock" transform="translate(1160 604) scale(0.78) rotate(-10)" opacity="0.82" />
+              <use href="#rock" transform="translate(1320 616) scale(0.66) rotate(18)" opacity="0.80" />
+            </g>
+          </g>
+        </defs>
+
+        <rect width="1200" height="675" fill="url(#gSky)" />
+        <rect width="1200" height="675" fill="url(#gSun)" opacity="0.9" />
+
+        <g opacity="0.95">
+          <path
+            d="M0 365 C 110 336 220 356 320 344 C 420 332 520 312 640 326 C 760 340 850 324 960 310 C 1080 296 1160 304 1200 292 L1200 450 L0 450 Z"
+            fill="#062216"
+            opacity="0.85"
+          />
+          <path
+            d="M0 380 C 120 352 220 364 330 354 C 440 344 550 326 670 340 C 790 354 890 338 1000 326 C 1110 314 1180 318 1200 312"
+            fill="none"
+            stroke="rgba(255, 240, 200, 0.10)"
+            stroke-width="28"
+            stroke-linecap="round"
+            opacity="0.55"
+            filter="url(#fMist)"
+          />
+        </g>
+
+        <g class="rays" opacity="0.28" filter="url(#fGlow)">
+          <path d="M820 0 L1060 0 L760 440 Z" fill="rgba(255, 233, 168, 0.16)" />
+          <path d="M940 0 L1200 0 L870 460 Z" fill="rgba(255, 233, 168, 0.13)" />
+          <path d="M720 0 L900 0 L700 420 Z" fill="rgba(255, 233, 168, 0.10)" />
+        </g>
+
+        <g id="parallax" class="motion-only">
+          <g id="layerFar" data-factor="0.18">
+            <use id="far0" href="#tileFar" />
+            <use id="far1" href="#tileFar" />
+          </g>
+
+          <g id="layerMid" data-factor="0.42">
+            <use id="mid0" href="#tileMid" />
+            <use id="mid1" href="#tileMid" />
+          </g>
+
+          <g id="layerNear" data-factor="0.68">
+            <use id="near0" href="#tileNear" />
+            <use id="near1" href="#tileNear" />
+          </g>
+
+          <g id="layerGround" data-factor="1.0">
+            <use id="gnd0" href="#tileGround" />
+            <use id="gnd1" href="#tileGround" />
+          </g>
+        </g>
+
+        <g id="leafLayer" class="motion-only" opacity="0.9"></g>
+
+        <g id="rig" class="motion-only" transform="translate(600 540)">
+          <ellipse cx="0" cy="8" rx="360" ry="46" fill="rgba(0,0,0,0.22)" filter="url(#fVignette)" />
+
+          <g id="bike" filter="url(#fSoftShadow)">
+            <g transform="translate(-250 -100)">
+              <use id="wheelRear" href="#wheel" />
+            </g>
+            <g transform="translate(250 -100)">
+              <use id="wheelFront" href="#wheel" />
+            </g>
+
+            <path
+              d="M-250 -100 L-70 -100 L-120 -220 L250 -100 L160 -235"
+              fill="none"
+              stroke="url(#gFrame)"
+              stroke-width="12"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              opacity="0.95"
+            />
+            <path
+              d="M-120 -220 L-28 -238 L160 -235"
+              fill="none"
+              stroke="rgba(255,255,255,0.10)"
+              stroke-width="5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              opacity="0.9"
+            />
+
+            <path
+              d="M-250 -100 L-120 -220"
+              fill="none"
+              stroke="rgba(0,0,0,0.25)"
+              stroke-width="7"
+              stroke-linecap="round"
+              opacity="0.7"
+            />
+            <path
+              d="M250 -100 L160 -235"
+              fill="none"
+              stroke="rgba(0,0,0,0.25)"
+              stroke-width="7"
+              stroke-linecap="round"
+              opacity="0.7"
+            />
+
+            <path
+              d="M-120 -220 C -128 -236 -118 -252 -100 -256 C -76 -260 -60 -246 -66 -228"
+              fill="none"
+              stroke="rgba(15,22,20,0.75)"
+              stroke-width="10"
+              stroke-linecap="round"
+              opacity="0.9"
+            />
+
+            <path
+              d="M160 -235 C 182 -252 214 -250 234 -232"
+              fill="none"
+              stroke="rgba(15,22,20,0.8)"
+              stroke-width="10"
+              stroke-linecap="round"
+              opacity="0.9"
+            />
+            <path
+              d="M190 -260 C 206 -276 234 -274 250 -256"
+              fill="none"
+              stroke="rgba(240,248,255,0.18)"
+              stroke-width="5"
+              stroke-linecap="round"
+              opacity="0.8"
+            />
+
+            <g id="crankWrap" transform="translate(-70 -100)">
+              <g id="crank">
+                <circle r="34" fill="rgba(10,16,14,0.9)" />
+                <circle r="28" fill="none" stroke="url(#gMetal)" stroke-width="4" opacity="0.9" />
+                <circle r="18" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="3" />
+                <path
+                  d="M-28 0 C -6 -14 6 -14 28 0 C 6 14 -6 14 -28 0 Z"
+                  fill="rgba(255,255,255,0.06)"
+                  opacity="0.7"
+                />
+
+                <g id="pedalL" transform="translate(-44 0)">
+                  <path d="M-18 -6 H18" stroke="rgba(255,255,255,0.10)" stroke-width="6" stroke-linecap="round" />
+                  <rect x="-14" y="-8" width="28" height="16" rx="4" fill="rgba(15,22,20,0.9)" />
+                  <path d="M-11 -4 H11" stroke="rgba(255,255,255,0.18)" stroke-width="2" stroke-linecap="round" />
+                </g>
+
+                <g id="pedalR" transform="translate(44 0)">
+                  <path d="M-18 -6 H18" stroke="rgba(255,255,255,0.10)" stroke-width="6" stroke-linecap="round" />
+                  <rect x="-14" y="-8" width="28" height="16" rx="4" fill="rgba(15,22,20,0.9)" />
+                  <path d="M-11 -4 H11" stroke="rgba(255,255,255,0.18)" stroke-width="2" stroke-linecap="round" />
+                </g>
+
+                <path
+                  d="M-46 0 L-88 -10"
+                  fill="none"
+                  stroke="rgba(15,22,20,0.85)"
+                  stroke-width="8"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M46 0 L88 10"
+                  fill="none"
+                  stroke="rgba(15,22,20,0.85)"
+                  stroke-width="8"
+                  stroke-linecap="round"
+                />
+
+                <path
+                  d="M-70 -100 C -130 -132 -194 -130 -250 -100"
+                  fill="none"
+                  stroke="rgba(0,0,0,0.22)"
+                  stroke-width="6"
+                  stroke-linecap="round"
+                  opacity="0.5"
+                />
+              </g>
+            </g>
+
+            <path
+              d="M-250 -100 C -154 -132 -92 -128 -10 -108"
+              fill="none"
+              stroke="rgba(255,255,255,0.06)"
+              stroke-width="4"
+              stroke-linecap="round"
+              opacity="0.7"
+            />
+
+            <path
+              d="M-70 -100 C 20 -108 120 -106 250 -100"
+              fill="none"
+              stroke="rgba(255,255,255,0.07)"
+              stroke-width="4"
+              stroke-linecap="round"
+              opacity="0.65"
+            />
+          </g>
+
+          <g id="pelicanWrap" transform="translate(-90 -282)">
+            <g id="pelicanBob">
+              <g id="pelicanShadow" opacity="0.16">
+                <path
+                  d="M-10 168 C 42 144 90 146 132 166 C 168 184 148 208 94 212 C 52 216 -8 204 -20 190 C -34 174 -24 176 -10 168 Z"
+                  fill="#000"
+                />
+              </g>
+
+              <g id="pelican">
+                <g id="tail" transform="translate(-10 64)">
+                  <path
+                    d="M-26 18 C -46 10 -52 -10 -34 -20 C -10 -34 10 -18 26 -6 C 44 6 54 22 40 32 C 20 46 -4 36 -26 18 Z"
+                    fill="url(#gFeatherShade)"
+                    opacity="0.85"
+                  />
+                  <path
+                    d="M-34 -10 C -18 -22 -2 -18 14 -8"
+                    fill="none"
+                    stroke="rgba(0,0,0,0.18)"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    opacity="0.5"
+                  />
+                </g>
+
+                <g id="body" transform="translate(40 38)">
+                  <path
+                    d="M-58 14 C -66 -30 -34 -76 10 -88 C 64 -102 124 -68 138 -16 C 154 46 112 98 52 104 C -6 110 -48 74 -58 14 Z"
+                    fill="url(#gFeather)"
+                  />
+                  <path
+                    d="M-50 12 C -56 -22 -30 -58 10 -68 C 58 -80 112 -54 126 -10 C 140 34 104 78 52 82 C 0 86 -42 60 -50 12 Z"
+                    fill="url(#pFeathers)"
+                    opacity="0.55"
+                  />
+                  <path
+                    d="M-38 -10 C -20 -58 42 -84 86 -62"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.22)"
+                    stroke-width="8"
+                    stroke-linecap="round"
+                    opacity="0.55"
+                  />
+                  <path
+                    d="M-20 48 C 12 22 54 24 92 52"
+                    fill="none"
+                    stroke="rgba(0,0,0,0.14)"
+                    stroke-width="10"
+                    stroke-linecap="round"
+                    opacity="0.4"
+                  />
+                </g>
+
+                <g id="wingWrap" transform="translate(56 62)">
+                  <g id="wing">
+                    <path
+                      d="M-12 -40 C 20 -78 88 -74 120 -32 C 150 8 140 58 94 80 C 56 98 10 86 -18 56 C -46 26 -42 -14 -12 -40 Z"
+                      fill="url(#gFeatherShade)"
+                      opacity="0.95"
+                    />
+                    <path
+                      d="M-8 -34 C 20 -64 82 -60 110 -28 C 136 0 128 42 92 60 C 60 76 18 66 -6 42 C -30 18 -30 -10 -8 -34 Z"
+                      fill="url(#pFeathers)"
+                      opacity="0.5"
+                    />
+                    <path
+                      d="M10 -14 C 36 -44 78 -46 96 -22"
+                      fill="none"
+                      stroke="rgba(255,255,255,0.18)"
+                      stroke-width="6"
+                      stroke-linecap="round"
+                      opacity="0.55"
+                    />
+                    <path
+                      d="M0 10 C 34 -10 66 -8 100 16"
+                      fill="none"
+                      stroke="rgba(0,0,0,0.18)"
+                      stroke-width="7"
+                      stroke-linecap="round"
+                      opacity="0.45"
+                    />
+                  </g>
+                </g>
+
+                <g id="headWrap" transform="translate(128 22)">
+                  <g id="head">
+                    <path
+                      d="M-18 12 C -28 -18 -10 -54 22 -62 C 54 -70 90 -48 96 -16 C 102 20 78 48 44 52 C 14 56 -8 40 -18 12 Z"
+                      fill="url(#gFeather)"
+                    />
+                    <path
+                      d="M-12 10 C -20 -12 -8 -40 20 -48 C 46 -56 74 -38 80 -14 C 86 16 66 40 38 42 C 14 44 -4 32 -12 10 Z"
+                      fill="url(#pFeathers)"
+                      opacity="0.45"
+                    />
+
+                    <g id="beakWrap" transform="translate(78 -16)">
+                      <g id="beak">
+                        <path
+                          d="M0 0 C 26 -10 72 -18 128 -10 C 140 -8 150 4 146 14 C 138 34 92 48 26 36 C 4 32 -8 12 0 0 Z"
+                          fill="url(#gBeak)"
+                        />
+                        <path
+                          d="M6 14 C 38 2 82 -4 120 4"
+                          fill="none"
+                          stroke="rgba(255,255,255,0.25)"
+                          stroke-width="5"
+                          stroke-linecap="round"
+                          opacity="0.65"
+                        />
+                        <path
+                          d="M8 28 C 46 44 90 44 132 30"
+                          fill="none"
+                          stroke="rgba(0,0,0,0.16)"
+                          stroke-width="6"
+                          stroke-linecap="round"
+                          opacity="0.55"
+                        />
+
+                        <g id="pouchWrap" transform="translate(12 28)">
+                          <g id="pouch">
+                            <path
+                              d="M0 0 C 20 28 66 42 114 20 C 128 14 140 10 142 24 C 144 44 112 70 68 72 C 26 74 -4 52 0 0 Z"
+                              fill="url(#gPouch)"
+                              opacity="0.9"
+                            />
+                            <path
+                              d="M18 20 C 42 40 80 46 112 30"
+                              fill="none"
+                              stroke="rgba(255,255,255,0.22)"
+                              stroke-width="5"
+                              stroke-linecap="round"
+                              opacity="0.55"
+                            />
+                            <path
+                              d="M10 12 C 34 26 62 32 92 22"
+                              fill="none"
+                              stroke="rgba(0,0,0,0.16)"
+                              stroke-width="5"
+                              stroke-linecap="round"
+                              opacity="0.5"
+                            />
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+
+                    <g id="eye" transform="translate(44 -20)">
+                      <circle r="10" fill="rgba(10,16,14,0.92)" />
+                      <circle cx="-3" cy="-3" r="3" fill="rgba(255,255,255,0.65)" />
+                      <path
+                        id="eyelid"
+                        d="M-12 0 C -6 -10 6 -10 12 0 C 6 10 -6 10 -12 0 Z"
+                        fill="rgba(246, 243, 233, 0.95)"
+                        opacity="0"
+                      />
+                      <path d="M-16 -8 C -6 -16 6 -16 16 -8" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="3" stroke-linecap="round" opacity="0.55" />
+                    </g>
+
+                    <path
+                      d="M18 42 C 28 54 46 58 62 48"
+                      fill="none"
+                      stroke="rgba(0,0,0,0.16)"
+                      stroke-width="6"
+                      stroke-linecap="round"
+                      opacity="0.55"
+                    />
+                  </g>
+                </g>
+
+                <g id="legs" transform="translate(48 138)">
+                  <g id="legL" transform="translate(6 0)">
+                    <g id="legLThighRot">
+                      <path
+                        d="M-8 0 C -18 30 -16 56 -6 78 C 2 96 14 98 20 82 C 28 64 20 32 10 0 C 6 -10 -4 -10 -8 0 Z"
+                        fill="rgba(255, 160, 96, 0.92)"
+                      />
+                      <path
+                        d="M-4 14 C -10 38 -8 56 2 74"
+                        fill="none"
+                        stroke="rgba(0,0,0,0.16)"
+                        stroke-width="4"
+                        stroke-linecap="round"
+                        opacity="0.6"
+                      />
+                      <g transform="translate(8 76)">
+                        <g id="legLShinRot">
+                          <path
+                            d="M-6 0 C -16 24 -12 54 6 82 C 14 94 26 92 26 74 C 26 54 16 22 6 0 C 2 -10 -2 -10 -6 0 Z"
+                            fill="rgba(255, 148, 82, 0.92)"
+                          />
+                          <path
+                            d="M-2 18 C -8 42 -2 60 10 78"
+                            fill="none"
+                            stroke="rgba(0,0,0,0.16)"
+                            stroke-width="4"
+                            stroke-linecap="round"
+                            opacity="0.6"
+                          />
+                          <g transform="translate(10 78)">
+                            <g id="legLFootRot">
+                              <path
+                                d="M-18 4 C -6 -10 12 -10 24 6 C 28 10 26 18 20 18 H-14 C -22 18 -24 10 -18 4 Z"
+                                fill="rgba(15,22,20,0.9)"
+                              />
+                              <path
+                                d="M-10 10 H18"
+                                stroke="rgba(255,255,255,0.12)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                                opacity="0.9"
+                              />
+                            </g>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+
+                  <g id="legR" transform="translate(46 0)">
+                    <g id="legRThighRot">
+                      <path
+                        d="M-8 0 C -18 30 -16 56 -6 78 C 2 96 14 98 20 82 C 28 64 20 32 10 0 C 6 -10 -4 -10 -8 0 Z"
+                        fill="rgba(255, 160, 96, 0.88)"
+                        opacity="0.9"
+                      />
+                      <path
+                        d="M-4 14 C -10 38 -8 56 2 74"
+                        fill="none"
+                        stroke="rgba(0,0,0,0.14)"
+                        stroke-width="4"
+                        stroke-linecap="round"
+                        opacity="0.55"
+                      />
+                      <g transform="translate(8 76)">
+                        <g id="legRShinRot">
+                          <path
+                            d="M-6 0 C -16 24 -12 54 6 82 C 14 94 26 92 26 74 C 26 54 16 22 6 0 C 2 -10 -2 -10 -6 0 Z"
+                            fill="rgba(255, 148, 82, 0.88)"
+                            opacity="0.9"
+                          />
+                          <path
+                            d="M-2 18 C -8 42 -2 60 10 78"
+                            fill="none"
+                            stroke="rgba(0,0,0,0.14)"
+                            stroke-width="4"
+                            stroke-linecap="round"
+                            opacity="0.55"
+                          />
+                          <g transform="translate(10 78)">
+                            <g id="legRFootRot">
+                              <path
+                                d="M-18 4 C -6 -10 12 -10 24 6 C 28 10 26 18 20 18 H-14 C -22 18 -24 10 -18 4 Z"
+                                fill="rgba(15,22,20,0.9)"
+                                opacity="0.95"
+                              />
+                              <path
+                                d="M-10 10 H18"
+                                stroke="rgba(255,255,255,0.12)"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                                opacity="0.85"
+                              />
+                            </g>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+
+                <g opacity="0.78">
+                  <use href="#sparkle" class="spark" transform="translate(-32 60) scale(1.0)" style="animation-delay: 0.4s" />
+                  <use href="#sparkle" class="spark" transform="translate(192 22) scale(0.82)" style="animation-delay: 1.2s" />
+                  <use href="#sparkle" class="spark" transform="translate(130 122) scale(0.7)" style="animation-delay: 2.1s" />
+                </g>
+              </g>
+            </g>
+          </g>
+
+          <g id="dust" class="motion-only" opacity="0.55"></g>
+        </g>
+
+        <g opacity="0.6" filter="url(#fVignette)">
+          <path
+            d="M0 0 H1200 V675 H0 Z M120 96 C 390 18 810 18 1080 96 C 1140 240 1140 435 1080 579 C 810 657 390 657 120 579 C 60 435 60 240 120 96 Z"
+            fill="rgba(0,0,0,0.55)"
+            fill-rule="evenodd"
+          />
+        </g>
+      </svg>
+    </div>
+
+    <script>
+      (() => {
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const scene = document.getElementById('scene');
+
+        const TILE_W = 1400;
+        const SPEED = 320; // px/s camera travel
+        const WHEEL_R = 98;
+        const TAU = Math.PI * 2;
+
+        const far0 = document.getElementById('far0');
+        const far1 = document.getElementById('far1');
+        const mid0 = document.getElementById('mid0');
+        const mid1 = document.getElementById('mid1');
+        const near0 = document.getElementById('near0');
+        const near1 = document.getElementById('near1');
+        const gnd0 = document.getElementById('gnd0');
+        const gnd1 = document.getElementById('gnd1');
+
+        const wheelRear = document.getElementById('wheelRear');
+        const wheelFront = document.getElementById('wheelFront');
+        const crank = document.getElementById('crank');
+
+        const pelicanBob = document.getElementById('pelicanBob');
+        const wing = document.getElementById('wing');
+        const tail = document.getElementById('tail');
+        const head = document.getElementById('head');
+        const beak = document.getElementById('beak');
+        const pouch = document.getElementById('pouch');
+        const eyelid = document.getElementById('eyelid');
+
+        const legLThighRot = document.getElementById('legLThighRot');
+        const legLShinRot = document.getElementById('legLShinRot');
+        const legLFootRot = document.getElementById('legLFootRot');
+        const legRThighRot = document.getElementById('legRThighRot');
+        const legRShinRot = document.getElementById('legRShinRot');
+        const legRFootRot = document.getElementById('legRFootRot');
+
+        const leafLayer = document.getElementById('leafLayer');
+        const dustLayer = document.getElementById('dust');
+
+        function clamp01(x) {
+          return x < 0 ? 0 : x > 1 ? 1 : x;
+        }
+
+        function smoothstep(a, b, x) {
+          const t = clamp01((x - a) / (b - a));
+          return t * t * (3 - 2 * t);
+        }
+
+        function fract(x) {
+          return x - Math.floor(x);
+        }
+
+        // Deterministic PRNG for reproducible details.
+        let prng = 0x9e3779b9;
+        function rand() {
+          prng = (prng * 1664525 + 1013904223) >>> 0;
+          return prng / 4294967296;
+        }
+
+        const leaves = [];
+        const LEAF_COUNT = 20;
+        for (let i = 0; i < LEAF_COUNT; i++) {
+          const u = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+          u.setAttribute('href', '#leaf');
+          u.setAttribute('opacity', (0.35 + rand() * 0.5).toFixed(3));
+          leafLayer.appendChild(u);
+
+          leaves.push({
+            el: u,
+            x0: -80 + rand() * 1360,
+            y0: 110 + rand() * 340,
+            z: 0.35 + rand() * 0.75,
+            drift: 0.22 + rand() * 0.9,
+            fall: 0.06 + rand() * 0.22,
+            spin: (rand() < 0.5 ? -1 : 1) * (20 + rand() * 120),
+            amp: 6 + rand() * 22,
+            freq: 0.6 + rand() * 2.2,
+            tilt: -18 + rand() * 36,
+            s: 0.45 + rand() * 0.95,
+          });
+        }
+
+        const dust = [];
+        const DUST_COUNT = 14;
+        for (let i = 0; i < DUST_COUNT; i++) {
+          const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c.setAttribute('r', (1.5 + rand() * 3.4).toFixed(2));
+          c.setAttribute('fill', 'rgba(255, 233, 168, 0.28)');
+          dustLayer.appendChild(c);
+          dust.push({
+            el: c,
+            a: rand() * TAU,
+            w: 0.9 + rand() * 1.8,
+            life: rand(),
+            s: 0.6 + rand() * 1.1,
+            ox: -250 + rand() * 34,
+            oy: -100 + rand() * 18,
+          });
+        }
+
+        function setTile(el0, el1, factor, distance) {
+          // Keep offset negative to avoid jumps.
+          let o = -((distance * factor) % TILE_W);
+          if (o > 0) o -= TILE_W;
+          el0.setAttribute('transform', `translate(${o} 0)`);
+          el1.setAttribute('transform', `translate(${o + TILE_W} 0)`);
+        }
+
+        function blinkValue(t) {
+          // Two quick blinks per cycle.
+          const period = 4.35;
+          const u = (t % period) / period;
+          const b1 = Math.exp(-Math.pow((u - 0.09) / 0.018, 2));
+          const b2 = 0.7 * Math.exp(-Math.pow((u - 0.58) / 0.014, 2));
+          return clamp01(b1 + b2);
+        }
+
+        let raf = 0;
+        let last = 0;
+        let distance = 0;
+
+        function frame(now) {
+          const t = now * 0.001;
+          const dt = Math.min(0.033, (now - last) * 0.001 || 0);
+          last = now;
+
+          // Travel distance drives the world; keep it stable across tab hitches.
+          distance += SPEED * dt;
+
+          setTile(far0, far1, 0.18, distance);
+          setTile(mid0, mid1, 0.42, distance);
+          setTile(near0, near1, 0.68, distance);
+          setTile(gnd0, gnd1, 1.0, distance);
+
+          // Wheels follow physical circumference.
+          const wheelTurns = distance / (TAU * WHEEL_R);
+          const wheelDeg = wheelTurns * 360;
+          wheelRear.setAttribute('transform', `rotate(${wheelDeg.toFixed(3)})`);
+          wheelFront.setAttribute('transform', `rotate(${wheelDeg.toFixed(3)})`);
+
+          // Crank with a mild gear ratio.
+          const crankDeg = wheelDeg * 1.22;
+          crank.setAttribute('transform', `rotate(${crankDeg.toFixed(3)})`);
+
+          const ph = (crankDeg * Math.PI) / 180;
+          const bobY = 5.5 * Math.sin(ph * 0.5) + 2.2 * Math.sin(ph * 1.2);
+          const bobRot = 1.8 * Math.sin(ph * 0.5);
+          pelicanBob.setAttribute('transform', `translate(0 ${bobY.toFixed(3)}) rotate(${bobRot.toFixed(3)})`);
+
+          // Wing and tail micro-dynamics.
+          const wingRot = -6 + 8 * Math.sin(ph + 0.4);
+          wing.setAttribute('transform', `rotate(${wingRot.toFixed(3)})`);
+          const tailRot = -8 + 10 * Math.sin(ph * 0.8 - 0.8);
+          tail.setAttribute('transform', `rotate(${tailRot.toFixed(3)})`);
+
+          // Head leads the motion slightly.
+          const headRot = 2.4 * Math.sin(ph * 0.5 + 0.2);
+          head.setAttribute('transform', `rotate(${headRot.toFixed(3)})`);
+
+          // Beak/pouch chatter in the wind.
+          const chatter = 0.5 + 0.5 * Math.sin(t * 3.2 + Math.sin(t * 0.7) * 1.4);
+          const beakRot = -2.2 + 4.2 * chatter;
+          beak.setAttribute('transform', `rotate(${beakRot.toFixed(3)})`);
+          const pouchScale = 0.92 + 0.14 * chatter;
+          pouch.setAttribute('transform', `scale(1 ${pouchScale.toFixed(3)})`);
+
+          // Legs: stylized pedaling synced to crank.
+          const l = Math.sin(ph);
+          const r = Math.sin(ph + Math.PI);
+          const l2 = Math.sin(ph + 0.9);
+          const r2 = Math.sin(ph + Math.PI + 0.9);
+
+          legLThighRot.setAttribute('transform', `rotate(${(18 * l).toFixed(3)})`);
+          legLShinRot.setAttribute('transform', `rotate(${(-26 * l2).toFixed(3)})`);
+          legLFootRot.setAttribute('transform', `rotate(${(-10 * l + 6 * l2).toFixed(3)})`);
+
+          legRThighRot.setAttribute('transform', `rotate(${(18 * r).toFixed(3)})`);
+          legRShinRot.setAttribute('transform', `rotate(${(-26 * r2).toFixed(3)})`);
+          legRFootRot.setAttribute('transform', `rotate(${(-10 * r + 6 * r2).toFixed(3)})`);
+
+          // Blink.
+          const b = blinkValue(t);
+          // Eyelid is a small cover shape; opacity + tiny scale for a crisp close.
+          const eyelidOp = b > 0.06 ? Math.min(1, (b - 0.06) / 0.65) : 0;
+          eyelid.setAttribute('opacity', eyelidOp.toFixed(3));
+          const eyelidSy = 0.2 + 0.9 * b;
+          eyelid.setAttribute('transform', `scale(1 ${eyelidSy.toFixed(3)})`);
+
+          // Leaves: combine travel parallax + breeze + gentle fall.
+          for (let i = 0; i < leaves.length; i++) {
+            const L = leaves[i];
+            const par = distance * (0.78 + 0.22 * L.z);
+            let x = L.x0 - par * (0.25 + 0.6 * L.drift);
+            x = ((x % 1360) + 1360) % 1360 - 80;
+            const y = L.y0 + 50 * Math.sin(t * 0.15 + L.z * 2.0) + (t * 24 * L.fall) % 420;
+            const sway = L.amp * Math.sin(t * L.freq + L.z * 7.0);
+            const rot = L.tilt + L.spin * fract(t * (0.09 + 0.05 * L.z));
+            const s = L.s * (0.9 + 0.12 * Math.sin(t * 0.8 + L.z * 4.0));
+            L.el.setAttribute('transform', `translate(${(x + sway).toFixed(3)} ${(110 + (y % 420)).toFixed(3)}) rotate(${rot.toFixed(3)}) scale(${s.toFixed(3)})`);
+          }
+
+          // Dust near the rear wheel: tiny arcs that fade.
+          for (let i = 0; i < dust.length; i++) {
+            const D = dust[i];
+            D.life += dt * (0.7 + D.w * 0.8);
+            const u = fract(D.life);
+            const fade = 1 - smoothstep(0.55, 1.0, u);
+            const arc = D.a + t * (1.2 + D.w);
+            const r0 = 18 + 26 * u;
+            const px = D.ox - 48 * u + Math.cos(arc) * r0;
+            const py = D.oy - 8 * u + Math.sin(arc) * (10 + 18 * u);
+            D.el.setAttribute('cx', px.toFixed(3));
+            D.el.setAttribute('cy', py.toFixed(3));
+            D.el.setAttribute('opacity', (0.55 * fade).toFixed(3));
+          }
+
+          raf = requestAnimationFrame(frame);
+        }
+
+        function start() {
+          last = performance.now();
+          raf = requestAnimationFrame(frame);
+        }
+
+        function stop() {
+          if (raf) cancelAnimationFrame(raf);
+          raf = 0;
+        }
+
+        if (!reduceMotion) start();
+
+        document.addEventListener(
+          'visibilitychange',
+          () => {
+            if (document.hidden) {
+              stop();
+            } else if (!reduceMotion) {
+              start();
+            }
+          },
+          { passive: true }
+        );
+
+        // Keep SVG crisp on mobile overscroll and prevent accidental selection.
+        scene.addEventListener(
+          'pointerdown',
+          (e) => {
+            if (e.target && e.target.closest) {
+              const a = e.target.closest('a');
+              if (!a) e.preventDefault();
+            }
+          },
+          { passive: false }
+        );
+      })();
+    </script>
+  </body>
+</html>
